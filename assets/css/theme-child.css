@@ -33,10 +33,11 @@ template: bb-theme
    it needs no path juggling between root and landen/ pages.
 --------------------------------------------------------------------------- */
 .fl-icon .ps-icon {
-	display: inline-block;
+	/* display:block keeps the svg out of the inline flow: as an inline-block it
+	   added descender space to the line box and grew the header from 36 to 40px. */
+	display: block;
 	width: 16px;
 	height: 16px;
-	vertical-align: -0.185em;
 	color: #9b9b9b;          /* match the Font Awesome glyphs beside it */
 }
 .fl-icon a:hover .ps-icon { color: #000; }
