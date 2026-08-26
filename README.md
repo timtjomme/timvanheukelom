@@ -1,8 +1,8 @@
 # timvanheukelom.nl — local copy
 
-An offline copy of the homepage of https://www.timvanheukelom.nl
-("Tim van Heukelom – Tim op Reis"), captured 2026-08-25, rebuilt into a
-conventional static-site layout.
+An offline copy of https://www.timvanheukelom.nl ("Tim van Heukelom – Tim op Reis"),
+captured 2026-08-25/26 and rebuilt from the original WordPress + Beaver Builder
+output into a conventional static-site layout.
 
 ## Run it
 
@@ -15,101 +15,94 @@ Then open http://localhost:8765
 ## Structure
 
 ```
-index.html
-favicon.ico
-css/
-  bootstrap.css      theme-skin.css    layout.css     open-sans.css
-  fontawesome.css    theme-child.css   modules.css    animate.css
-  magnific-popup.css
-js/
-  jquery.js          bootstrap.js      layout.js      waypoints.js
-  jquery-migrate.js  theme.js          modules.js     imagesloaded.js
-  magnific-popup.js  throttle-debounce.js
-fonts/
-  fontawesome/       fa-solid-900.woff2, fa-brands-400.woff2
-  open-sans/         latin + latin-ext woff2
-img/                 19 photos + favicons
-tools/               mirror.py, restructure.py (see below)
+index.html                     homepage
+landen/<slug>/index.html       14 travel stories
+voorbereidingen/<slug>/        2 pre-trip posts
+timtjomme/  travelblog/  waar-zijn-we-geweest/
+polarsteps/                    added page: Polarsteps journey embed
+css/   31 files                bootstrap, fontawesome, animate, magnific-popup,
+                               theme-skin, theme-child, per-page layout-<id>,
+                               module bundles, open-sans-<weights>
+js/    37 files                jquery, bootstrap, theme, waypoints, imagesloaded,
+                               magnific-popup, three + cardboard (360 viewer),
+                               per-page layout-<id>, module bundles
+fonts/ 6 files                 Font Awesome woff2, Open Sans woff2
+img/   759 photos              one size per photo
+tools/                         build + page-generation scripts
 ```
 
-`layout.css` / `layout.js` are this page's generated Beaver Builder layout;
-`modules.css` / `modules.js` are the BB module bundle.
+21 pages, 759 photos, ~130 MB.
 
-## Weight
+## Image policy
 
-**8.7 MB → 4.9 MB (44% smaller)**, with the rendered page unchanged.
+The story pages reference 4085 image URLs, but that is only **755 distinct
+photos** — WordPress emits ~5.6 `srcset` thumbnails per photo. This copy keeps
+**one variant per photo** (the largest at or below 1200px) and strips `srcset`
+and `sizes` so the browser uses it directly. Full `srcset` fidelity would have
+cost ~308 MB for the same visible result at normal viewport sizes.
 
-| removed                              | saved   | why it was safe |
-|--------------------------------------|---------|-----------------|
-| Font Awesome eot/ttf/svg/woff        | 2.5 MB  | modern browsers load only woff2 |
-| `fa-regular-400.*` (all formats)     | (above) | page uses only `.fas` + `.fab` |
-| `three.min.js` + orbit controls + cardboard.js | 440 KB | VR plugin, no VR module on this page |
-| Open Sans: 8 unused subsets          | 350 KB  | Dutch text needs latin + latin-ext only |
-| `block-library/style.min.css`        | 120 KB  | Gutenberg styles; page is Beaver Builder |
-| `dashicons.min.css` + `dashicons.ttf`| 120 KB  | WP admin icon font, unused on the front end |
-| `snazzymaps.js`                      | 8 KB    | no map on this page |
-| `wp-emoji-release.min.js` + loader   | 24 KB   | emoji polyfill for legacy browsers |
+360° panoramas are the exception: they are kept at full resolution
+(2560x1280), because the viewer maps them onto a sphere and downscaling is
+visible.
 
-Also dropped: the glyphicon `@font-face` in Bootstrap (those files 404 on the
-live server too and nothing uses them), and 28 of 30 Open Sans `@font-face`
-rules, so no dangling references remain.
+## What was trimmed
 
-**The 19 photos (4.0 MB) were left untouched.** They are already tightly
-encoded — re-encoding them at the same dimensions makes them *bigger*
-(WebP q82: +12%, JPEG q80: +30%), and at a 1280px viewport the banners render
-at 640 CSS px, i.e. 1280 device px on a retina screen, so 1500x1500 is honest
-sizing rather than waste. Any further image saving is a visible-quality trade:
-WebP q75 would cut about 500 KB.
+Relative to a raw mirror, with no change to the rendered pages:
+
+- Font Awesome eot/ttf/svg/woff (woff2 only)
+- 7 unused Open Sans subsets, keeping latin, latin-ext and vietnamese
+  (the last matters — "Hà Nội", "Chùa Bái Đính")
+- `block-library.css` (Gutenberg; these pages are Beaver Builder)
+- `dashicons` (WP admin icon font)
+- `snazzymaps.js` (no map on any page), emoji polyfill
+- Dead WordPress `<head>` entries: RSS/comments feeds, oEmbed endpoints,
+  REST API links, RSD/xmlrpc, generator meta, shortlink.
+  `rel="canonical"` is deliberately kept — it marks the live site as the original.
+
+`three.js` + `cardboard.js` are kept, but linked **only from the 6 pages that
+actually embed a panorama**, so the other 15 pages do not pay the 440 KB.
 
 ## Fidelity
 
-Verified against the untrimmed mirror at a matched 1280x800 viewport, both
-scrolled through and left to settle:
+- **2364 local references across 21 pages resolve — 0 missing. 0 server 404s.**
+- The homepage still hashes to `b251d5b7` — the identical rendered fingerprint
+  (position, size, font, weight, colour, background) measured before the story
+  pages were added, across all 330 rendered elements.
+- `landen/nobus/` renders 15 of 15 panorama viewers as live WebGL canvases;
+  page width matches the live site exactly (1281px).
+- Counters, parallax hero, hover banners and scroll animations all work.
 
-- 330 rendered elements on each, **identical layout/style fingerprint**
-  (hash `b251d5b7`) covering position, size, font, weight, colour and
-  background image
-- identical `scrollHeight` (5956px) and identical page text
-- 16 images, 0 broken; 0 requests leave the machine; 0 404s
-- all 3 counter animations fire and land on 87.501 / 250 / 12
+## Needs an internet connection
+
+Everything is local **except** third-party embeds, which cannot be mirrored:
+
+- **Vimeo videos** on 6 story pages — click-to-play; the poster thumbnails also
+  come from `i.vimeocdn.com`
+- **Polarsteps map** on `/polarsteps/`
+- Outbound links in post text (Instagram, Facebook, etc.)
+
+Navigation between the 21 mirrored pages is fully local. Links to pages that
+were not mirrored — notably the 34 `/cardboard/<id>` full-screen panorama pages
+— still point at the live site; the inline 360° viewers work offline regardless.
 
 ## Rebuilding
 
-`tools/mirror.py` re-downloads the live homepage into a raw mirror that
-preserves the original WordPress URL paths. `tools/restructure.py` converts
-such a mirror into this layout and applies the trimming above:
-
 ```bash
-python3 tools/mirror.py ./raw-mirror
-python3 tools/restructure.py ./raw-mirror ./site
+python3 tools/build_site.py <output-dir>          # crawl + build the whole site
+python3 tools/make_page.py . polarsteps "Title" tools/pages/polarsteps.html polarsteps.css
 ```
 
-## WordPress remnants removed
+`make_page.py` derives its shell from the current `index.html`, so generated
+pages always pick up the current asset filenames instead of going stale.
 
-The page is generated by WordPress 6.9.7 + Beaver Builder. Beyond the asset
-trimming above, these dead `<head>` references were stripped — all pointed back
-at the live WordPress install and did nothing in a static copy:
+Note: the host throttles sustained crawling to roughly 8 requests/minute, so a
+full image fetch takes about 90 minutes. `build_site.py` caches to
+`/tmp/tvh-cache` and skips files already downloaded, so it is resumable.
 
-- RSS feed and comments-feed `<link rel="alternate">`
-- oEmbed discovery endpoints (JSON + XML)
-- REST API root (`rel="https://api.w.org/"`) and the page's `wp-json` JSON link
-- RSD / `xmlrpc.php` `EditURI` link
-- `<meta name="generator" content="WordPress 6.9.7">`
-- `rel="shortlink"`
+## Local-copy fix
 
-`<link rel="canonical">` is deliberately **kept**, pointing at
-https://www.timvanheukelom.nl/ — it is standard HTML rather than WordPress
-plumbing, and it correctly marks the live site as the authoritative original.
-
-Removing these changed nothing on screen: the rendered fingerprint stayed
-`b251d5b7`.
-
-## Known, deliberate deviations
-
-- **Navigation links still point at the live site.** This is a copy of the one
-  homepage; the ~17 linked posts (`/landen/...`, `/timtjomme/`, `/travelblog/`)
-  were not mirrored.
-- A `//# sourceURL=` comment in an inline script still names an original URL.
-  It is a devtools marker only.
-- `dns-prefetch` / `preconnect` hints for fonts.googleapis.com remain in the
-  HTML. They fetch nothing offline.
+`css/theme-child.css` carries one added rule (`.cardboard { overflow:hidden }`).
+Served locally the panorama images decode far faster than over the network, so a
+viewer inside a collapsed container could be initialised at full width and spill
+out of the page. The rule restores the live site's layout and is a no-op for
+correctly sized viewers.

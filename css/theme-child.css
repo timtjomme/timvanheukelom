@@ -14,3 +14,14 @@ template: bb-theme
     color: #f66666;
     font-family: arial;
 }
+/* ---------------------------------------------------------------------------
+   Local copy fix — 360° panorama viewers.
+   cardboard.js sizes its <canvas> once, from the container width at init.
+   Served locally the panorama images decode much faster than over the network,
+   so a viewer sitting in a collapsed (0-width) infobox can be initialised with
+   a full 1060px canvas and spill out of the page, producing a horizontal
+   scrollbar the live site does not have. Clipping to the container restores
+   the original behaviour and is a no-op for correctly sized viewers.
+--------------------------------------------------------------------------- */
+.cardboard { max-width: 100%; overflow: hidden; }
+.cardboard canvas { max-width: 100%; }
