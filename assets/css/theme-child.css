@@ -25,3 +25,18 @@ template: bb-theme
 --------------------------------------------------------------------------- */
 .cardboard { max-width: 100%; overflow: hidden; }
 .cardboard canvas { max-width: 100%; }
+
+/* ---------------------------------------------------------------------------
+   Polarsteps menu icon.
+   Inlined SVG rather than an <img> so it inherits the same colour and hover
+   state as the Font Awesome glyphs beside it (stroke="currentColor"), and so
+   it needs no path juggling between root and landen/ pages.
+--------------------------------------------------------------------------- */
+.fl-icon .ps-icon {
+	display: inline-block;
+	width: 16px;
+	height: 16px;
+	vertical-align: -0.185em;
+	color: #9b9b9b;          /* match the Font Awesome glyphs beside it */
+}
+.fl-icon a:hover .ps-icon { color: #000; }
