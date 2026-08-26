@@ -2,10 +2,13 @@
 """Generate a standalone page that reuses the site's own shell (head, header,
 footer and whatever asset filenames index.html currently points at).
 
-Re-run this after rebuilding the site: it always picks up the current asset
-names, so the page never ends up with stale references.
+Re-run after rebuilding the site: it always picks up the current asset names,
+so a generated page never ends up with stale references.
 
     python3 tools/make_page.py <site-dir> <slug> <title> <body.html> [extra.css]
+
+Writes <site-dir>/<slug>.html . Pages live at the site root, so the shell's
+asset paths (assets/css/..., assets/js/...) are used unchanged.
 """
 import os, re, sys
 
@@ -19,18 +22,9 @@ def build(site, slug, title, body_html, extra_css=None):
     head = re.sub(r'[ \t]*<link rel="canonical"[^>]*/>\n?', "", head)   # no upstream original
     if extra_css:
         head = head.replace("<link rel='stylesheet' id='fl-child-theme-css'",
-            f"<link rel='stylesheet' id='page-{slug}-css' href='../css/{extra_css}' "
+            f"<link rel='stylesheet' id='page-{slug}-css' href='assets/css/{extra_css}' "
             f"type='text/css' media='all' />\n<link rel='stylesheet' id='fl-child-theme-css'", 1)
 
-    depth = slug.count("/") + 1
-    up = "../" * depth
-    def deepen(t):
-        t = re.sub(r'(["\'])(css|js|img|fonts)/', r'\1' + up + r'\2/', t)
-        # header nav links are root-relative in index.html; lift them too
-        t = re.sub(r'(href=["\'])((?:[A-Za-z0-9_-]+/)+index\.html)', r'\1' + up + r'\2', t)
-        t = re.sub(r'(href=["\'])(index\.html)(["\'])', r'\1' + up + r'\2\3', t)
-        return t.replace('href="favicon.ico"', f'href="{up}favicon.ico"')
-    head, bodyhdr, tail = deepen(head), deepen(bodyhdr), deepen(tail)
     bodyhdr = bodyhdr.replace('class="home wp-singular page-template-default page page-id-1914',
                               f'class="wp-singular page-template-default page page-id-{slug}', 1)
 
@@ -44,8 +38,7 @@ def build(site, slug, title, body_html, extra_css=None):
                '\n\n\t\t\t</div><!-- .fl-post-content -->\n\t\t\t</article><!-- .fl-post -->\n'
                '\t\t</div>\n\t</div>\n</div>\n\n')
 
-    out = os.path.join(site, slug, "index.html")
-    os.makedirs(os.path.dirname(out), exist_ok=True)
+    out = os.path.join(site, slug + ".html")
     open(out, "w", encoding="utf-8").write(head + bodyhdr + content + tail)
     return out
 

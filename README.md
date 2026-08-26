@@ -16,22 +16,35 @@ Then open http://localhost:8765
 
 ```
 index.html                     homepage
-landen/<slug>/index.html       14 travel stories
-voorbereidingen/<slug>/        2 pre-trip posts
-timtjomme/  travelblog/  waar-zijn-we-geweest/
-polarsteps/                    added page: Polarsteps journey embed
-css/   31 files                bootstrap, fontawesome, animate, magnific-popup,
-                               theme-skin, theme-child, per-page layout-<id>,
-                               module bundles, open-sans-<weights>
-js/    37 files                jquery, bootstrap, theme, waypoints, imagesloaded,
-                               magnific-popup, three + cardboard (360 viewer),
-                               per-page layout-<id>, module bundles
-fonts/ 6 files                 Font Awesome woff2, Open Sans woff2
-img/   759 photos              one size per photo
-tools/                         build + page-generation scripts
+travelblog.html
+timtjomme.html
+waar-zijn-we-geweest.html
+polarsteps.html                added page: Polarsteps journey embed
+landen/<slug>.html             14 travel stories
+voorbereidingen/<slug>.html    2 pre-trip posts
+assets/
+  css/   31 files              bootstrap, fontawesome, animate, magnific-popup,
+                               theme-skin, theme-child, one <page>.css per page,
+                               modules[-n].css, open-sans-<weights>.css
+  js/    37 files              jquery, bootstrap, theme, waypoints, imagesloaded,
+                               magnific-popup, masonry/mosaicflow/wookmark,
+                               three + cardboard (360 viewer), <page>.js, modules.js
+  fonts/  6 files              Font Awesome woff2, Open Sans woff2
+  img/  759 photos             one size per photo
+favicon.ico  serve.sh  README.md  tools/
 ```
 
-21 pages, 759 photos, ~130 MB.
+21 pages, 759 photos, ~129 MB. Page URLs are `/landen/nobus.html` style.
+
+Nothing is named after WordPress any more: the per-page stylesheets and
+scripts were `layout-<post-id>.css/js` (`layout-2079.css`) and the Beaver
+Builder bundles were content hashes (`modules-b6f8a276.css`). They are now
+named for the page they belong to (`nobus.css`, `nobus.js`) and numbered by
+use (`modules.css` on 16 pages, then `modules-2`, `modules-3`).
+
+Note the page **markup** is still Beaver Builder's — `fl-row`, `fl-module`,
+`uabb-*` and the `fl-node-<hash>` ids. That cannot be renamed away: every
+stylesheet targets those class names, so the layout depends on them.
 
 ## Image policy
 
@@ -88,9 +101,14 @@ were not mirrored — notably the 34 `/cardboard/<id>` full-screen panorama page
 ## Rebuilding
 
 ```bash
-python3 tools/build_site.py <output-dir>          # crawl + build the whole site
-python3 tools/make_page.py . polarsteps "Title" tools/pages/polarsteps.html polarsteps.css
+python3 tools/build_site.py <output-dir>   # crawl the live site + build
+python3 tools/flatten.py   <output-dir>    # flat pages, assets/, drop post-id names
+python3 tools/make_page.py <output-dir> polarsteps "Title" \
+        tools/pages/polarsteps.html polarsteps.css
 ```
+
+`build_site.py` mirrors WordPress's own shape (`landen/<slug>/index.html`,
+`layout-<id>.css`); `flatten.py` converts that into the layout above.
 
 `make_page.py` derives its shell from the current `index.html`, so generated
 pages always pick up the current asset filenames instead of going stale.
