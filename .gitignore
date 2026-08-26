@@ -1,3 +1,4 @@
 .DS_Store
-tracker/analytics.db
-tracker/.salt
+analytics/visits.log
+analytics/geo-cache.json
+analytics/config.php

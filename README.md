@@ -10,11 +10,12 @@ output into a conventional static-site layout.
 ./serve.sh
 ```
 
-Site at http://localhost:8765, visit stats at http://localhost:8765/dashboard
+Site at http://localhost:8765, visit stats at
+http://localhost:8765/analytics/dashboard.php
 
-`serve.sh` runs `tracker/server.py`, which serves the static files *and*
-collects the analytics below. Plain `python3 -m http.server` still works if
-you only want the site.
+`serve.sh` runs `php -S`, so the tracker below works locally exactly as it
+does on the live host. `python3 -m http.server` still serves the site if you
+only want the pages.
 
 ## Structure
 
@@ -132,54 +133,56 @@ correctly sized viewers.
 
 ## Self-hosted visit tracker
 
-No third party, no account, no external requests: the same process that serves
-the pages records the visits, into a local SQLite file.
+Same design as the teddyrileyproductions site: plain PHP, no database, no
+third-party analytics service. Beacons go to our own `analytics/track.php`,
+which appends one JSON line per event to `visits.log`.
 
 ```
-tracker/server.py       serves the site + POST /api/collect + GET /api/stats
-tracker/dashboard.html  the dashboard at /dashboard
-assets/js/tracker.js    3.5 KB client, loaded with defer on all 21 pages
-tracker/analytics.db    SQLite (gitignored)
-tracker/.salt           per-install secret (gitignored, chmod 600)
+analytics/track.php          receives beacons, appends to visits.log
+analytics/dashboard.php      password-protected dashboard
+analytics/.htaccess          denies direct access to *.log, *.json, config.php
+analytics/config.example.php password template
+analytics/visits.log         the data          (gitignored)
+analytics/geo-cache.json     ip-hash -> country/city cache (gitignored)
+analytics/config.php         the password      (gitignored)
+assets/js/tracker.js         the beacon snippet, on all 21 pages
 ```
 
 ### What it records
 
 | | |
 |---|---|
-| behaviour | pageviews, time on page, scroll depth, link clicks, entry/exit, sessions |
-| location  | the browser's IANA timezone (`Europe/Amsterdam`) and language |
-| time      | timestamp, day, hour-of-day |
-| device    | viewport size, bucketed to mobile / tablet / desktop |
+| behaviour | pageviews, time on page, scroll depth, and named interactions: `story_open`, `panorama_view`, `video_play`, `nav_icon` |
+| location  | country and city, from a coarse IP lookup; browser timezone and language as fallback |
+| time      | ISO timestamp per event, plus per-day and per-session totals |
+| device    | viewport, bucketed to mobile / tablet / desktop |
 
-Time on page counts only the time the tab was actually *visible* — switching
-tabs pauses it, so a forgotten tab does not inflate the numbers. Exit events
-go out via `sendBeacon`, which survives the page closing.
+The dashboard also shows **per-session journeys** — the pages one visitor moved
+through in order, with what they clicked and how long they stayed.
 
-### Privacy design
+Unlike the TRP site, pages here live at two depths (`index.html`,
+`landen/nobus.html`), so the snippet derives its endpoint from its own script
+URL rather than a fixed relative path. That also survives being served from a
+subdirectory.
 
-These choices are deliberate. They are what makes the tracker lawful in the EU
-without a cookie banner, so please do not "improve" it by storing more:
+### Privacy
 
-- **no cookies, no localStorage** — nothing is persisted on the visitor's
-  device. The session id lives in `sessionStorage`, so it dies with the tab.
-- **no raw IP addresses are ever written to disk.** A visitor is
-  `sha256(ip + user-agent + salt + date)`, truncated. It rotates at midnight,
-  so the same person is a new id tomorrow and cannot be followed across days.
-- **coarse location only** — timezone and language. The Geolocation API is
-  never called and there is no IP-geolocation lookup.
-- **`Do Not Track` and `Global Privacy Control` are honoured** — those
-  visitors are not recorded at all.
+- no cookies; the session id lives in `sessionStorage`, so it dies with the tab
+  and never follows a visitor across days
+- **raw IP addresses are never written to disk.** The geo lookup is keyed by
+  `sha256(ip)` and only the country/city result is cached
+- `Do Not Track` and `Global Privacy Control` are honoured — those visitors are
+  not recorded at all
+- the one outbound call is the coarse IP -> country/city lookup at
+  `ip-api.com`. That is a third party seeing visitor IPs, so if you would
+  rather keep everything in-house, delete the `geolocate()` call in
+  `track.php` and the dashboard falls back to browser timezone.
 
-Because no personal data is stored and nothing is read from the visitor's
-device, this needs no consent banner under GDPR/ePrivacy. That stops being
-true if you add IP logging, cross-day identifiers, or third-party scripts.
+### First run
 
-### Hosting
+`config.php` is gitignored, so a freshly deployed copy has no password. The
+first visit to `analytics/dashboard.php` lets you set one in the browser; it is
+written on the server and never passes through the repo. Alternatively copy
+`config.example.php` to `config.php` by hand.
 
-The tracker needs a process running — **it cannot work on GitHub Pages**,
-which only serves static files. On a real host (Plesk, a VPS) run
-`tracker/server.py` behind nginx/Apache, or port the two endpoints to
-whatever backend the host offers; the client script and schema stay the same.
-Put the dashboard behind auth before exposing it publicly — it is
-`noindex,nofollow` but it is not access-controlled.
+**This needs PHP**, so it works on the Plesk host but not on GitHub Pages.

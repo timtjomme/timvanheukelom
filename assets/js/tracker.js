@@ -1,110 +1,94 @@
-/*  Self-hosted visit tracker — client half.
- *
- *  Sends: page view, time on page, scroll depth, link clicks, coarse locale.
- *  Never sends: anything identifying. No cookies, no localStorage, no
- *  Geolocation API. The session id lives in sessionStorage only, so it dies
- *  with the tab and cannot follow anyone between visits.
- */
+// ---- VISIT TRACKING -------------------------------------------------
+// Self-hosted: every beacon goes to our own analytics/track.php, never to a
+// third party. No cookies — the session id is a random string kept in
+// sessionStorage, so it resets once the tab/browser session ends rather
+// than following a visitor across days.
 (function () {
-	"use strict";
+  // Honour the browser's own opt-out before anything else happens.
+  if (navigator.doNotTrack === '1' || window.doNotTrack === '1' ||
+      navigator.globalPrivacyControl === true) return;
 
-	var ENDPOINT = "/api/collect";
+  // Pages live at two depths (index.html, landen/nobus.html), so the endpoint
+  // is derived from this script's own URL instead of being a fixed relative
+  // path. That also survives the site being served from a subdirectory.
+  var self = document.currentScript ||
+             document.querySelector('script[src$="assets/js/tracker.js"]');
+  var ENDPOINT = self
+    ? self.src.replace(/assets\/js\/tracker\.js.*$/, 'analytics/track.php')
+    : '/analytics/track.php';
 
-	// Honour the browser's own opt-out.
-	if (navigator.doNotTrack === "1" || window.doNotTrack === "1" ||
-	    navigator.globalPrivacyControl === true) return;
+  function sid() {
+    try {
+      var v = sessionStorage.getItem('tvh_sid');
+      if (!v) {
+        v = Math.random().toString(36).slice(2) + Date.now().toString(36);
+        sessionStorage.setItem('tvh_sid', v);
+      }
+      return v;
+    } catch (e) { return ''; }
+  }
 
-	function sessionId() {
-		try {
-			var k = "_vt_sid", v = sessionStorage.getItem(k);
-			if (!v) {
-				v = (Date.now().toString(36) + Math.random().toString(36).slice(2, 10));
-				sessionStorage.setItem(k, v);
-			}
-			return v;
-		} catch (e) { return "nosession"; }   // private mode: still count the view
-	}
+  function send(payload) {
+    var body = JSON.stringify(payload);
+    if (navigator.sendBeacon) {
+      navigator.sendBeacon(ENDPOINT, new Blob([body], { type: 'application/json' }));
+    } else {
+      fetch(ENDPOINT, { method: 'POST', body: body, keepalive: true }).catch(function () {});
+    }
+  }
 
-	var sid    = sessionId(),
-	    start  = Date.now(),
-	    maxPc  = 0,
-	    sent   = false,
-	    active = 0,          // ms the tab was actually visible
-	    lastOn = Date.now();
+  // Keep the folder so landen/nobus.html and index.html stay distinguishable.
+  var page = location.pathname.replace(/^\//, '') || 'index.html';
+  var started = Date.now();
+  var visitorId = sid();
+  var maxScroll = 0;
+  var sentDuration = false;
 
-	function base(type) {
-		return {
-			type: type,
-			sid: sid,
-			path: location.pathname,
-			ref: document.referrer || "",
-			// coarse location: an IANA zone like "Europe/Amsterdam", never GPS
-			tz: (function () {
-				try { return Intl.DateTimeFormat().resolvedOptions().timeZone || ""; }
-				catch (e) { return ""; }
-			})(),
-			lang: (navigator.language || "").slice(0, 16),
-			viewport: window.innerWidth + "x" + window.innerHeight
-		};
-	}
+  send({
+    type: 'pageview', page: page, ref: document.referrer || null, sid: visitorId,
+    vw: window.innerWidth, vh: window.innerHeight,
+    // coarse location fallback for when the IP lookup can't resolve
+    tz: (function () {
+      try { return Intl.DateTimeFormat().resolvedOptions().timeZone || null; }
+      catch (e) { return null; }
+    })(),
+    lang: (navigator.language || '').slice(0, 16) || null
+  });
 
-	function send(payload, useBeacon) {
-		var body = JSON.stringify(payload);
-		if (useBeacon && navigator.sendBeacon) {
-			navigator.sendBeacon(ENDPOINT, new Blob([body], { type: "application/json" }));
-		} else {
-			fetch(ENDPOINT, {
-				method: "POST", body: body, keepalive: true,
-				headers: { "Content-Type": "application/json" }
-			}).catch(function () {});
-		}
-	}
+  // How far down a story someone actually read — these pages are very long.
+  function onScroll() {
+    var h = document.documentElement.scrollHeight - window.innerHeight;
+    var pc = h > 0 ? Math.round((window.scrollY / h) * 100) : 100;
+    if (pc > maxScroll) maxScroll = Math.max(0, Math.min(100, pc));
+  }
+  window.addEventListener('scroll', onScroll, { passive: true });
+  onScroll();
 
-	/* ---------------------------------------------------------- page view */
-	send(base("pageview"), false);
+  function sendDuration() {
+    if (sentDuration) return;
+    var dur = Math.round((Date.now() - started) / 1000);
+    if (dur < 1) return;
+    sentDuration = true;
+    send({ type: 'duration', page: page, sid: visitorId, dur: dur, scroll: maxScroll });
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') sendDuration();
+  });
+  window.addEventListener('pagehide', sendDuration);
 
-	/* ------------------------------------------------------- scroll depth */
-	function onScroll() {
-		var h = document.documentElement.scrollHeight - window.innerHeight;
-		var pc = h > 0 ? Math.round((window.scrollY / h) * 100) : 100;
-		if (pc > maxPc) maxPc = Math.min(100, Math.max(0, pc));
-	}
-	addEventListener("scroll", onScroll, { passive: true });
-	onScroll();
-
-	/* ------------------------------------------- visible time, not wall time */
-	function visChange() {
-		if (document.visibilityState === "hidden") {
-			active += Date.now() - lastOn;
-			flush();                       // tab hidden may mean tab closed
-		} else {
-			lastOn = Date.now();
-		}
-	}
-	addEventListener("visibilitychange", visChange);
-
-	/* -------------------------------------------------------- link clicks */
-	addEventListener("click", function (e) {
-		var a = e.target && e.target.closest && e.target.closest("a[href]");
-		if (!a) return;
-		var href = a.getAttribute("href") || "";
-		if (!href || href.charAt(0) === "#" || /^(javascript|mailto):/i.test(href)) return;
-		var ev = base("click");
-		ev.target = href.slice(0, 200);
-		send(ev, true);
-	}, true);
-
-	/* ---------------------------------------------------- dwell on the way out */
-	function flush() {
-		if (sent) return;
-		sent = true;
-		var visible = active + (document.visibilityState === "visible"
-			? Date.now() - lastOn : 0);
-		var ev = base("exit");
-		ev.dwell = Math.min(visible, Date.now() - start);
-		ev.scroll = maxPc;
-		send(ev, true);
-	}
-	addEventListener("pagehide", flush);
-	addEventListener("beforeunload", flush);
+  // A light touch on behaviour, not full click-tracking: the interactions
+  // that actually say something on a travel blog.
+  document.addEventListener('click', function (e) {
+    var t = e.target;
+    if (!t || !t.closest) return;
+    if (t.closest('.uabb-new-ib-link')) {
+      send({ type: 'event', name: 'story_open', page: page, sid: visitorId });
+    } else if (t.closest('.cardboard')) {
+      send({ type: 'event', name: 'panorama_view', page: page, sid: visitorId });
+    } else if (t.closest('.uabb-video__play')) {
+      send({ type: 'event', name: 'video_play', page: page, sid: visitorId });
+    } else if (t.closest('.fl-icon a')) {
+      send({ type: 'event', name: 'nav_icon', page: page, sid: visitorId });
+    }
+  });
 })();
