@@ -10,7 +10,11 @@ output into a conventional static-site layout.
 ./serve.sh
 ```
 
-Then open http://localhost:8765
+Site at http://localhost:8765, visit stats at http://localhost:8765/dashboard
+
+`serve.sh` runs `tracker/server.py`, which serves the static files *and*
+collects the analytics below. Plain `python3 -m http.server` still works if
+you only want the site.
 
 ## Structure
 
@@ -124,3 +128,58 @@ Served locally the panorama images decode far faster than over the network, so a
 viewer inside a collapsed container could be initialised at full width and spill
 out of the page. The rule restores the live site's layout and is a no-op for
 correctly sized viewers.
+
+
+## Self-hosted visit tracker
+
+No third party, no account, no external requests: the same process that serves
+the pages records the visits, into a local SQLite file.
+
+```
+tracker/server.py       serves the site + POST /api/collect + GET /api/stats
+tracker/dashboard.html  the dashboard at /dashboard
+assets/js/tracker.js    3.5 KB client, loaded with defer on all 21 pages
+tracker/analytics.db    SQLite (gitignored)
+tracker/.salt           per-install secret (gitignored, chmod 600)
+```
+
+### What it records
+
+| | |
+|---|---|
+| behaviour | pageviews, time on page, scroll depth, link clicks, entry/exit, sessions |
+| location  | the browser's IANA timezone (`Europe/Amsterdam`) and language |
+| time      | timestamp, day, hour-of-day |
+| device    | viewport size, bucketed to mobile / tablet / desktop |
+
+Time on page counts only the time the tab was actually *visible* — switching
+tabs pauses it, so a forgotten tab does not inflate the numbers. Exit events
+go out via `sendBeacon`, which survives the page closing.
+
+### Privacy design
+
+These choices are deliberate. They are what makes the tracker lawful in the EU
+without a cookie banner, so please do not "improve" it by storing more:
+
+- **no cookies, no localStorage** — nothing is persisted on the visitor's
+  device. The session id lives in `sessionStorage`, so it dies with the tab.
+- **no raw IP addresses are ever written to disk.** A visitor is
+  `sha256(ip + user-agent + salt + date)`, truncated. It rotates at midnight,
+  so the same person is a new id tomorrow and cannot be followed across days.
+- **coarse location only** — timezone and language. The Geolocation API is
+  never called and there is no IP-geolocation lookup.
+- **`Do Not Track` and `Global Privacy Control` are honoured** — those
+  visitors are not recorded at all.
+
+Because no personal data is stored and nothing is read from the visitor's
+device, this needs no consent banner under GDPR/ePrivacy. That stops being
+true if you add IP logging, cross-day identifiers, or third-party scripts.
+
+### Hosting
+
+The tracker needs a process running — **it cannot work on GitHub Pages**,
+which only serves static files. On a real host (Plesk, a VPS) run
+`tracker/server.py` behind nginx/Apache, or port the two endpoints to
+whatever backend the host offers; the client script and schema stay the same.
+Put the dashboard behind auth before exposing it publicly — it is
+`noindex,nofollow` but it is not access-controlled.
