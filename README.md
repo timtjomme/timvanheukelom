@@ -186,3 +186,50 @@ written on the server and never passes through the repo. Alternatively copy
 `config.example.php` to `config.php` by hand.
 
 **This needs PHP**, so it works on the Plesk host but not on GitHub Pages.
+
+## Comments
+
+The 122 historical comments stay baked into the pages by the mirror. New ones
+are handled by a small PHP backend, in the same style as the tracker — no
+database, JSON lines on disk, nothing third-party.
+
+```
+comments/post.php            accepts a new comment, stores it unapproved
+comments/list.php            returns approved comments for one post
+comments/admin.php           moderation, password-protected
+comments/.htaccess           denies data/, config.php and the salt
+comments/data/<slug>.jsonl   the comments        (gitignored)
+comments/config.php          the password        (gitignored)
+assets/css/comments.css      thread + form styling
+assets/js/comments.js        polish, loads new comments, drives the form
+```
+
+**Nothing appears on the site until it is approved** in `comments/admin.php`,
+which uses the same first-run password flow as the analytics dashboard.
+
+The pages stay static: `comments.js` fetches newly approved comments from
+`list.php` and appends them to the thread, so no page needs to be regenerated
+or rendered through PHP.
+
+### Why the form had to be replaced
+
+The mirrored form still pointed at
+`https://www.timvanheukelom.nl/wp-comments-post.php`. Submitting it from this
+copy would have filed a comment on the live WordPress site. It now posts to
+`comments/post.php`.
+
+### Spam handling
+
+No captcha, no third-party service:
+
+- a honeypot field that is off-screen rather than `display:none`
+- a minimum time-on-page before a submission is accepted
+- max 3 comments per hour per IP hash
+- comments with more than two links are rejected
+- length limits, and everything is escaped on output
+
+### Data collected
+
+Name and comment only — no email, no URL, no cookies. The IP is used for rate
+limiting and stored only as a salted hash, so there is no personal data to
+protect beyond the name someone chooses to type.

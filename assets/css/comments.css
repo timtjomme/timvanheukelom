@@ -163,56 +163,149 @@
 	color: #3b7dd8;
 }
 
+/* ---- count chip + author badge -------------------------------------- */
+.fl-comments .c-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 7px;
+	margin-right: 2px;
+	border-radius: 999px;
+	background: #eef2f9;
+	color: #3b7dd8;
+	font-size: 12px;
+	font-weight: 700;
+}
+.fl-comments .author-badge {
+	margin-left: 7px;
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #eef2f9;
+	color: #3b7dd8;
+	font-size: 10.5px;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+	vertical-align: 1px;
+}
+
+/* a comment that arrived since the page was built fades in rather than popping */
+.fl-comments li.comment.is-new > .comment-body { animation: c-in .45s ease both; }
+@keyframes c-in { from { opacity: 0; transform: translateY(6px); } }
+
 /* ---- the form -------------------------------------------------------- */
 .fl-comments .comment-respond {
-	margin-top: 28px;
-	padding: 22px;
-	background: #fafafa;
-	border: 1px solid #efefef;
-	border-radius: 10px;
+	margin-top: 30px;
+	padding: 24px;
+	background: linear-gradient(#fbfcfe, #f7f9fc);
+	border: 1px solid #e9edf3;
+	border-radius: 14px;
 }
 .fl-comments .comment-reply-title {
-	margin: 0 0 14px;
+	margin: 0 0 16px;
 	font-size: 15px;
 	font-weight: 600;
-	color: #4a4a4a;
+	color: #3a3a3a;
 }
-.fl-comments .comment-form input[type=text],
-.fl-comments .comment-form input[type=email],
-.fl-comments .comment-form input[type=url],
-.fl-comments .comment-form textarea {
+
+/* floating label: the placeholder is a single space, so :placeholder-shown
+   is only true while the field is genuinely empty */
+.fl-comments .c-field { position: relative; }
+.fl-comments .c-field + .c-field, .fl-comments .c-row { margin-top: 12px; }
+.fl-comments .c-field label {
+	position: absolute;
+	left: 13px;
+	top: 13px;
+	padding: 0 4px;
+	color: #9b9b9b;
+	font-size: 14px;
+	pointer-events: none;
+	background: #fff;
+	border-radius: 4px;
+	transition: transform .16s ease, font-size .16s ease, color .16s ease;
+	transform-origin: left top;
+}
+.fl-comments .c-field textarea,
+.fl-comments .c-field input[type=text] {
 	width: 100%;
-	padding: 11px 13px;
-	border: 1px solid #e2e2e2;
-	border-radius: 8px;
+	padding: 13px;
+	border: 1px solid #e0e6ee;
+	border-radius: 10px;
 	background: #fff;
 	font: inherit;
 	font-size: 14.5px;
+	line-height: 1.55;
 	color: #2f2f2f;
-	transition: border-color .15s ease, box-shadow .15s ease;
+	transition: border-color .16s ease, box-shadow .16s ease;
 }
-.fl-comments .comment-form textarea { min-height: 110px; resize: vertical; }
-.fl-comments .comment-form input:focus,
-.fl-comments .comment-form textarea:focus {
+.fl-comments .c-field textarea { min-height: 104px; resize: vertical; display: block; }
+.fl-comments .c-field textarea:focus,
+.fl-comments .c-field input[type=text]:focus {
 	outline: 0;
 	border-color: #3b7dd8;
-	box-shadow: 0 0 0 3px rgba(59, 125, 216, .13);
+	box-shadow: 0 0 0 3px rgba(59, 125, 216, .12);
 }
-.fl-comments .comment-form .form-submit input[type=submit],
-.fl-comments .comment-form button[type=submit] {
-	padding: 10px 22px;
+.fl-comments .c-field textarea:focus + label,
+.fl-comments .c-field textarea:not(:placeholder-shown) + label,
+.fl-comments .c-field input:focus + label,
+.fl-comments .c-field input:not(:placeholder-shown) + label {
+	transform: translateY(-22px) scale(.82);
+	color: #3b7dd8;
+}
+.fl-comments .c-count-chars {
+	position: absolute;
+	right: 12px;
+	bottom: 10px;
+	font-size: 11px;
+	color: #b6b6b6;
+	pointer-events: none;
+}
+
+.fl-comments .c-row { display: flex; gap: 12px; align-items: flex-start; }
+.fl-comments .c-field-name { flex: 1; min-width: 0; }
+.fl-comments .c-submit {
+	flex: 0 0 auto;
+	padding: 13px 26px;
 	border: 0;
-	border-radius: 999px;
+	border-radius: 10px;
 	background: #3b7dd8;
 	color: #fff;
 	font: inherit;
-	font-size: 13.5px;
+	font-size: 14px;
 	font-weight: 600;
 	cursor: pointer;
-	transition: background-color .15s ease;
+	transition: background-color .16s ease, transform .08s ease;
 }
-.fl-comments .comment-form .form-submit input[type=submit]:hover,
-.fl-comments .comment-form button[type=submit]:hover { background: #2f6ac0; }
+.fl-comments .c-submit:hover { background: #2f6ac0; }
+.fl-comments .c-submit:active { transform: translateY(1px); }
+.fl-comments .c-submit:disabled { opacity: .6; cursor: default; }
+.fl-comments .c-submit.is-busy::after {
+	content: "";
+	display: inline-block;
+	width: 12px; height: 12px;
+	margin-left: 8px;
+	vertical-align: -1px;
+	border: 2px solid rgba(255,255,255,.45);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: c-spin .7s linear infinite;
+}
+@keyframes c-spin { to { transform: rotate(360deg); } }
+
+/* honeypot — off-screen rather than display:none, which some bots skip */
+.fl-comments .c-hp {
+	position: absolute !important;
+	left: -9999px;
+	width: 1px; height: 1px;
+	overflow: hidden;
+}
+
+.fl-comments .c-status { margin: 12px 0 0; font-size: 13.5px; color: #8a8a8a; min-height: 1em; }
+.fl-comments .c-status.is-ok    { color: #2f7d4f; }
+.fl-comments .c-status.is-error { color: #c2402f; }
+.fl-comments .c-privacy { margin: 10px 0 0; font-size: 12px; line-height: 1.6; color: #a6a6a6; }
 
 @media (max-width: 600px) {
 	.fl-comments { margin-top: 40px; }
@@ -221,4 +314,7 @@
 	.fl-comments .comment-avatar img,
 	.fl-comments .comment-avatar .initial-avatar { width: 32px; height: 32px; font-size: 13px; }
 	.fl-comments ol.children { margin-left: 14px; padding-left: 16px; }
+	.fl-comments .comment-respond { padding: 18px; }
+	.fl-comments .c-row { flex-direction: column; }
+	.fl-comments .c-submit { width: 100%; }
 }
