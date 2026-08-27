@@ -233,3 +233,40 @@ No captcha, no third-party service:
 Name and comment only — no email, no URL, no cookies. The IP is used for rate
 limiting and stored only as a salted hash, so there is no personal data to
 protect beyond the name someone chooses to type.
+
+## Deploying (replacing the WordPress site)
+
+The static build takes over `timvanheukelom.nl` from the WordPress install.
+Plesk at `https://shared195.cloud86-host.io:8443/` → Websites & domeinen →
+timvanheukelom.nl → Git, then **Nu pull uitvoeren** followed by **Nu
+publiceren** (publication is Manual, so a `git push` alone does not deploy).
+
+Three things have to be right or the site breaks on switchover:
+
+**1. Old URLs.** Every published link points at a directory
+(`/landen/nobus/`); the static build is files (`/landen/nobus.html`). The
+root `.htaccess` 301-redirects the old shapes to the new ones. Without it
+every existing link, bookmark and search result 404s.
+
+**2. WordPress has to actually go.** Publishing does not delete what is
+already in the document root. If WordPress's `index.php` and its `.htaccess`
+survive, they win — WP's rewrite sends every request to its front controller
+and the static pages never render. Remove or move aside `index.php`,
+`wp-*.php`, `wp-admin/`, `wp-includes/`, `wp-content/` and the old
+`.htaccess` before or immediately after the first publish.
+
+Take a full backup of the WordPress install and its database first. This
+copy is a snapshot from 25 Aug 2026, and once WordPress is gone the posts,
+comments and media only exist here.
+
+**3. Apache vs nginx.** All the protection for `comments/data/`,
+`analytics/visits.log` and both `config.php` files is `.htaccess`, which
+nginx ignores. On nginx, move those directories outside the web root and
+serve the equivalents in the vhost config instead.
+
+After the first publish:
+
+- visit `analytics/dashboard.php` once to set the stats password
+- visit `comments/admin.php` once to set the moderation password
+- make `comments/` and `analytics/` writable so they can create `data/`,
+  `visits.log`, and their salts
