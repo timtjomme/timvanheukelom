@@ -1,0 +1,224 @@
+/* ---------------------------------------------------------------------------
+   Modern comment thread.
+
+   A drop-in restyle: it targets the markup WordPress already emits
+   (.fl-comments, .comment-meta, .comment-content, .comment-reply-link), so
+   nothing in the pages has to change. Pair with assets/js/comments.js, which
+   swaps the Gravatar images for locally drawn initial avatars.
+--------------------------------------------------------------------------- */
+
+.fl-comments {
+	max-width: 720px;
+	margin: 56px auto 0;
+	padding: 0 4px;
+	font-family: "Open Sans", sans-serif;
+}
+
+/* ---- heading --------------------------------------------------------- */
+.fl-comments-list-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 6px;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: .02em;
+	color: #4a4a4a;
+	text-transform: none;
+}
+.fl-comments-list-title::after {
+	content: "";
+	flex: 1;
+	height: 1px;
+	background: #ececec;
+}
+
+/* ---- the thread ------------------------------------------------------ */
+.fl-comments ol#comments,
+.fl-comments ol.children {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.fl-comments li.comment {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.fl-comments .comment-body {
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-areas: "avatar meta" "avatar text" "avatar actions";
+	column-gap: 14px;
+	padding: 20px 0;
+	border-bottom: 1px solid #f0f0f0;
+}
+.fl-comments li.comment:last-child > .comment-body { border-bottom: 0; }
+
+/* replies: indent, and draw the thread line rather than nesting boxes */
+.fl-comments ol.children {
+	margin-left: 19px;
+	padding-left: 21px;
+	border-left: 2px solid #eef1f5;
+}
+
+/* ---- avatar ---------------------------------------------------------- */
+.fl-comments .comment-avatar {
+	grid-area: avatar;
+	display: block;
+	width: 40px;
+	height: 40px;
+}
+.fl-comments .comment-avatar img,
+.fl-comments .comment-avatar .initial-avatar {
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	display: block;
+	object-fit: cover;
+}
+/* drawn by comments.js: a coloured disc with the commenter's initial */
+.fl-comments .initial-avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 15px;
+	font-weight: 600;
+	letter-spacing: .01em;
+	user-select: none;
+}
+
+/* ---- meta line ------------------------------------------------------- */
+.fl-comments .comment-meta {
+	grid-area: meta;
+	display: flex;
+	align-items: baseline;
+	flex-wrap: wrap;
+	gap: 8px;
+	margin: 0 0 4px;
+	line-height: 1.4;
+}
+.fl-comments .comment-author-link {
+	font-size: 14.5px;
+	font-weight: 600;
+	color: #2f2f2f;
+}
+.fl-comments .comment-date {
+	font-size: 12.5px;
+	color: #a8a8a8;
+	font-weight: 400;
+}
+/* the theme writes "op <date> om <time>" — js trims it to a plain date */
+
+/* ---- body ------------------------------------------------------------ */
+.fl-comments .comment-content {
+	grid-area: text;
+	/* the old build put the text in a bordered box; the card is the row now */
+	border: 0;
+	padding: 0;
+	background: none;
+	font-size: 15px;
+	line-height: 1.62;
+	color: #4a4a4a;
+	overflow-wrap: anywhere;
+}
+.fl-comments .comment-content p { margin: 0 0 .7em; }
+.fl-comments .comment-content p:last-child { margin-bottom: 0; }
+
+/* ---- reply ----------------------------------------------------------- */
+.fl-comments .comment-reply-link {
+	grid-area: actions;
+	justify-self: start;
+	text-align: left;
+	margin-top: 9px;
+}
+.fl-comments a.comment-reply-link,
+.fl-comments .comment-reply-link a {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 11px 4px 9px;
+	border-radius: 999px;
+	font-size: 12.5px;
+	font-weight: 600;
+	color: #8d8d8d;
+	text-decoration: none;
+	background: transparent;
+	transition: background-color .15s ease, color .15s ease;
+}
+.fl-comments .comment-reply-link a::before {
+	content: "";
+	width: 13px;
+	height: 13px;
+	background: currentColor;
+	/* corner-down-left arrow, so the affordance reads as "reply" */
+	-webkit-mask: no-repeat center/13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 14 4 9 9 4'/%3E%3Cpath d='M20 20v-7a4 4 0 0 0-4-4H4'/%3E%3C/svg%3E");
+	mask: no-repeat center/13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 14 4 9 9 4'/%3E%3Cpath d='M20 20v-7a4 4 0 0 0-4-4H4'/%3E%3C/svg%3E");
+}
+.fl-comments .comment-reply-link a:hover,
+.fl-comments .comment-reply-link a:focus-visible {
+	background: #eef2f9;
+	color: #3b7dd8;
+}
+
+/* ---- the form -------------------------------------------------------- */
+.fl-comments .comment-respond {
+	margin-top: 28px;
+	padding: 22px;
+	background: #fafafa;
+	border: 1px solid #efefef;
+	border-radius: 10px;
+}
+.fl-comments .comment-reply-title {
+	margin: 0 0 14px;
+	font-size: 15px;
+	font-weight: 600;
+	color: #4a4a4a;
+}
+.fl-comments .comment-form input[type=text],
+.fl-comments .comment-form input[type=email],
+.fl-comments .comment-form input[type=url],
+.fl-comments .comment-form textarea {
+	width: 100%;
+	padding: 11px 13px;
+	border: 1px solid #e2e2e2;
+	border-radius: 8px;
+	background: #fff;
+	font: inherit;
+	font-size: 14.5px;
+	color: #2f2f2f;
+	transition: border-color .15s ease, box-shadow .15s ease;
+}
+.fl-comments .comment-form textarea { min-height: 110px; resize: vertical; }
+.fl-comments .comment-form input:focus,
+.fl-comments .comment-form textarea:focus {
+	outline: 0;
+	border-color: #3b7dd8;
+	box-shadow: 0 0 0 3px rgba(59, 125, 216, .13);
+}
+.fl-comments .comment-form .form-submit input[type=submit],
+.fl-comments .comment-form button[type=submit] {
+	padding: 10px 22px;
+	border: 0;
+	border-radius: 999px;
+	background: #3b7dd8;
+	color: #fff;
+	font: inherit;
+	font-size: 13.5px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .15s ease;
+}
+.fl-comments .comment-form .form-submit input[type=submit]:hover,
+.fl-comments .comment-form button[type=submit]:hover { background: #2f6ac0; }
+
+@media (max-width: 600px) {
+	.fl-comments { margin-top: 40px; }
+	.fl-comments .comment-body { grid-template-columns: 32px 1fr; column-gap: 11px; }
+	.fl-comments .comment-avatar,
+	.fl-comments .comment-avatar img,
+	.fl-comments .comment-avatar .initial-avatar { width: 32px; height: 32px; font-size: 13px; }
+	.fl-comments ol.children { margin-left: 14px; padding-left: 16px; }
+}
