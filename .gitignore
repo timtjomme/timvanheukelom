@@ -2,7 +2,6 @@
 analytics/visits.log
 analytics/geo-cache.json
 analytics/config.php
-_preview-comments.html
 comments/data/
 comments/config.php
 comments/.salt

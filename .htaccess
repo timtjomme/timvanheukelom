@@ -18,7 +18,13 @@ DirectoryIndex index.html index.php
   RewriteRule ^(landen|voorbereidingen)/([^/]+)/?$ /$1/$2.html [R=301,L]
 
   RewriteCond %{REQUEST_FILENAME} !-f
-  RewriteRule ^(travelblog|timtjomme|waar-zijn-we-geweest|polarsteps)/?$ /$1.html [R=301,L]
+  RewriteRule ^(travelblog|timtjomme|waar-zijn-we-geweest)/?$ /$1.html [R=301,L]
+
+  # The Polarsteps map now lives on the "waar zijn we geweest" page alongside
+  # the travelmap one, so /polarsteps has no page of its own any more. It was
+  # a published URL, so it redirects rather than 404s. No !-f guard here on
+  # purpose: polarsteps.html is gone and must stay gone.
+  RewriteRule ^polarsteps(\.html|/)?$ /waar-zijn-we-geweest.html [R=301,L]
 
   # The 360 viewer pages were never mirrored — send them to the story index
   # rather than leaving a dead end.
@@ -39,8 +45,11 @@ DirectoryIndex index.html index.php
 </FilesMatch>
 
 # ---- caching ---------------------------------------------------------------
-# Photos and fonts never change once published; HTML must not be pinned, or a
-# new story would not show up for repeat visitors.
+# Photos and fonts never change once published. HTML must not be pinned, or a
+# new story would not show up for repeat visitors. site.css and the scripts
+# keep their filenames when they are edited, so they get a short life rather
+# than a version query string that would have to be bumped by hand in 21
+# files; they are 25 KB together, so re-fetching them costs nothing.
 <IfModule mod_expires.c>
   ExpiresActive On
   ExpiresByType image/webp              "access plus 1 year"
@@ -48,8 +57,8 @@ DirectoryIndex index.html index.php
   ExpiresByType image/png               "access plus 1 year"
   ExpiresByType image/svg+xml           "access plus 1 year"
   ExpiresByType font/woff2              "access plus 1 year"
-  ExpiresByType text/css                "access plus 7 days"
-  ExpiresByType application/javascript  "access plus 7 days"
+  ExpiresByType text/css                "access plus 1 hour"
+  ExpiresByType application/javascript  "access plus 1 hour"
   ExpiresByType text/html               "access plus 0 seconds"
 </IfModule>
 

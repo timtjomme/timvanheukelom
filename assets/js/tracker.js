@@ -81,14 +81,16 @@
   document.addEventListener('click', function (e) {
     var t = e.target;
     if (!t || !t.closest) return;
-    if (t.closest('.uabb-new-ib-link')) {
+    if (t.closest('.card')) {
       send({ type: 'event', name: 'story_open', page: page, sid: visitorId });
-    } else if (t.closest('.cardboard')) {
+    } else if (t.closest('.panorama')) {
       send({ type: 'event', name: 'panorama_view', page: page, sid: visitorId });
-    } else if (t.closest('.uabb-video__play')) {
+    } else if (t.closest('.video')) {
       send({ type: 'event', name: 'video_play', page: page, sid: visitorId });
-    } else if (t.closest('.fl-icon a')) {
+    } else if (t.closest('.topbar-nav a')) {
       send({ type: 'event', name: 'nav_icon', page: page, sid: visitorId });
+    } else if (t.closest('.gallery a')) {
+      send({ type: 'event', name: 'photo_open', page: page, sid: visitorId });
     }
   });
 })();

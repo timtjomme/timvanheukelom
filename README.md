@@ -1,8 +1,10 @@
-# timvanheukelom.nl — local copy
+# timvanheukelom.nl
 
-An offline copy of https://www.timvanheukelom.nl ("Tim van Heukelom – Tim op Reis"),
-captured 2026-08-25/26 and rebuilt from the original WordPress + Beaver Builder
-output into a conventional static-site layout.
+A plain static site: 20 hand-editable HTML pages, one stylesheet, four small
+scripts and the photos. No framework, no build step, no CMS.
+
+It started life as a WordPress + Beaver Builder site; that export was rewritten
+into ordinary HTML on 28 Aug 2026 (see "Where this came from" below).
 
 ## Run it
 
@@ -13,82 +15,107 @@ output into a conventional static-site layout.
 Site at http://localhost:8765, visit stats at
 http://localhost:8765/analytics/dashboard.php
 
-`serve.sh` runs `php -S`, so the tracker below works locally exactly as it
-does on the live host. `python3 -m http.server` still serves the site if you
-only want the pages.
+`serve.sh` runs `php -S`, so the comment backend and the tracker work locally
+exactly as they do on the live host. `python3 -m http.server` also serves the
+pages if you only want to look at them.
 
 ## Structure
 
 ```
-index.html                     homepage
-travelblog.html
-timtjomme.html
-waar-zijn-we-geweest.html
-polarsteps.html                added page: Polarsteps journey embed
+index.html                     home: hero with the three counter rings, 16 story cards
+travelblog.html                the same page under its own published URL
+waar-zijn-we-geweest.html      the route: the travelmap.net map and the
+                               Polarsteps one, on the same page
+timtjomme.html                 link out to Instagram
 landen/<slug>.html             14 travel stories
 voorbereidingen/<slug>.html    2 pre-trip posts
 assets/
-  css/   31 files              bootstrap, fontawesome, animate, magnific-popup,
-                               theme-skin, theme-child, one <page>.css per page,
-                               modules[-n].css, open-sans-<weights>.css
-  js/    37 files              jquery, bootstrap, theme, waypoints, imagesloaded,
-                               magnific-popup, masonry/mosaicflow/wookmark,
-                               three + cardboard (360 viewer), <page>.js, modules.js
-  fonts/  6 files              Font Awesome woff2, Open Sans woff2
-  img/  759 photos             one size per photo
-favicon.ico  serve.sh  README.md  tools/
+  css/site.css                 the whole stylesheet, ~17 KB
+  js/site.js                   counters, click-to-play video, lightbox
+  js/panorama.js               the 360° viewer
+  js/comments.js               loads and posts comments
+  js/tracker.js                the visit beacon
+  fonts/open-sans/             three woff2 subsets
+  img/                         753 photos
+analytics/  comments/          the two small PHP backends
+.htaccess  favicon.ico  serve.sh  tools/
 ```
 
-21 pages, 759 photos, ~129 MB. Page URLs are `/landen/nobus.html` style.
+Every page is one file you can open and edit. The header, footer and comment
+form are written out in each page rather than pulled from a template — that is
+the trade for having no build step, and it is 20 lines of markup.
 
-Nothing is named after WordPress any more: the per-page stylesheets and
-scripts were `layout-<post-id>.css/js` (`layout-2079.css`) and the Beaver
-Builder bundles were content hashes (`modules-b6f8a276.css`). They are now
-named for the page they belong to (`nobus.css`, `nobus.js`) and numbered by
-use (`modules.css` on 16 pages, then `modules-2`, `modules-3`).
+## How a page is put together
 
-Note the page **markup** is still Beaver Builder's — `fl-row`, `fl-module`,
-`uabb-*` and the `fl-node-<hash>` ids. That cannot be renamed away: every
-stylesheet targets those class names, so the layout depends on them.
+```html
+<header class="topbar">…</header>          the bar: title left, three icons right
+                                            (brand text is the home link)
+
+<section class="hero" style="background-image:url('…')">
+  <div class="hero-inner"><p class="hero-kicker">…</p><h1>…</h1></div>
+</section>                                 full-bleed photo, title over it.
+                                            background-attachment:fixed gives
+                                            the parallax scroll (the same
+                                            technique live uses); the home
+                                            page also puts the three counter
+                                            rings in .hero-inner
+
+<article class="story">
+  <div class="prose"><p>…</p></div>        text, 1020px wide, centred
+  <div class="gallery"><a …><img …></a></div>
+  <figure class="photo"><img …></figure>
+  <div class="video" data-vimeo="199519738">…</div>
+  <div class="panorama" data-image="…"></div>
+</article>
+
+<nav class="pnav">…</nav>                  previous / all / next story
+<section class="comments">…</section>
+<footer class="footer">…</footer>
+```
+
+Adding a story means copying an existing one in `landen/`, changing the hero
+and the blocks, and adding a `<a class="card">` to `index.html` and
+`travelblog.html`. Nothing else knows about it.
+
+## The scripts
+
+All four are plain ES5-ish JavaScript with no dependencies, and all four are
+enhancements — the pages read correctly with every one of them blocked.
+
+| file | ~size | what it does |
+|---|---|---|
+| `site.js` | 4 KB | draws the three counter rings while their numbers count up, swaps a video poster for the player on click, opens galleries in a lightbox |
+| `panorama.js` | 7 KB | the 360° viewer: an equirectangular sphere in raw WebGL, built only when a viewer scrolls near the viewport |
+| `comments.js` | 6 KB | draws the avatars and relative dates, fetches newly approved comments, submits the form |
+| `tracker.js` | 4 KB | the visit beacon (see below) |
+
+`panorama.js` replaces three.js + OrbitControls + cardboard.js. One page carries
+fifteen viewers, so each one is only given a WebGL context once it comes within
+400px of the viewport; without a context it falls back to the flat photo.
+
+## Matching the old site
+
+The rewrite keeps the old site's design, measured off it rather than guessed:
+70px hero titles on the single-line pages and 60px (40px on a phone) over a
+story, 36px subtitles under a 3px white rule at 85% width, 20px/300 body copy
+in a 1020px column, galleries two square columns wide with no gutter, 250px
+counter rings in three equal columns, and cards whose photo is untouched until
+you point at it and then goes to `rgba(10,10,10,.8)`.
+
+Two things are deliberately *not* copied, because they were faults rather than
+choices, and both were reported before this rewrite: the bar was missing on
+phones entirely, and on the story pages it rendered 110px tall with cramped
+left-aligned icons because those pages' CSS bundle never included the header
+module's own rules. Every page now carries the same 36px bar.
 
 ## Image policy
 
-The story pages reference 4085 image URLs, but that is only **755 distinct
-photos** — WordPress emits ~5.6 `srcset` thumbnails per photo. This copy keeps
-**one variant per photo** (the largest at or below 1200px) and strips `srcset`
-and `sizes` so the browser uses it directly. Full `srcset` fidelity would have
-cost ~308 MB for the same visible result at normal viewport sizes.
+The stories reference 753 photos, one size each (the largest at or below
+1200px). There is no `srcset`: full WordPress srcset fidelity would have cost
+~308 MB for the same visible result at normal viewport sizes.
 
-360° panoramas are the exception: they are kept at full resolution
-(2560x1280), because the viewer maps them onto a sphere and downscaling is
-visible.
-
-## What was trimmed
-
-Relative to a raw mirror, with no change to the rendered pages:
-
-- Font Awesome eot/ttf/svg/woff (woff2 only)
-- 7 unused Open Sans subsets, keeping latin, latin-ext and vietnamese
-  (the last matters — "Hà Nội", "Chùa Bái Đính")
-- `block-library.css` (Gutenberg; these pages are Beaver Builder)
-- `dashicons` (WP admin icon font)
-- `snazzymaps.js` (no map on any page), emoji polyfill
-- Dead WordPress `<head>` entries: RSS/comments feeds, oEmbed endpoints,
-  REST API links, RSD/xmlrpc, generator meta, shortlink.
-  `rel="canonical"` is deliberately kept — it marks the live site as the original.
-
-`three.js` + `cardboard.js` are kept, but linked **only from the 6 pages that
-actually embed a panorama**, so the other 15 pages do not pay the 440 KB.
-
-## Fidelity
-
-- **2364 local references across 21 pages resolve — 0 missing. 0 server 404s.**
-- The homepage still hashes to `b251d5b7` — the identical rendered fingerprint
-  (position, size, font, weight, colour, background) measured before the story
-  pages were added, across all 330 rendered elements.
-- `landen/nobus/` renders 15 of 15 panorama viewers as live WebGL canvases;
-  page width matches the live site exactly (1281px).
-- Counters, parallax hero, hover banners and scroll animations all work.
+360° panoramas are the exception — they stay at 2560x1280, because the viewer
+maps them onto a sphere and downscaling is visible.
 
 ## Needs an internet connection
 
@@ -96,40 +123,46 @@ Everything is local **except** third-party embeds, which cannot be mirrored:
 
 - **Vimeo videos** on 6 story pages — click-to-play; the poster thumbnails also
   come from `i.vimeocdn.com`
-- **Polarsteps map** on `/polarsteps/`
-- Outbound links in post text (Instagram, Facebook, etc.)
+- **both route maps** on `/waar-zijn-we-geweest.html` — travelmap.net and
+  Polarsteps. Note travelmap.net serves a bot-block page to unusual user
+  agents; in a normal browser it frames fine
+- outbound links in post text (Instagram, Facebook, etc.)
 
-Navigation between the 21 mirrored pages is fully local. Links to pages that
-were not mirrored — notably the 34 `/cardboard/<id>` full-screen panorama pages
-— still point at the live site; the inline 360° viewers work offline regardless.
+Nothing else leaves the server. There is no Google Fonts, no CDN, no analytics
+service, no gravatar.com.
 
-## Rebuilding
+## Where this came from
 
-```bash
-python3 tools/build_site.py <output-dir>   # crawl the live site + build
-python3 tools/flatten.py   <output-dir>    # flat pages, assets/, drop post-id names
-python3 tools/make_page.py <output-dir> polarsteps "Title" \
-        tools/pages/polarsteps.html polarsteps.css
-```
+The site was WordPress with the Beaver Builder page builder. It was mirrored to
+static files on 25/26 Aug 2026 and then rewritten on 28 Aug 2026, because the
+mirror carried the whole builder with it:
 
-`build_site.py` mirrors WordPress's own shape (`landen/<slug>/index.html`,
-`layout-<id>.css`); `flatten.py` converts that into the layout above.
+| | before | after |
+|---|---|---|
+| stylesheets | 31 files, 2.7 MB | 1 file, 17 KB |
+| scripts | 37 files, 2.0 MB | 4 files, 21 KB |
+| fonts | Open Sans + Font Awesome, 264 KB | Open Sans, 92 KB |
+| home page | 45 KB of markup | 7 KB |
+| markup | `fl-row`, `fl-col`, `uabb-infobox`, `fl-node-5b50940b8247c` | `header`, `article`, `figure`, `.gallery` |
 
-`make_page.py` derives its shell from the current `index.html`, so generated
-pages always pick up the current asset filenames instead of going stale.
+Dropped along the way: jQuery and jQuery Migrate, Bootstrap, Font Awesome,
+animate.css, magnific-popup, masonry / mosaicflow / wookmark, waypoints,
+imagesloaded, three.js, the Beaver Builder theme and module CSS, one 100–200 KB
+stylesheet and one 40–100 KB script per page, and the WordPress `<head>`
+(Akismet, speculation rules, emoji polyfill, oEmbed, Gutenberg block styles).
 
-Note: the host throttles sustained crawling to roughly 8 requests/minute, so a
-full image fetch takes about 90 minutes. `build_site.py` caches to
-`/tmp/tvh-cache` and skips files already downloaded, so it is resumable.
+Kept: every word, every photo, all 122 comments, both PHP backends, and the
+`/landen/<slug>.html` URLs, so nothing that was ever linked has moved.
 
-## Local-copy fix
+The one page that did move is `/polarsteps`, which was folded into
+`/waar-zijn-we-geweest.html` (both were a map of the same trip). It was a
+published URL, so `.htaccess` 301s `/polarsteps`, `/polarsteps/` and
+`/polarsteps.html` to the combined page rather than letting them 404.
 
-`css/theme-child.css` carries one added rule (`.cardboard { overflow:hidden }`).
-Served locally the panorama images decode far faster than over the network, so a
-viewer inside a collapsed container could be initialised at full width and spill
-out of the page. The rule restores the live site's layout and is a no-op for
-correctly sized viewers.
-
+`tools/` holds the scripts that crawled the WordPress site (`build_site.py`)
+and flattened the mirror (`flatten.py`, `make_page.py`). They cannot rebuild
+the site in its current shape — they are kept only as the record of where the
+content came from while the WordPress install still exists.
 
 ## Self-hosted visit tracker
 
@@ -145,7 +178,7 @@ analytics/config.example.php password template
 analytics/visits.log         the data          (gitignored)
 analytics/geo-cache.json     ip-hash -> country/city cache (gitignored)
 analytics/config.php         the password      (gitignored)
-assets/js/tracker.js         the beacon snippet, on all 21 pages
+assets/js/tracker.js         the beacon snippet, on all 20 pages
 ```
 
 ### What it records
@@ -189,9 +222,9 @@ written on the server and never passes through the repo. Alternatively copy
 
 ## Comments
 
-The 122 historical comments stay baked into the pages by the mirror. New ones
-are handled by a small PHP backend, in the same style as the tracker — no
-database, JSON lines on disk, nothing third-party.
+The 122 historical comments are plain HTML in the pages. New ones are handled
+by a small PHP backend, in the same style as the tracker — no database, JSON
+lines on disk, nothing third-party.
 
 ```
 comments/post.php            accepts a new comment, stores it unapproved
@@ -200,8 +233,7 @@ comments/admin.php           moderation, password-protected
 comments/.htaccess           denies data/, config.php and the salt
 comments/data/<slug>.jsonl   the comments        (gitignored)
 comments/config.php          the password        (gitignored)
-assets/css/comments.css      thread + form styling
-assets/js/comments.js        polish, loads new comments, drives the form
+assets/js/comments.js        avatars, dates, loads new comments, drives the form
 ```
 
 **Nothing appears on the site until it is approved** in `comments/admin.php`,
@@ -209,14 +241,12 @@ which uses the same first-run password flow as the analytics dashboard.
 
 The pages stay static: `comments.js` fetches newly approved comments from
 `list.php` and appends them to the thread, so no page needs to be regenerated
-or rendered through PHP.
+or rendered through PHP. Each page names its own thread with
+`<body data-post="landen-nobus">`.
 
-### Why the form had to be replaced
-
-The mirrored form still pointed at
-`https://www.timvanheukelom.nl/wp-comments-post.php`. Submitting it from this
-copy would have filed a comment on the live WordPress site. It now posts to
-`comments/post.php`.
+The form is ordinary markup in each story page, so it is visible with
+JavaScript off — it simply cannot submit. (The mirrored WordPress form used to
+point at `wp-comments-post.php` on the live site; that is gone.)
 
 ### Spam handling
 

@@ -1,0 +1,853 @@
+/* ===========================================================================
+   timvanheukelom.nl — the whole site's stylesheet.
+
+   One file, no framework. Replaces the 31 stylesheets the WordPress/Beaver
+   Builder export shipped (bootstrap, font-awesome, animate, magnific-popup,
+   the theme skin and one 100–200 KB bundle per page).
+   =========================================================================== */
+
+/* --- Open Sans ------------------------------------------------------------
+   Three subsets of one variable file; vietnamese matters for "Hà Nội" and
+   "Chùa Bái Đính". font-display:swap so text paints before the font lands. */
+@font-face {
+	font-family: "Open Sans";
+	font-style: normal;
+	font-weight: 300 700;
+	font-display: swap;
+	src: url("../fonts/open-sans/open-sans-latin.woff2") format("woff2");
+	unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA,
+		U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191,
+		U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+@font-face {
+	font-family: "Open Sans";
+	font-style: normal;
+	font-weight: 300 700;
+	font-display: swap;
+	src: url("../fonts/open-sans/open-sans-latin-ext.woff2") format("woff2");
+	unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF,
+		U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020,
+		U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face {
+	font-family: "Open Sans";
+	font-style: normal;
+	font-weight: 300 700;
+	font-display: swap;
+	src: url("../fonts/open-sans/open-sans-vietnamese.woff2") format("woff2");
+	unicode-range: U+0102-0103, U+0110-0111, U+0128-0129, U+0168-0169, U+01A0-01A1,
+		U+01AF-01B0, U+0300-0301, U+0303-0304, U+0308-0309, U+0323, U+0329,
+		U+1EA0-1EF9, U+20AB;
+}
+
+:root {
+	--ink: #1c1c1c;
+	--ink-soft: #6b7280;
+	--line: #e4e4e4;
+	--card: #fff;
+	--accent: #3b7dd8;
+	--prose: 1020px;  /* the width the text has always had */
+	--wide: 75rem;
+	--bar: 36px;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+/* live's <body> is #f2f2f2, but a full-width white wrapper sits over it on
+   every page below the header, so the grey never actually shows — the page
+   reads as plain white. Matching what's visible rather than the hidden
+   value. */
+body {
+	margin: 0;
+	background: #fff;
+	color: var(--ink);
+	font: 300 1.25rem/1.45 "Open Sans", system-ui, sans-serif;
+	overflow-wrap: break-word;
+}
+
+img, svg, iframe { display: block; max-width: 100%; }
+img { height: auto; }
+
+a { color: inherit; }
+
+h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
+
+/* --- the bar ------------------------------------------------------------ */
+.topbar {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	height: var(--bar);
+	padding: 0 20px;
+	background: transparent;
+	font-size: 0.875rem;
+	font-weight: 400;
+}
+.topbar-brand {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	text-decoration: none;
+}
+.topbar-brand span { color: #9b9b9b; }
+.topbar-nav {
+	display: flex;
+	gap: 10px;
+	margin-left: auto;
+}
+.topbar-nav a {
+	display: block;
+	color: #9b9b9b;
+	transition: color .15s;
+}
+.topbar-nav a:hover,
+.topbar-nav a[aria-current] { color: var(--ink); }
+.topbar-nav svg { width: 16px; height: 16px; }
+
+/* Story pages on the live site never picked up the header module's own
+   overrides (right-aligned icon group, zeroed row padding) — each story's
+   per-page stylesheet doesn't include them, so the bar falls back to Beaver
+   Builder's unstyled defaults there: 20px padding all round instead of a
+   fixed 36px bar, brand and icons as plain 50/50 columns, icons left-aligned
+   in the second half rather than pushed to the edge. Matched here — rather
+   than cleaned up — so a story page looks like its live counterpart; the
+   single-hero pages (home, the route, Instagram) render correctly on live
+   and keep the compact bar above. Scoped to desktop: every page, including
+   story ones, already got an explicit mobile bar fix earlier and that stays. */
+@media (min-width: 769px) {
+	.topbar:has(+ .hero-dim) {
+		height: auto;
+		min-height: 110px;
+		max-width: 1100px;
+		margin: 0 auto;
+		padding: 20px;
+		gap: 0;
+	}
+	.topbar:has(+ .hero-dim) .topbar-brand { flex: 0 0 50%; }
+	.topbar:has(+ .hero-dim) .topbar-nav { flex: 0 0 50%; margin-left: 0; }
+}
+
+/* --- hero ---------------------------------------------------------------
+   The photo is a CSS background rather than an <img>, and specifically one
+   with background-attachment:fixed: that alone is the parallax effect (the
+   photo stays put relative to the viewport while the section scrolls over
+   it) — no scroll listener needed, and it's the same technique the live
+   site uses. The one cost is losing the <img fetchpriority="high"> load
+   hint; live has the same trade-off, so this isn't a regression against it.
+   iOS Safari doesn't support fixed attachment and just scrolls the image
+   normally there — a known limitation of the technique itself, not
+   something to special-case, since live degrades exactly the same way. */
+.hero {
+	position: relative;
+	display: grid;
+	place-items: center;
+	min-height: 100vh;
+	padding: 4rem 1.25rem;
+	overflow: hidden;
+	background-repeat: no-repeat;
+	background-position: center;
+	background-size: cover;
+	background-attachment: fixed;
+	text-align: center;
+	color: #fff;
+}
+/* A story's hero is a tall band rather than one screen — 1264px on a desktop,
+   976px on a phone, which is the height the spacers gave it before. The home,
+   route and Instagram heroes stay at one full screen. */
+/* the title sits about a quarter of the way down the band, not in the middle */
+.hero-dim {
+	align-items: start;
+	min-height: 61rem;
+	padding-top: 13.4rem;
+}
+@media (min-width: 62rem) {
+	.hero-dim { min-height: 79rem; padding-top: 19rem; }
+}
+
+/* the wide, shallow white notch cut into the foot of a story's hero band —
+   live's own shape divider (uabb-xlarge_triangle), reproduced with its exact
+   path so the cut lines up the same way at every width. Only story heroes
+   carry it; home, route and Instagram end in a plain edge. */
+.hero-divider {
+	position: absolute;
+	left: 0;
+	right: 0;
+	bottom: 0;
+	height: 0;
+	overflow: visible;
+	z-index: 3;   /* above the scrim (1) and the title (2) — it's a cut in the photo, not part of the text layer */
+	pointer-events: none;
+}
+.hero-divider svg {
+	position: absolute;
+	bottom: 0;
+	left: 0;
+	width: calc(100% + 1.5px);
+	height: 100px;
+	/* the path's own geometry is a solid block over a notch; flipping it
+	   vertically is what actually turns that into the wedge cut into the
+	   photo — live does this with the same transform, not a different path */
+	transform: scaleY(-1);
+}
+
+/* the scrim sits between the photo and the words, so it darkens only the photo.
+   Only the story heroes carry it — the home, route and Instagram photos run
+   flat, with the title straight on top. */
+.hero-dim::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: rgba(0, 0, 0, .3);
+}
+.hero-inner { position: relative; z-index: 2; width: 100%; max-width: 1060px; }
+/* Sizes are the ones the site has always used: 60px over a story, 70px on the
+   pages that carry a single line, dropping to 40px on a phone. They are fixed
+   rather than fluid, and there is no text shadow — the photo shows through the
+   letters, which is the look. */
+.hero-kicker {
+	margin: 0;
+	font-size: clamp(2.5rem, 4.7vw, 3.75rem);
+	font-weight: 300;
+	line-height: 1.17;
+}
+/* the story subtitle — the countries — under a white rule.
+   Scoped to the sibling so it cannot catch a page whose only line is an h1
+   that carries .hero-kicker itself. */
+.hero-kicker + h1 {
+	position: relative;
+	margin: 1.5rem 0 0;
+	padding-top: 1.5rem;
+	font-size: 2.25rem;
+	font-weight: 400;
+	line-height: 1.4;
+}
+/* the rule is 85% wide and centred; the line under it runs the full column */
+.hero-kicker + h1::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 85%;
+	transform: translateX(-50%);
+	border-top: 3px solid #fff;
+}
+/* one line on its own gets the larger size */
+.hero-home .hero-kicker,
+.hero-single .hero-kicker { font-size: min(4.375rem, 17.9vw); line-height: 1.4; }
+
+/* --- story -------------------------------------------------------------- */
+.story {
+	max-width: 1100px;
+	margin: 0 auto;
+	padding: 3rem 20px 4rem;
+	background: var(--card);
+}
+.prose {
+	max-width: var(--prose);
+	margin: 0 auto;
+}
+.prose p { margin: 0 0 10px; }
+.prose p:last-child { margin-bottom: 0; }
+.prose a { color: var(--accent); }
+.story > * + * { margin-top: 2.5rem; }
+
+/* --- galleries ---------------------------------------------------------- */
+.gallery {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 0;
+}
+.gallery a {
+	display: block;
+	overflow: hidden;
+	background: #e9e9e9;
+	line-height: 0;
+}
+.gallery img {
+	width: 100%;
+	aspect-ratio: 1;
+	object-fit: cover;
+	transition: transform .35s ease;
+}
+.gallery a:hover img { transform: scale(1.04); }
+
+figure.photo { margin: 0; }
+figure.photo img { width: 100%; }
+
+/* --- video (click to play, so no third-party script until asked) -------- */
+.video {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	background: #000;
+	cursor: pointer;
+}
+.video img, .video iframe { width: 100%; height: 100%; object-fit: cover; border: 0; }
+.video-play {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-items: center;
+	border: 0;
+	background: none;
+	cursor: pointer;
+}
+.video-play svg { width: 76px; height: 53px; filter: drop-shadow(0 2px 10px rgba(0, 0, 0, .4)); }
+.video-play:hover svg { transform: translateY(-3px); transition: transform .2s; }
+
+/* --- 360° panorama ------------------------------------------------------ */
+.panorama {
+	position: relative;
+	aspect-ratio: 16 / 9;
+	overflow: hidden;
+	background: #111;
+	cursor: grab;
+}
+.panorama canvas { width: 100%; height: 100%; display: block; }
+.panorama.is-dragging { cursor: grabbing; }
+.panorama-hint {
+	position: absolute;
+	right: 10px;
+	bottom: 10px;
+	padding: 4px 10px;
+	border-radius: 999px;
+	background: rgba(0, 0, 0, .45);
+	color: #fff;
+	font-size: .75rem;
+	pointer-events: none;
+}
+.panorama-fallback {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+/* --- home: the three counters, over the hero ---------------------------
+   A ring that draws itself from twelve o'clock while the number counts up.
+   --count-ms below is the single source of truth for how long that takes:
+   the transition uses it, and site.js reads it back so the number lands on
+   its final value at the moment the ring closes. Keep it in milliseconds.
+   Both sides ease on the same curve (ease-out cubic), so they stay in step
+   the whole way, not just at the end.
+
+   The ring's finished state is the default, so with JavaScript off (or
+   reduced motion on) it is simply there, complete. */
+.hero-home .hero-inner {
+	display: grid;
+	justify-items: center;
+	gap: 1.5rem;
+	width: 100%;
+}
+/* three equal columns across the hero, each ring centred in its own — the
+   spacing the row has always had. The ring takes its column's width when that
+   is under 250px, so three of them still fit on the narrowest phone. */
+.counters {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	justify-items: center;
+	gap: 0 clamp(.6rem, 2vw, 1.5rem);
+	width: 100%;
+}
+.counter {
+	--count-ms: 3400ms;
+	position: relative;
+	width: min(250px, 100%);
+	aspect-ratio: 1;
+}
+.counter-ring { width: 100%; height: 100%; }
+.ring-bg, .ring-bar { fill: none; stroke-width: 10; }
+.ring-bg { stroke: #fff; }
+.ring-bar {
+	stroke: #106ad1;
+	stroke-dasharray: 722.57;   /* 2πr, r = 115 */
+	stroke-dashoffset: 0;
+	transform: rotate(-90deg);
+	transform-origin: 50% 50%;
+}
+.counter.is-armed .ring-bar { stroke-dashoffset: 722.57; }
+.counter.is-on .ring-bar {
+	stroke-dashoffset: 0;
+	transition: stroke-dashoffset var(--count-ms) cubic-bezier(.33, 1, .68, 1);
+}
+.counter-text {
+	position: absolute;
+	inset: 0;
+	display: grid;
+	place-content: center;
+	margin: 0;
+	color: #fff;
+	text-align: center;
+	text-shadow: 0 1px 12px rgba(0, 0, 0, .35);
+}
+.counter-text b {
+	display: block;
+	font-size: clamp(1.05rem, 3.6vw, 2.5rem);
+	font-weight: 400;
+	line-height: 1.1;
+	font-variant-numeric: tabular-nums;
+}
+.counter-text span {
+	display: block;
+	margin-top: .45em;
+	font-size: clamp(.62rem, 1.5vw, .875rem);
+	font-weight: 400;
+}
+
+/* --- home: story cards -------------------------------------------------- */
+/* one big square per row on a phone, two side by side from tablet up —
+   the same shape the site has always had */
+.cards { display: grid; grid-template-columns: 1fr; }
+@media (min-width: 44rem)  { .cards { grid-template-columns: repeat(2, 1fr); } }
+@media (min-width: 95rem)  { .cards { grid-template-columns: repeat(3, 1fr); } }
+.card {
+	position: relative;
+	display: grid;
+	place-items: center;
+	aspect-ratio: 1;
+	padding: 1.5rem;
+	overflow: hidden;
+	text-align: center;
+	color: #fff;
+	text-decoration: none;
+}
+.card img {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+	transition: transform .5s ease;
+}
+.card::after {
+	content: "";
+	position: absolute;
+	inset: 0;
+	z-index: 1;
+	background: rgba(10, 10, 10, .8);
+	opacity: 0;
+	transition: opacity .3s;
+}
+.card:hover img, .card:focus-visible img { transform: scale(1.05); }
+.card:hover::after, .card:focus-visible::after { opacity: 1; }
+.card-text { position: relative; z-index: 2; }
+.card-text h2 {
+	font-size: min(2.5rem, 10.3vw);
+	font-weight: 300;
+	line-height: 1.4;
+}
+.card-text p {
+	margin: .35rem 0 0;
+	font-size: 1.25rem;
+	font-weight: 400;
+}
+
+/* --- simple embed pages ------------------------------------------------- */
+.panel {
+	max-width: var(--wide);
+	margin: 0 auto;
+	padding: 3rem 1.25rem 4rem;
+	background: var(--card);
+}
+.panel > .prose { text-align: center; }
+.panel h2 {
+	max-width: var(--prose);
+	margin: 3rem auto 0;
+	font-size: 1.5rem;
+	text-align: center;
+}
+.embed {
+	margin-top: 1.5rem;
+	aspect-ratio: 16 / 10;
+	background: #e9e9e9;
+}
+.embed iframe { width: 100%; height: 100%; border: 0; }
+.note { margin-top: 1rem; font-size: .95rem; color: var(--ink-soft); text-align: center; }
+
+a.button {
+	display: inline-block;
+	margin-top: 1.5rem;
+	padding: .7rem 1.4rem;
+	border-radius: 999px;
+	background: var(--ink);
+	color: #fff;
+	font-size: 1rem;
+	text-decoration: none;
+}
+a.button:hover { background: var(--accent); }
+
+/* --- story-to-story navigation -------------------------------------------
+   Ported verbatim from the live site's theme-child.css (deployed separately,
+   ahead of this rewrite): 900px, 46px top margin, 600-weight titles. */
+.pnav {
+	display: grid;
+	grid-template-columns: 1fr auto 1fr;
+	align-items: stretch;
+	gap: 14px;
+	max-width: 900px;
+	margin: 46px auto 10px;
+	padding: 0 20px;
+}
+.pnav-item {
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	gap: 5px;
+	min-width: 0;
+	padding: 16px 18px;
+	border: 1px solid #ececec;
+	border-radius: 10px;
+	background: #fff;
+	text-decoration: none;
+	transition: border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+}
+a.pnav-item:hover {
+	border-color: #d7e2f2;
+	box-shadow: 0 2px 14px rgba(59, 125, 216, .1);
+	transform: translateY(-1px);
+}
+.pnav-empty { border: 0; background: none; pointer-events: none; }
+.pnav-label {
+	font-size: 11px;
+	font-weight: 700;
+	letter-spacing: .1em;
+	text-transform: uppercase;
+	color: #a8a8a8;
+	transition: color .16s ease;
+}
+a.pnav-item:hover .pnav-label { color: var(--accent); }
+.pnav-title {
+	font-size: 15px;
+	font-weight: 600;
+	line-height: 1.35;
+	color: #2f2f2f;
+	display: -webkit-box;
+	-webkit-line-clamp: 2;
+	-webkit-box-orient: vertical;
+	overflow: hidden;
+}
+.pnav-next { text-align: right; }
+.pnav-prev .pnav-label::before { content: "← "; }
+.pnav-next .pnav-label::after { content: " →"; }
+.pnav-home {
+	align-self: center;
+	white-space: nowrap;
+	padding: 9px 18px;
+	border-radius: 999px;
+	background: #f4f6f9;
+	color: #6b7280;
+	font-size: 12.5px;
+	font-weight: 600;
+	text-decoration: none;
+	transition: background-color .16s ease, color .16s ease;
+}
+.pnav-home:hover { background: #eef2f9; color: var(--accent); }
+
+/* --- footer ------------------------------------------------------------- */
+.footer {
+	padding: 2rem 1.25rem 3rem;
+	color: var(--ink-soft);
+	font-size: .9rem;
+	text-align: center;
+}
+.footer a { color: var(--ink-soft); }
+
+/* --- lightbox ----------------------------------------------------------- */
+.lightbox {
+	position: fixed;
+	inset: 0;
+	z-index: 50;
+	display: grid;
+	place-items: center;
+	padding: 1.5rem;
+	background: rgba(0, 0, 0, .9);
+}
+.lightbox img {
+	max-width: 100%;
+	max-height: 100%;
+	object-fit: contain;
+}
+.lightbox button {
+	position: absolute;
+	top: 0;
+	padding: 1rem 1.25rem;
+	border: 0;
+	background: none;
+	color: #fff;
+	font-size: 1.75rem;
+	line-height: 1;
+	cursor: pointer;
+}
+.lightbox .lb-close { right: 0; }
+.lightbox .lb-prev, .lightbox .lb-next { top: 50%; transform: translateY(-50%); font-size: 2.5rem; }
+.lightbox .lb-prev { left: 0; }
+.lightbox .lb-next { right: 0; }
+body.is-locked { overflow: hidden; }
+
+/* ---------------------------------------------------------------------------
+   Comments.
+
+   Ported from the live site's assets/css/comments.css (deployed separately,
+   ahead of this rewrite) rather than redesigned, so the thread and the form
+   still look and behave the way readers already know: a three-row grid per
+   comment (avatar / meta+text+reply), a reply pill that fills a hidden
+   "parent" field the backend already accepts, and floating-label fields in
+   the form via the empty-placeholder + :not(:placeholder-shown) trick.
+--------------------------------------------------------------------------- */
+.comments {
+	max-width: 45rem;
+	margin: 0 auto;
+	padding: 0 1.25rem 3rem;
+}
+.c-title {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	margin: 0 0 24px;
+	font-size: .9375rem;
+	font-weight: 600;
+	letter-spacing: .02em;
+	color: #4a4a4a;
+}
+.c-title::after { content: ""; flex: 1; height: 1px; background: var(--line); }
+.c-count {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	min-width: 22px;
+	height: 22px;
+	padding: 0 7px;
+	border-radius: 999px;
+	background: #eef2f9;
+	color: var(--accent);
+	font-size: .75rem;
+	font-weight: 700;
+}
+
+.c-list { margin: 0 0 2.5rem; padding: 0; list-style: none; }
+.c-item {
+	display: grid;
+	grid-template-columns: 40px 1fr;
+	grid-template-areas: "avatar meta" "avatar body" "avatar reply";
+	column-gap: 14px;
+	padding: 20px 0;
+	border-top: 1px solid var(--line);
+}
+.c-list li:first-child { border-top: 0; }
+
+.c-avatar-slot { grid-area: avatar; width: 40px; height: 40px; }
+.c-avatar {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	width: 40px;
+	height: 40px;
+	border-radius: 50%;
+	font-size: .9375rem;
+	font-weight: 600;
+	user-select: none;
+}
+
+.c-meta { grid-area: meta; display: flex; align-items: baseline; flex-wrap: wrap; gap: 8px; margin: 0 0 4px; line-height: 1.4; }
+.c-name { font-size: .90625rem; font-weight: 600; color: var(--ink); }
+.c-date { font-size: .78125rem; color: #a8a8a8; }
+.c-badge {
+	padding: 2px 8px;
+	border-radius: 999px;
+	background: #eef2f9;
+	color: var(--accent);
+	font-size: .65625rem;
+	font-weight: 700;
+	letter-spacing: .05em;
+	text-transform: uppercase;
+}
+
+.c-body { grid-area: body; font-size: .9375rem; line-height: 1.62; color: #4a4a4a; overflow-wrap: anywhere; }
+.c-body p { margin: 0 0 .7em; }
+.c-body p:last-child { margin-bottom: 0; }
+
+.c-reply {
+	grid-area: reply;
+	justify-self: start;
+	align-self: start;
+	margin-top: 9px;
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	padding: 4px 11px 4px 9px;
+	border: 0;
+	border-radius: 999px;
+	background: transparent;
+	color: #8d8d8d;
+	font: inherit;
+	font-size: .78125rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .15s ease, color .15s ease;
+}
+.c-reply::before {
+	content: "";
+	width: 13px;
+	height: 13px;
+	background: currentColor;
+	-webkit-mask: no-repeat center/13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 14 4 9 9 4'/%3E%3Cpath d='M20 20v-7a4 4 0 0 0-4-4H4'/%3E%3C/svg%3E");
+	mask: no-repeat center/13px url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%23000' stroke-width='2.4' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpolyline points='9 14 4 9 9 4'/%3E%3Cpath d='M20 20v-7a4 4 0 0 0-4-4H4'/%3E%3C/svg%3E");
+}
+.c-reply:hover, .c-reply:focus-visible { background: #eef2f9; color: var(--accent); }
+
+/* a comment that arrived since the page was built fades in, rather than popping */
+.c-item.is-new { animation: c-in .45s ease both; }
+@keyframes c-in { from { opacity: 0; transform: translateY(6px); } }
+
+/* "In antwoord op X" banner shown above the form once a reply pill is clicked */
+.c-replying[hidden] { display: none; }
+.c-replying {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin: 0 0 12px;
+	font-size: .875rem;
+	color: var(--ink-soft);
+}
+.c-replying b { color: var(--ink); font-weight: 600; }
+.c-replying button {
+	margin-left: auto;
+	padding: 0 4px;
+	border: 0;
+	background: none;
+	color: var(--ink-soft);
+	font-size: 1.15rem;
+	line-height: 1;
+	cursor: pointer;
+}
+
+/* ---- the form ---------------------------------------------------------- */
+.c-respond {
+	padding: 24px;
+	background: linear-gradient(#fbfcfe, #f7f9fc);
+	border: 1px solid #e9edf3;
+	border-radius: 14px;
+}
+.c-respond > h3 { margin: 0 0 16px; font-size: .9375rem; font-weight: 600; color: #3a3a3a; }
+
+/* floating label: the placeholder is a single space, so :placeholder-shown
+   is only true while the field is genuinely empty */
+.c-field { position: relative; }
+.c-field + .c-field, .c-row { margin-top: 12px; }
+.c-field label {
+	position: absolute;
+	left: 13px;
+	top: 13px;
+	padding: 0 4px;
+	color: #9b9b9b;
+	font-size: .875rem;
+	pointer-events: none;
+	background: #fff;
+	border-radius: 4px;
+	transition: transform .16s ease, color .16s ease;
+	transform-origin: left top;
+}
+.c-field textarea,
+.c-field input[type="text"] {
+	width: 100%;
+	padding: 13px;
+	border: 1px solid #e0e6ee;
+	border-radius: 10px;
+	background: #fff;
+	font: inherit;
+	font-size: .90625rem;
+	line-height: 1.55;
+	color: #2f2f2f;
+	transition: border-color .16s ease, box-shadow .16s ease;
+}
+.c-field textarea { min-height: 104px; resize: vertical; display: block; }
+.c-field textarea:focus,
+.c-field input[type="text"]:focus {
+	outline: 0;
+	border-color: var(--accent);
+	box-shadow: 0 0 0 3px rgba(59, 125, 216, .12);
+}
+.c-field textarea:focus + label,
+.c-field textarea:not(:placeholder-shown) + label,
+.c-field input:focus + label,
+.c-field input:not(:placeholder-shown) + label {
+	transform: translateY(-22px) scale(.82);
+	color: var(--accent);
+}
+.c-count-chars {
+	position: absolute;
+	right: 12px;
+	bottom: 10px;
+	font-size: .6875rem;
+	color: #b6b6b6;
+	pointer-events: none;
+}
+
+.c-row { display: flex; gap: 12px; align-items: flex-start; }
+.c-field-name { flex: 1; min-width: 0; }
+.c-submit {
+	flex: 0 0 auto;
+	padding: 13px 26px;
+	border: 0;
+	border-radius: 10px;
+	background: var(--accent);
+	color: #fff;
+	font: inherit;
+	font-size: .875rem;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background-color .16s ease, transform .08s ease;
+}
+.c-submit:hover { background: #2f6ac0; }
+.c-submit:active { transform: translateY(1px); }
+.c-submit:disabled { opacity: .6; cursor: default; }
+.c-submit.is-busy::after {
+	content: "";
+	display: inline-block;
+	width: 12px;
+	height: 12px;
+	margin-left: 8px;
+	vertical-align: -1px;
+	border: 2px solid rgba(255, 255, 255, .45);
+	border-top-color: #fff;
+	border-radius: 50%;
+	animation: c-spin .7s linear infinite;
+}
+@keyframes c-spin { to { transform: rotate(360deg); } }
+
+/* honeypot: off-screen rather than display:none, which some bots skip */
+.c-hp { position: absolute !important; left: -9999px; width: 1px; height: 1px; overflow: hidden; }
+
+.c-status { margin: 12px 0 0; font-size: .84375rem; color: #8a8a8a; min-height: 1em; }
+.c-status.is-ok { color: #2f7d4f; }
+.c-status.is-error { color: #c2402f; }
+.c-privacy { margin: 10px 0 0; font-size: .75rem; line-height: 1.6; color: #a6a6a6; }
+
+@media (max-width: 600px) {
+	.c-item { grid-template-columns: 32px 1fr; column-gap: 11px; }
+	.c-avatar-slot, .c-avatar { width: 32px; height: 32px; font-size: .8125rem; }
+	.c-respond { padding: 18px; }
+	.c-row { flex-direction: column; }
+	.c-submit { width: 100%; }
+}
+
+@media (max-width: 700px) {
+	.pnav { grid-template-columns: 1fr; gap: 10px; margin-top: 34px; }
+	.pnav-next { text-align: left; }
+	.pnav-next .pnav-label::after { content: none; }
+	.pnav-next .pnav-label::before { content: "→ "; }
+	.pnav-empty { display: none; }
+	.pnav-home { justify-self: center; order: 3; margin-top: 4px; }
+	.story, .panel { padding: 2rem 20px 3rem; }
+	.story > .gallery,
+	.story > .photo,
+	.story > .video,
+	.story > .panorama { margin-left: -20px; margin-right: -20px; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+	*, *::before, *::after { animation: none !important; transition: none !important; }
+	.counter .ring-bar { stroke-dashoffset: 0; }
+}
