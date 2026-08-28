@@ -132,3 +132,64 @@ a.pnav-item:hover .pnav-label { color: #3b7dd8; }
 	.pnav-empty { display: none; }
 	.pnav-home { justify-self: center; order: 3; margin-top: 4px; }
 }
+
+/* ---------------------------------------------------------------------------
+   Phone layout.
+
+   1. Full-bleed rows. Beaver Builder stacks columns below 769px and then caps
+      every stacked .fl-col-small at 400px, centred. On a phone wider than that
+      (430px on a Pro Max, 412px on most Androids) and on a tablet in portrait
+      that left white gutters either side of photos which are meant to run edge
+      to edge, so the cap goes.
+
+   2. The menu. All three header templates were exported as desktop/large/
+      medium only, so phones got no menu at all. The rows now carry
+      fl-visible-mobile; the rules below keep the bar to a single 36px line.
+      Two things fight it: the mobile reset stacks the columns and strips the
+      row padding, and the story pages bundle their own CSS which never
+      included the header modules' rules (there the bar renders 110px tall with
+      cramped, left-aligned 14px icons). Restating them here is scoped to the
+      phone breakpoint, so desktop stays exactly as it was.
+--------------------------------------------------------------------------- */
+@media (max-width: 768px) {
+	.fl-col-small:not(.fl-col-small-full-width) { max-width: none; }
+
+	.fl-builder-content[data-type="header"] .fl-row-content-wrap { padding: 0 20px; }
+	.fl-builder-content[data-type="header"] .fl-col-content { padding: 0; }
+	.fl-builder-content[data-type="header"] .fl-module-content { margin: 0; }
+
+	.fl-builder-content[data-type="header"] .fl-col-group {
+		display: flex;
+		/* the equal-height flex styles wrap by default, which dropped the icons
+		   onto a second line as soon as the title filled the space beside them */
+		flex-wrap: nowrap;
+		align-items: center;
+	}
+	.fl-builder-content[data-type="header"] .fl-col { margin: 0; max-width: none; }
+	/* title takes the slack, icons keep their natural width */
+	.fl-builder-content[data-type="header"] .fl-col:first-child {
+		flex: 1 1 auto;
+		min-width: 0;
+		padding-right: 10px;   /* keeps the clipped title off the first icon */
+	}
+	.fl-builder-content[data-type="header"] .fl-col:last-child  { flex: 0 0 auto; }
+
+	.fl-builder-content[data-type="header"] .fl-icon-group { text-align: right; }
+	.fl-builder-content[data-type="header"] .fl-icon-group .fl-icon {
+		/* table-cell is the default and swallows the margins below */
+		display: inline-block;
+		margin-top: 10px;
+		margin-bottom: 10px;
+	}
+	.fl-builder-content[data-type="header"] .fl-icon + .fl-icon { margin-left: 10px; }
+	.fl-builder-content[data-type="header"] .fl-icon i,
+	.fl-builder-content[data-type="header"] .fl-icon i:before { font-size: 16px; }
+
+	/* "Tim & Michel op reis — Waar zijn we geweest..." does not fit a phone;
+	   clip it rather than let it push the icons off the bar. */
+	.fl-builder-content[data-type="header"] .fl-rich-text p {
+		overflow: hidden;
+		text-overflow: ellipsis;
+		white-space: nowrap;
+	}
+}
