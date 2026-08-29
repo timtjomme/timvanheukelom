@@ -137,9 +137,12 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
    it) — no scroll listener needed, and it's the same technique the live
    site uses. The one cost is losing the <img fetchpriority="high"> load
    hint; live has the same trade-off, so this isn't a regression against it.
-   iOS Safari doesn't support fixed attachment and just scrolls the image
-   normally there — a known limitation of the technique itself, not
-   something to special-case, since live degrades exactly the same way. */
+   iOS Safari doesn't just lose the parallax and fall back to scrolling the
+   photo normally — combined with this element's own overflow:hidden, fixed
+   attachment makes WebKit fail to paint the background at all, leaving the
+   hero blank. Touch devices get scroll attachment instead, below, so the
+   photo actually renders there; only hover-capable pointers keep the fixed
+   parallax. */
 .hero {
 	position: relative;
 	display: grid;
@@ -153,6 +156,9 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 	background-attachment: fixed;
 	text-align: center;
 	color: #fff;
+}
+@media (hover: none), (pointer: coarse) {
+	.hero { background-attachment: scroll; }
 }
 /* A story's hero is a tall band rather than one screen — 1264px on a desktop,
    976px on a phone, which is the height the spacers gave it before. The home,
