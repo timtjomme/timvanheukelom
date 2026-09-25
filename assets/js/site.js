@@ -1,10 +1,11 @@
 /* ---------------------------------------------------------------------------
    Everything the pages need beyond plain HTML, in one file: counting numbers,
-   click-to-play video, and a gallery lightbox. No jQuery, no libraries.
+   click-to-play video, a gallery lightbox, and a hidden way through to the
+   Teddy Riley archive. No jQuery, no libraries.
 
-   All three are progressive enhancements — with this file blocked the numbers
-   still read correctly, the videos still link out, and photos still open on
-   their own.
+   All four are progressive enhancements — with this file blocked the numbers
+   still read correctly, the videos still link out, photos still open on
+   their own, and the archive is still there at /teddy-riley/.
 --------------------------------------------------------------------------- */
 (function () {
 	"use strict";
@@ -70,6 +71,45 @@
 			box.replaceChildren(f);
 		}, { once: true });
 	});
+
+	/* -- the archive: type "tr" and a menu button for /teddy-riley/ appears - */
+	/* Nothing on the page hints at it. The button is built here instead of
+	   being written into every page's header, and only shows once the two
+	   letters are typed within 1.5 seconds of each other. Form fields don't
+	   count (a comment about a "trip" would trigger it) and neither do
+	   shortcuts like Cmd+T and Cmd+R. */
+	var lastKey = "", lastAt = 0, archive;
+
+	document.addEventListener("keydown", function (e) {
+		// e.key is missing on the synthetic keydown Chrome fires for autofill
+		if (!e.key || e.key.length !== 1 || e.ctrlKey || e.metaKey || e.altKey) return;
+		var t = e.target;
+		if (t.isContentEditable || /^(INPUT|TEXTAREA|SELECT)$/.test(t.tagName)) return;
+
+		var key = e.key.toLowerCase(), now = Date.now();
+		if (key === "r" && lastKey === "t" && now - lastAt < 1500) reveal();
+		lastKey = key;
+		lastAt = now;
+	});
+
+	function reveal() {
+		var nav = document.querySelector(".topbar-nav");
+		if (!nav || archive) return;
+
+		archive = document.createElement("a");
+		archive.className = "topbar-extra";
+		archive.href = (document.body.dataset.root || "") + "teddy-riley/";
+		archive.title = "Teddy Riley";
+		archive.setAttribute("aria-label", "Teddy Riley");
+		archive.innerHTML = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" ' +
+			'stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">' +
+			'<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/></svg>';
+		nav.prepend(archive);
+
+		// read it back at opacity 0 so the fade has a start point
+		getComputedStyle(archive).opacity;
+		archive.classList.add("is-on");
+	}
 
 	/* -- lightbox -------------------------------------------------------- */
 	var groups = [];

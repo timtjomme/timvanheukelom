@@ -31,7 +31,7 @@ landen/<slug>.html             14 travel stories
 voorbereidingen/<slug>.html    2 pre-trip posts
 assets/
   css/site.css                 the whole stylesheet, ~17 KB
-  js/site.js                   counters, click-to-play video, lightbox
+  js/site.js                   counters, click-to-play video, lightbox, hidden Teddy Riley link
   js/panorama.js               the 360° viewer
   js/comments.js               loads and posts comments
   js/tracker.js                the visit beacon
@@ -84,7 +84,7 @@ enhancements — the pages read correctly with every one of them blocked.
 
 | file | ~size | what it does |
 |---|---|---|
-| `site.js` | 4 KB | draws the three counter rings while their numbers count up, swaps a video poster for the player on click, opens galleries in a lightbox |
+| `site.js` | 7 KB | draws the three counter rings while their numbers count up, swaps a video poster for the player on click, opens galleries in a lightbox, and adds a menu button for `/teddy-riley/` to the header when a visitor types `tr` (ignored inside form fields; nothing on the page mentions it) |
 | `panorama.js` | 7 KB | the 360° viewer: an equirectangular sphere in raw WebGL, built only when a viewer scrolls near the viewport |
 | `comments.js` | 6 KB | draws the avatars and relative dates, fetches newly approved comments, submits the form |
 | `tracker.js` | 4 KB | the visit beacon (see below) |

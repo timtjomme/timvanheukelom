@@ -94,6 +94,7 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 }
 .topbar-brand span { color: #9b9b9b; }
 .topbar-nav {
+	position: relative;   /* anchors .topbar-extra */
 	display: flex;
 	gap: 10px;
 	margin-left: auto;
@@ -106,6 +107,22 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 .topbar-nav a:hover,
 .topbar-nav a[aria-current] { color: var(--ink); }
 .topbar-nav svg { width: 16px; height: 16px; }
+
+/* The hidden extra site.js adds when someone types "tr": a link through to the
+   Teddy Riley archive. It hangs off the left edge of the icon group instead of
+   joining the row — the group is pushed to the right on most pages but sits
+   left-aligned in its half on a desktop story, so a fourth icon in the flow
+   would nudge the three that are always there in one layout or the other. */
+.topbar-nav .topbar-extra {
+	position: absolute;
+	top: 0;
+	right: 100%;
+	width: 16px;   /* the icon's own size: with no room left of the group, a shrink-to-fit box collapses to nothing */
+	margin-right: 10px;
+	opacity: 0;
+	transition: opacity .3s, color .15s;
+}
+.topbar-nav .topbar-extra.is-on { opacity: 1; }
 
 /* Story pages on the live site never picked up the header module's own
    overrides (right-aligned icon group, zeroed row padding) — each story's
