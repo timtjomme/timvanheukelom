@@ -1,0 +1,84 @@
+[
+  {
+    "date": "2026-08-19",
+    "count": 24,
+    "pages": [
+      { "label": "Added a life-story timeline, 1967 to now", "href": "timeline.html" },
+      { "name": "1990's", "href": "1990s.html", "count": 22 },
+      { "name": "1980's", "href": "1980s.html", "count": 1 },
+      { "name": "New Jack Swing", "href": "new-jack-swing-productions.html", "count": 1 }
+    ]
+  },
+  {
+    "date": "2026-08-25",
+    "count": 18,
+    "pages": [
+      { "label": "Filled in dozens of photos across the life-story timeline", "href": "timeline.html" },
+      { "name": "1990's", "href": "1990s.html", "count": 18 },
+      { "label": "Sampled page now has its own hero photo", "href": "sampled.html" },
+      { "label": "Added a 2026 chapter to the timeline: Teddy's first book", "href": "timeline.html" }
+    ]
+  },
+  {
+    "date": "2026-08-27",
+    "count": 47,
+    "pages": [
+      { "label": "The 2000's are here", "href": "2000s.html" },
+      { "name": "2000's", "href": "2000s.html", "count": 47 }
+    ]
+  },
+  {
+    "date": "2026-08-28",
+    "count": 66,
+    "pages": [
+      { "name": "2000's", "href": "2000s.html", "count": 24 },
+      { "label": "The 2010's are here", "href": "2010s.html" },
+      { "name": "2010's", "href": "2010s.html", "count": 42 },
+      { "label": "Four more chapters added to the life-story timeline", "href": "timeline.html" }
+    ]
+  },
+  {
+    "date": "2026-08-29",
+    "count": 38,
+    "pages": [
+      { "label": "The 2020's are here", "href": "2020s.html" },
+      { "name": "2020's", "href": "2020s.html", "count": 35 },
+      { "name": "1980's", "href": "1980s.html", "count": 1 },
+      { "name": "2010's", "href": "2010s.html", "count": 1 },
+      { "name": "1990's", "href": "1990s.html", "count": 1 },
+      { "label": "New: a Missing page cataloging known-but-uncollected mixes and edits", "href": "missing.html" }
+    ]
+  },
+  {
+    "date": "2026-09-04",
+    "count": 0,
+    "pages": [
+      { "label": "Corrected the tracklist for La Va'ba - That Girl", "href": "1980s.html" }
+    ]
+  },
+  {
+    "date": "2026-09-07",
+    "count": 2,
+    "pages": [
+      { "label": "Added a missing mix to B-Fats - B-Fats (1987)", "href": "1980s.html" },
+      { "name": "1980's", "href": "1980s.html", "count": 1 },
+      { "label": "New: site-wide search — press \"/\" anywhere to use it", "href": "index.html" },
+      { "name": "2000's", "href": "2000s.html", "count": 1 }
+    ]
+  },
+  {
+    "date": "2026-09-12",
+    "count": 5,
+    "pages": [
+      { "name": "New Jack Swing", "href": "new-jack-swing-productions.html", "count": 5 }
+    ]
+  },
+  {
+    "date": "2026-09-15",
+    "count": 0,
+    "pages": [
+      { "label": "New: a complete Teddy Riley discography and production-credits guide", "href": "discography.html" },
+      { "label": "Five original 1999 Guy promotional sleeves added", "href": "1990s.html" }
+    ]
+  }
+]

@@ -1,0 +1,10 @@
+# timvanheukelom.nl
+#
+# The Teddy Riley archive lives in /teddy-riley/ (moved here from its own domain).
+# Crawl rules only work at the domain root, so they are kept here: the archive's
+# visit-log backend stays out of search results, and its sitemap is listed so
+# search engines can find it from the root.
+User-agent: *
+Disallow: /teddy-riley/analytics/
+
+Sitemap: https://timvanheukelom.nl/teddy-riley/sitemap.xml

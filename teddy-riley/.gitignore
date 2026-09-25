@@ -1,0 +1,8 @@
+.DS_Store
+dist/
+
+# the dashboard password and any data ever collected — never leaves the server
+analytics/config.php
+analytics/visits.log
+analytics/geo-cache.json
+__pycache__/

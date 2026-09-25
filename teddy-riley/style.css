@@ -1,0 +1,2405 @@
+@font-face{
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url('fonts/open-sans-latin-ext.woff2') format('woff2');
+  unicode-range: U+0100-02BA, U+02BD-02C5, U+02C7-02CC, U+02CE-02D7, U+02DD-02FF, U+0304, U+0308, U+0329, U+1D00-1DBF, U+1E00-1E9F, U+1EF2-1EFF, U+2020, U+20A0-20AB, U+20AD-20C0, U+2113, U+2C60-2C7F, U+A720-A7FF;
+}
+@font-face{
+  font-family: 'Open Sans';
+  font-style: normal;
+  font-weight: 300 800;
+  font-display: swap;
+  src: url('fonts/open-sans-latin.woff2') format('woff2');
+  unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+0304, U+0308, U+0329, U+2000-206F, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;
+}
+
+:root{
+    --bg:#f4f4f6;
+    --bg-2:#e9e9ec;
+    --vignette: radial-gradient(ellipse at 50% -10%, #ffffff 0%, #e4e4e8 60%);
+    /* --label is both the page text colour and the record-label face of a card */
+    --label:#121214;
+    --label-2:#1c1c20;
+    /* --ink is the type printed on that label face */
+    --ink:#f7f7f9;
+    --ink-soft:#9a9aa4;
+    --accent:#121214;
+    --accent-soft:#55555d;
+    --muted:#63636b;
+    --rule: rgba(0,0,0,0.16);
+    --shadow: 0 24px 56px -20px rgba(0,0,0,0.18);
+  }
+
+  *{box-sizing:border-box;}
+  html,body{margin:0;padding:0;}
+
+  /* ---- CONTENT PROTECTION ----
+     A deterrent, not real protection — view-source, devtools and a
+     screenshot all still work regardless. This just removes the casual,
+     one-click paths: drag-saving an image, selecting and copying text.
+     Right-click is blocked separately in script.js. Form fields are
+     re-enabled below since a visitor must be able to select and copy
+     what they type (their email, a message) to use the contact form. */
+  body{
+    -webkit-user-select: none;
+    user-select: none;
+  }
+  input, textarea{
+    -webkit-user-select: text;
+    user-select: text;
+  }
+  img, video{
+    -webkit-user-drag: none;
+    user-drag: none;
+  }
+
+  body{
+    /* background-color is the safety net: the gradient alone leaves the canvas
+       unpainted once you scroll past it on a page this tall */
+    background-color: var(--bg);
+    background-image: var(--vignette);
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+    color: var(--label);
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    min-height:100%;
+    /* no padding here — the hero is full-bleed, so spacing lives on .wrap */
+    padding: 0;
+  }
+
+  /* ---- HERO ---- */
+  .hero{
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background-image: var(--hero-img);
+    background-size: cover;
+    /* these portraits sit high in frame, so the crop is pulled up off centre;
+       each page tunes --hero-pos to its own photo */
+    background-position: 50% var(--hero-pos, 15%);
+    background-repeat: no-repeat;
+    /* the parallax: the sleeve grid scrolls up over a pinned image */
+    background-attachment: fixed;
+  }
+  .hero::after{
+    content:"";
+    position:absolute; inset:0;
+    background: linear-gradient(180deg, rgba(10,10,12,0.10) 0%, rgba(10,10,12,0.22) 55%, rgba(10,10,12,0.38) 100%);
+  }
+  .hero-title{
+    position:relative;
+    z-index:1;
+    margin:0;
+    font: 300 clamp(72px, 13vw, 160px)/0.95 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.035em;
+    color:#fff;
+    text-shadow: 0 2px 30px rgba(0,0,0,0.45);
+  }
+
+  /* The eyebrow + decade nav, pinned over the photo instead of sitting below
+     it in .page-head — a visitor sees where they can go without scrolling
+     past the full-height hero first. Only used on the three full hero pages
+     (1980s/1990s/new-jack-swing-productions); contact and privacy-policy
+     keep .decade-nav in .page-head below their compact hero, where this
+     treatment isn't needed.
+
+     Color is per-page, not a shadow or a backing plate: white reads fine on
+     most of these photos, but hero-1980s.jpg averages rgb(199,193,193) in
+     the top-left corner where the nav sits (measured by sampling the actual
+     photo) — light enough that white text needs to flip to dark instead.
+     Add "is-light-corner" to that page's .hero if a future photo needs the
+     same flip. */
+  .hero-nav{
+    position: absolute;
+    z-index: 1;
+    top: 32px;
+    left: 32px;
+    max-width: calc(100% - 64px);
+  }
+  .hero-nav .eyebrow{
+    color: #fff;
+    text-shadow: 0 2px 20px rgba(0,0,0,0.5);
+  }
+  .hero-nav .eyebrow::before{ background: rgba(255,255,255,0.6); }
+  .hero-nav .decade-nav{
+    font-size: 15px;
+    gap: 22px;
+  }
+  .hero-nav .decade-nav a{
+    color: rgba(255,255,255,0.75);
+    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .hero-nav .decade-nav a:hover{ color: #fff; }
+  .hero-nav .decade-nav a[aria-current="page"]{
+    color: #fff;
+    border-bottom-color: #fff;
+  }
+  .hero-nav .decade-nav span{ color: rgba(255,255,255,0.45); }
+  .hero-nav .nav-dropdown summary{
+    color: rgba(255,255,255,0.75);
+    text-shadow: 0 2px 16px rgba(0,0,0,0.5);
+  }
+  .hero-nav .nav-dropdown summary:hover{ color: #fff; }
+  .hero-nav .nav-dropdown.is-current summary{ color: #fff; border-bottom-color: #fff; }
+
+  .hero.is-light-corner .hero-nav .eyebrow{
+    color: var(--accent);
+    text-shadow: 0 2px 16px rgba(255,255,255,0.6);
+  }
+  .hero.is-light-corner .hero-nav .eyebrow::before{ background: var(--accent-soft); }
+  .hero.is-light-corner .hero-nav .decade-nav a{
+    color: var(--accent-soft);
+    text-shadow: 0 2px 12px rgba(255,255,255,0.6);
+  }
+  .hero.is-light-corner .hero-nav .decade-nav a:hover{ color: var(--accent); }
+  .hero.is-light-corner .hero-nav .decade-nav a[aria-current="page"]{
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .hero.is-light-corner .hero-nav .decade-nav span{ color: var(--muted); opacity: 0.6; }
+  .hero.is-light-corner .hero-nav .nav-dropdown summary{
+    color: var(--accent-soft);
+    text-shadow: 0 2px 12px rgba(255,255,255,0.6);
+  }
+  .hero.is-light-corner .hero-nav .nav-dropdown summary:hover{ color: var(--accent); }
+  .hero.is-light-corner .hero-nav .nav-dropdown.is-current summary{ color: var(--accent); border-bottom-color: var(--accent); }
+
+  @media (max-width: 560px){
+    .hero-nav{ top: 20px; left: 20px; }
+    .hero-nav .decade-nav{ font-size: 13px; gap: 16px; }
+  }
+
+  /* background-attachment:fixed is unreliable on touch browsers (iOS Safari
+     scales it to document height); fall back to a static cover there */
+  @media (hover: none){
+    .hero{ background-attachment: scroll; }
+  }
+
+  .wrap{
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 20px 80px;
+  }
+
+  .page-head{
+    margin: 64px 0 44px;
+    max-width: 620px;
+  }
+
+  .eyebrow{
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent);
+    margin: 0 0 14px;
+    display:flex;
+    align-items:center;
+    gap:10px;
+  }
+  .eyebrow::before{
+    content:"";
+    width:22px; height:1px;
+    background: var(--accent-soft);
+  }
+
+  .page-head h2{
+    font: 300 34px/1.15 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    margin: 0 0 12px;
+    text-wrap: balance;
+  }
+  .page-head h2 em{
+    font-style: normal;
+    color: var(--muted);
+  }
+
+  .page-head p{
+    font: 400 15px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* One rail for the whole list, not per-year segments — its height is
+     just the wrapper's content height, so it tracks years opening and
+     closing automatically instead of needing to be recalculated. */
+  .timeline{
+    position:relative;
+    padding-left: 30px;
+  }
+  .timeline::before{
+    content:"";
+    position:absolute;
+    left:0; top:0; bottom:0;
+    width:2px;
+    /* --rule (a 16%-opacity hairline) all but disappears at this width —
+       matches the horizontal rule's own solid --accent instead, so the two
+       read as one continuous mark rather than the dots floating unconnected */
+    background: var(--accent);
+  }
+  /* the rail's 30px costs width .grid doesn't have to spare on a phone —
+     minmax(300px, 1fr) is already tight against .wrap's own padding below
+     ~560px, so the decoration steps aside rather than forcing overflow */
+  @media (max-width: 560px){
+    .timeline{ padding-left: 0; }
+    .timeline::before, summary.year-rule::before{ display:none; }
+  }
+
+  .year-rule{
+    display:flex;
+    align-items:center;
+    gap: 20px;
+    margin: 72px 0 28px;
+    font: 300 clamp(38px, 6.5vw, 60px)/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+  }
+  .year-rule::after{
+    content:"";
+    flex:1;
+    height:2px;
+    background: var(--accent);
+  }
+  /* .year-rule doubles as a plain heading (404's "Meanwhile, in the crates")
+     and, on the decade pages, a <summary> — reset the marker only where the
+     tag actually has one. */
+  summary.year-rule{
+    position:relative;
+    cursor:pointer;
+    list-style:none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  /* the trailing rule reads fine on a plain heading, but on the flip-card
+     pages' <summary> it competes with the fold icon right after it — drop
+     it there only. */
+  summary.year-rule::after{ content:none; }
+  summary.year-rule::-webkit-details-marker{ display:none; }
+  summary.year-rule:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+  /* the node marking this year on the .timeline rail — centred on it,
+     regardless of .timeline's own padding-left (see the maths note in
+     tools/build.py's grids_html if this ever needs to move) */
+  summary.year-rule::before{
+    content:"";
+    position:absolute;
+    left: -37px;
+    top: 50%;
+    margin-top: -6px;
+    width: 12px; height: 12px;
+    border-radius: 50%;
+    background: var(--accent);
+    border: 2px solid var(--bg);
+  }
+  /* plain glyph, not a button — same restraint as .node-plus on the
+     timeline page ("Born in Harlem +"): the toggle reads as part of the
+     heading's typography, not a corner badge sitting on top of it. */
+  .fold-icon{
+    order: 2;
+    flex-shrink:0;
+    width: 22px; height: 22px;
+    color: var(--muted);
+    transition: transform 0.25s ease, color 0.2s ease;
+  }
+  summary.year-rule:hover .fold-icon,
+  summary.year-rule:focus-visible .fold-icon{
+    color: var(--accent);
+  }
+  details[open] > .year-rule .fold-icon{ transform: rotate(180deg); }
+
+  /* a one-time nudge on the first closed year — the open one right above
+     it already shows what expanding looks like, so only this one needs
+     the hint. Structural, not markup: always the year-group right after
+     the auto-open first one, so it survives a rebuild untouched. Stays at
+     opacity:0 until script.js's initYearHint adds .show-hint once this
+     heading actually scrolls into view — see that function for why it's
+     keyed off visibility rather than page load. order:3 puts it after the
+     icon (order:2), captioning it, rather than wedged between the year
+     and the icon it's pointing at. */
+  details.year-group[open] + details.year-group:not([open]) > summary.year-rule::after{
+    content: "Click me";
+    order: 3;
+    flex: none;
+    height: auto;
+    background: none;
+    font: 600 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    white-space: nowrap;
+    pointer-events: none;
+    opacity: 0;
+    transform: scale(0.85);
+  }
+  details.year-group[open] + details.year-group:not([open]) > summary.year-rule.show-hint::after{
+    animation: year-hint 2.2s ease-in-out 0.2s 3 forwards;
+  }
+  @keyframes year-hint{
+    0%, 100% { opacity: 0; transform: scale(0.85); }
+    50% { opacity: 1; transform: scale(1); color: var(--accent); }
+  }
+  @media (prefers-reduced-motion: reduce){
+    details.year-group[open] + details.year-group:not([open]) > summary.year-rule.show-hint::after{
+      animation: none;
+    }
+  }
+
+  /* ---- TIMELINE (biography) ----
+     era-head reuses .eyebrow + .year-rule verbatim as a plain heading —
+     .year-rule already doubles as one elsewhere (404's "Meanwhile, in the
+     crates"), though here it's overridden to sit flush right with no
+     trailing rule (below) rather than the left-aligned "text + line"
+     shape it has everywhere else. .story stacks each .era (its heading
+     plus its own .snake grid) straight down the page — one panel per
+     era, not side by side. Within an .era, the moments are still a
+     .snake: a CSS grid of numbered .node stops read left-to-right, row
+     by row, with an SVG connector (script.js, initSnakeLines) drawn
+     through the actual rendered centre of each .node-dot. initEraLinks
+     draws one more connector of the exact same path/stroke recipe from
+     the last dot of one .era down to the first dot of the next, into a
+     single overlay SVG (.era-link-line) sized in JS to .story's full
+     height — inset:0 alone only ever covers the viewport-clipped box,
+     not content taller than it. .story is a plain wrapper distinct from
+     .timeline on purpose — .timeline/.timeline::before belong to the
+     decade pages' vertical rail and this page doesn't use that shape at
+     all. */
+  .story{
+    counter-reset: moment;
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    gap: 64px;
+    padding-top: 4px;
+  }
+
+  /* sized and positioned entirely in JS (initEraLinks) — this is the
+     shared canvas the era-to-era joins are drawn into, so they read as
+     the same line as .snake-line rather than a one-off treatment */
+  .era-link-line{
+    position: absolute;
+    left: 0;
+    top: 0;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .era-link-line path{
+    fill: none;
+    stroke: var(--accent-soft);
+    stroke-width: 1.5;
+    opacity: 0.6;
+  }
+
+  /* column-reverse rather than reordering the markup in all 7 eras: the
+     year (second in the HTML) reads as the heading, with the era's own
+     name sitting underneath it as a caption — both flush right. */
+  .era-head{
+    margin: 0 0 28px;
+    display: flex;
+    flex-direction: column-reverse;
+  }
+  .era-head .eyebrow{
+    margin-bottom: 0;
+    margin-top: 14px;
+    justify-content: flex-end;
+  }
+  /* flush right, no trailing rule — .year-rule's default "text + line
+     filling the row" reads fine as a left-aligned heading elsewhere, but
+     stacked between two rows of circular photos it competed with the
+     snake/era-link lines already doing that job */
+  .era-head .year-rule{
+    margin: 0;
+    justify-content: flex-end;
+    text-align: right;
+  }
+  .era-head .year-rule::after{ content: none; }
+
+  .snake{
+    position: relative;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    column-gap: 20px;
+    row-gap: 56px;
+    padding: 4px 0 4px;
+  }
+  .snake-line{
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    overflow: visible;
+    pointer-events: none;
+  }
+  .snake-line path{
+    fill: none;
+    stroke: var(--accent-soft);
+    stroke-width: 1.5;
+    opacity: 0.6;
+  }
+  @media (min-width: 640px){
+    .snake{ grid-template-columns: repeat(3, 1fr); column-gap: 36px; row-gap: 76px; }
+  }
+  @media (min-width: 960px){
+    .snake{ grid-template-columns: repeat(4, 1fr); }
+  }
+
+  /* Below 640px there's only room for one photo per row anyway, so
+     .snake collapses to a single column and nodes read top to bottom.
+     Both initSnakeLines and initEraLinks in script.js detect this
+     (one grid track) and draw a straight rail through the dot centres
+     rather than the multi-column zig-zag, which only makes sense when
+     there's a next column to snake into. */
+  @media (max-width: 639px){
+    .snake{ grid-template-columns: 1fr; row-gap: 48px; }
+    /* the rail (initSnakeLines/initEraLinks, script.js) runs through each
+       dot's left edge here — nudge the text right of it rather than the
+       rail right of the text, so the dot itself still sits right on the line */
+    .node-year, .node-head{ margin-left: 20px; }
+  }
+
+  .node{ position: relative; z-index: 1; counter-increment: moment; }
+  .node summary{
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+  }
+  .node summary::-webkit-details-marker{ display:none; }
+  .node summary:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 6px;
+    border-radius: 16px;
+  }
+
+  /* the grid's one connector target — plain numbered ring by default,
+     counting up via CSS so the sequence never has to be hand-kept in
+     sync with the HTML; a matching archive photo takes over the same
+     circle instead of the number where one exists. */
+  .node-dot{
+    width: 148px; height: 148px;
+    border-radius: 50%;
+    border: 1.5px solid var(--rule);
+    background: var(--bg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: hidden;
+    font: 600 13px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.04em;
+    color: var(--muted);
+    transition: transform 0.25s ease, border-color 0.25s ease;
+  }
+  .node-dot::before{ content: counter(moment, decimal-leading-zero); }
+  .node summary:hover .node-dot{ transform: scale(1.08); border-color: var(--accent-soft); }
+  .node.has-photo .node-dot{ border-color: transparent; box-shadow: 0 6px 18px -4px rgba(0,0,0,0.22); cursor: zoom-in; }
+  .node.has-photo .node-dot::before{ content: none; }
+  .node-dot img{ width:100%; height:100%; object-fit: cover; display:block; }
+  /* for the rare photo that's an actual record label — spins in place
+     like it's on a platter. Opt-in per <img> (class="is-label"), not tied
+     to has-photo generally, since most node photos are just photos. A
+     per-image crop still comes through --spin-scale (an inline custom
+     property) rather than a plain transform: the animation's own
+     "to" keyframe would otherwise overwrite a static transform outright
+     instead of layering with it, losing the crop the moment it spins. */
+  @keyframes node-spin{ to{ transform: scale(var(--spin-scale, 1)) rotate(360deg); } }
+  .node-dot img.is-label{
+    transform: scale(var(--spin-scale, 1));
+    animation: node-spin 6s linear infinite;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .node-dot img.is-label{ animation: none; }
+  }
+
+  .node-year{
+    font: 300 32px/1.2 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--accent);
+  }
+  /* title and the +/- share a row so the toggle reads as part of the
+     title ("Born in Harlem +"), not a corner badge floating over the
+     connector line's height */
+  .node-head{
+    display: flex;
+    align-items: baseline;
+    gap: 10px;
+    width: 100%;
+  }
+  .node-title{
+    flex: 1;
+    min-width: 0;
+    font: 600 17px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+  }
+  .node-plus{
+    flex: none;
+    font: 300 24px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+  }
+  .node-plus .i-minus{ display:none; }
+  .node[open] .node-plus .i-plus{ display:none; }
+  .node[open] .node-plus .i-minus{ display:inline; }
+
+  .node-body{ padding: 4px 0 0; }
+  .node-body p{
+    font: 400 15.5px/1.65 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0;
+    text-wrap: pretty;
+  }
+  /* the source citation, where a moment has one — same quiet italic
+     treatment as the release cards' own back-of-sleeve .note */
+  .node-cite{
+    font: 400 11px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: italic;
+    color: var(--muted);
+    opacity: 0.75;
+    margin: 10px 0 0;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .node-dot{ transition: none; }
+  }
+
+  .grid{
+    display:grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 30px;
+    /* the anchor id lives here, below the summary — enough headroom that a
+       jumped-to year's heading isn't jammed against the viewport top */
+    scroll-margin-top: 110px;
+  }
+
+  .card{
+    position:relative;
+    aspect-ratio: 1 / 1;
+    perspective: 1600px;
+  }
+
+  .card-inner{
+    position:absolute; inset:0;
+    cursor:pointer;
+    transform-style: preserve-3d;
+    transition: transform 0.7s cubic-bezier(.2,.85,.35,1);
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+  .card-inner.flipped{ transform: rotateY(180deg); }
+
+  .card-inner:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 4px;
+  }
+
+  .face{
+    position:absolute; inset:0;
+    backface-visibility: hidden;
+    border-radius: 12px;
+    overflow:hidden;
+  }
+
+  /* ---- FRONT ---- */
+  .front{
+    background: #f0f0f2;
+  }
+  .front img{
+    width:100%; height:100%;
+    object-fit: cover;
+    display:block;
+    filter: saturate(1.03) contrast(1.02);
+  }
+  /* Where the year badge used to sit, and the same frosted paper as .flip-hint
+     opposite it — the two corners are a pair. No border: that's the whole
+     difference from the old year tag. A third of these sleeves are near-white
+     and a third near-black, so the plate is what carries the type; on a pale
+     sleeve it all but disappears and the caps read on the sleeve itself. */
+  .format{
+    position:absolute; top:10px; left:10px;
+    padding: 6px 8px 5px;
+    background: rgba(248,248,250,0.86);
+    backdrop-filter: blur(2px);
+    color: var(--accent);
+    font: 600 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    border-radius: 6px;
+  }
+  .flip-hint{
+    position:absolute; top:10px; right:10px;
+    width:26px; height:26px;
+    border-radius:50%;
+    background: rgba(248,248,250,0.86);
+    border: 1px solid rgba(0,0,0,0.22);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--label);
+    opacity:0.9;
+  }
+  .flip-hint svg{ width:13px; height:13px; }
+
+  /* ---- VIDEO MODAL ---- */
+  .video-modal{
+    position:fixed; inset:0;
+    z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    padding: 60px 24px 24px;
+  }
+  .video-modal[hidden]{ display:none; }
+  .video-modal-backdrop{
+    position:absolute; inset:0;
+    background: rgba(8,8,10,0.88);
+    opacity:0;
+    transition: opacity 0.25s ease;
+  }
+  .video-modal.is-open .video-modal-backdrop{ opacity:1; }
+  .video-modal-box{
+    position:relative;
+    width:100%; max-width: 900px;
+    opacity:0;
+    transform: scale(0.97);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .video-modal.is-open .video-modal-box{ opacity:1; transform:none; }
+  .video-modal-close{
+    all:unset;
+    position:absolute; top:-38px; right:0;
+    width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .video-modal-close:hover{ opacity:0.8; }
+  .video-modal-tabs{
+    display:flex; flex-wrap:wrap; gap:8px;
+    margin-bottom:10px;
+  }
+  .video-modal-tabs button{
+    all:unset;
+    cursor:pointer;
+    font: 600 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color: rgba(255,255,255,0.75);
+    padding: 7px 11px;
+    border: 1px solid rgba(255,255,255,0.32);
+    border-radius: 6px;
+  }
+  .video-modal-tabs button[aria-current]{
+    color:#0a0a0c;
+    background:#fff;
+    border-color:#fff;
+  }
+  .video-modal-frame{
+    position:relative;
+    width:100%;
+    aspect-ratio: 16 / 9;
+    background:#000;
+  }
+  .video-modal-frame iframe{
+    position:absolute; inset:0;
+    width:100%; height:100%;
+    border:0;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .video-modal-backdrop, .video-modal-box{ transition: none; }
+  }
+
+  /* ---- PHOTO MODAL ----
+     Same shell as the video modal (backdrop, centred box, corner close),
+     an <img> in place of the iframe. One instance shared by every node
+     photo on the page, same as the video modal is shared by every
+     release's video button. */
+  .photo-modal{
+    position:fixed; inset:0;
+    z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    padding: 60px 24px 24px;
+  }
+  .photo-modal[hidden]{ display:none; }
+  .photo-modal-backdrop{
+    position:absolute; inset:0;
+    background: rgba(8,8,10,0.88);
+    opacity:0;
+    transition: opacity 0.25s ease;
+  }
+  .photo-modal.is-open .photo-modal-backdrop{ opacity:1; }
+  .photo-modal-box{
+    position:relative;
+    max-width: 720px;
+    max-height: 100%;
+    opacity:0;
+    transform: scale(0.97);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .photo-modal.is-open .photo-modal-box{ opacity:1; transform:none; }
+  .photo-modal-close{
+    all:unset;
+    position:absolute; top:-38px; right:0;
+    width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .photo-modal-close:hover{ opacity:0.8; }
+  .photo-modal-box img{
+    display:block;
+    width:100%;
+    max-height: calc(100vh - 120px);
+    object-fit: contain;
+    border-radius: 12px;
+    box-shadow: var(--shadow);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .photo-modal-backdrop, .photo-modal-box{ transition: none; }
+  }
+
+  /* ---- SEARCH ----
+     Trigger sits fixed top-right, clear of the .yep widget's bottom-left
+     spot, so the two don't collide on any page — this one has no per-page
+     HTML at all: script.js injects both the trigger and the modal shell into
+     every page's <body> at load, the same way videoModal()/photoModal() are
+     one shared instance rather than per-caller markup. */
+  .search-trigger{
+    -webkit-appearance: none;
+    appearance: none;
+    border: 0;
+    margin: 0;
+    padding: 0;
+    font: inherit;
+    -webkit-tap-highlight-color: transparent;
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 50;
+    width: 52px;
+    height: 52px;
+    border-radius: 50%;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    background: var(--label);
+    color: var(--ink);
+    cursor: pointer;
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,0.35);
+    transition: transform 0.18s ease;
+  }
+  .search-trigger:hover{ transform: scale(1.06); }
+  .search-trigger:focus-visible{ outline: 3px solid var(--accent); outline-offset: 3px; }
+  .search-trigger svg{ width:22px; height:22px; }
+
+  /* same shell as .video-modal/.photo-modal above */
+  .search-modal{
+    position:fixed; inset:0;
+    z-index:200;
+    display:flex; align-items:center; justify-content:center;
+    padding: 60px 24px 24px;
+  }
+  .search-modal[hidden]{ display:none; }
+  .search-modal-backdrop{
+    position:absolute; inset:0;
+    background: rgba(8,8,10,0.88);
+    opacity:0;
+    transition: opacity 0.25s ease;
+  }
+  .search-modal.is-open .search-modal-backdrop{ opacity:1; }
+  .search-modal-box{
+    position:relative;
+    width:100%; max-width: 640px;
+    max-height: 100%;
+    display:flex;
+    flex-direction:column;
+    background: #fff;
+    border-radius: 14px;
+    box-shadow: var(--shadow);
+    opacity:0;
+    transform: scale(0.97);
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .search-modal.is-open .search-modal-box{ opacity:1; transform:none; }
+  .search-modal-close{
+    all:unset;
+    position:absolute; top:-38px; right:0;
+    width:32px; height:32px;
+    display:flex; align-items:center; justify-content:center;
+    color:#fff;
+    font-size:26px;
+    line-height:1;
+    cursor:pointer;
+  }
+  .search-modal-close:hover{ opacity:0.8; }
+  .search-modal-head{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 18px 20px;
+    border-bottom: 1px solid var(--rule);
+    flex-shrink:0;
+  }
+  .search-modal-head svg{ width:18px; height:18px; color:var(--muted); flex-shrink:0; }
+  .search-modal-input{
+    all:unset;
+    flex:1;
+    font: 500 16px/1.3 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+  }
+  .search-modal-input::placeholder{ color: var(--muted); opacity:0.8; }
+  .search-modal-status{
+    padding: 10px 20px 0;
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    color: var(--muted);
+    flex-shrink:0;
+  }
+  .search-modal-results{
+    overflow-y: auto;
+    padding: 8px 10px 14px;
+  }
+  .search-result{
+    display:flex;
+    align-items:center;
+    gap:12px;
+    padding: 9px 10px;
+    border-radius: 10px;
+    text-decoration:none;
+    color: inherit;
+  }
+  .search-result:hover, .search-result:focus-visible{ background: var(--bg); }
+  .search-result img{
+    width:44px; height:44px;
+    border-radius: 6px;
+    object-fit: cover;
+    flex-shrink:0;
+    background: var(--bg-2);
+  }
+  .search-result-text{ min-width:0; }
+  .search-result-title{
+    display:block;
+    margin:0;
+    font: 600 14px/1.3 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  .search-result-meta{
+    display:block;
+    margin: 2px 0 0;
+    font: 400 12px/1.3 'Open Sans', 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .search-modal-backdrop, .search-modal-box, .search-trigger{ transition: none; }
+  }
+
+  /* ---- BACK (label) ---- */
+  .back{
+    /* no position here — .face already sets position:absolute, which the
+       flip depends on; re-declaring it (even to the same-looking "relative")
+       would win the cascade tie against .face and silently break the flip */
+    transform: rotateY(180deg);
+    /* the cover itself, sharp and un-blurred — .back::before does the
+       blurring via backdrop-filter, not this. Same neutral .front falls
+       back to if its own image is missing, not --label: a dark fallback
+       under a pale wash turns any rendering seam into a visible black line,
+       where a light one just disappears. */
+    background-image: var(--cover-img);
+    background-size: cover;
+    background-position: center;
+    background-color: #f0f0f2;
+    color: var(--label);
+    padding: 16px 16px 14px;
+    display:flex;
+    flex-direction:column;
+    /* the missing-track red was brightened for the old dark face; on this
+       pale, image-washed one the bright version reads too light, so it's
+       darkened back down again, scoped here so .missing-note and the YEP
+       widget elsewhere keep the brighter one */
+    --missing: #b3261e;
+  }
+  /* Blurs the cover via backdrop-filter — the same frosted-glass technique
+     as .format's badge on the front face — rather than filter:blur() on an
+     oversized copy of it. filter:blur() needs a bled, negatively-inset box
+     to fade out in before .face's rounded overflow:hidden clips it, and in
+     practice that clip edge still shows a faint seam against the blur layer
+     no matter how much bleed it's given (a known rendering quirk of
+     rounding + clipping + a blurred child, worse again on a
+     backface-visibility:hidden face). backdrop-filter blurs what's already
+     composited behind it instead of blurring its own box, so there's no
+     oversized layer for the clip to catch a seam against — .format proves
+     this same combination (rounded, clipped, backface-hidden face) renders
+     clean with backdrop-filter right on this site. */
+  .back::before{
+    content:"";
+    position:absolute;
+    inset: 0;
+    backdrop-filter: blur(18px) saturate(1.15);
+    background: rgba(255,255,255,0.82);
+  }
+  /* real content sits above the frosted layer */
+  .back > *{
+    position: relative;
+    z-index: 1;
+  }
+
+  .back-head{
+    display:flex;
+    align-items:flex-start;
+    justify-content:space-between;
+    gap:10px;
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 8px;
+    margin-bottom: 8px;
+  }
+  .back-head-text{ min-width:0; }
+  /* Sits right of the title — appears only on releases with a matching
+     clip. Same circular-icon language as .flip-hint on the front. */
+  .video-btn{
+    all: unset;
+    flex-shrink:0;
+    width:26px; height:26px;
+    margin-top:1px;
+    border-radius:50%;
+    border: 1px solid rgba(0,0,0,0.28);
+    display:flex; align-items:center; justify-content:center;
+    color: var(--label);
+    cursor:pointer;
+  }
+  .video-btn:hover{ background: rgba(0,0,0,0.06); }
+  .video-btn:focus-visible{ outline: 2px solid var(--accent); outline-offset: 2px; }
+  .video-btn svg{ width:12px; height:12px; margin-left:1px; }
+  .back .artist{
+    font: 600 15px/1.2 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin:0;
+  }
+  .back .title{
+    font: 400 12px/1.2 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: italic;
+    color: var(--muted);
+    margin: 1px 0 0;
+  }
+  .back .label-name{
+    font: 600 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    /* --muted, not --ink-soft: this face is a pale wash now, not dark */
+    color: var(--muted);
+    margin: 6px 0 0;
+  }
+
+  .tracks{
+    list-style:none;
+    margin:0; padding:0;
+    overflow-y:auto;
+    font: 400 13px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    flex:1;
+  }
+  .tracks li{
+    display:flex;
+    gap:7px;
+    padding: 2.5px 0;
+  }
+  .tracks li::before{
+    content:"";
+    width:5px; height:5px;
+    border-radius:50%;
+    background: var(--muted);
+    margin-top:6px;
+    flex-shrink:0;
+    opacity:0.45;
+  }
+  .back .note{
+    font: 400 10.5px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    font-style: italic;
+    color: var(--muted);
+    margin: 8px 0 0;
+    padding-top: 8px;
+    border-top: 1px solid var(--rule);
+  }
+  .back-foot{
+    display:flex;
+    align-items:center;
+    justify-content:flex-end;
+    padding-top:8px;
+    margin-top:6px;
+    border-top: 1px solid var(--rule);
+  }
+  .back-foot button{
+    all:unset;
+    cursor:pointer;
+    font: 600 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform:uppercase;
+    letter-spacing:0.06em;
+    color: var(--label);
+    padding: 6px 10px;
+    border: 1px solid rgba(0,0,0,0.28);
+    border-radius: 6px;
+  }
+  .back-foot button:hover{ background: rgba(0,0,0,0.06); }
+
+  footer{
+    max-width: 1040px;
+    margin: 56px auto 0;
+    padding-top: 20px;
+    border-top: 1px solid var(--rule);
+    font: 400 12px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .card-inner{ transition: none; }
+    .hero{ background-attachment: scroll; }
+  }
+
+  /* ---- DECADE NAV ---- */
+  .decade-nav{
+    display:flex;
+    flex-wrap:wrap;
+    gap: 18px;
+    margin: 0 0 28px;
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.08em;
+  }
+  .decade-nav a{
+    color: var(--accent-soft);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 3px;
+  }
+  .decade-nav a:hover{ color: var(--accent); }
+  /* you-are-here gets the strongest treatment, not the weakest */
+  .decade-nav a[aria-current="page"]{
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  /* decades the source site hasn't published yet */
+  .decade-nav span{
+    color: var(--muted);
+    opacity: 0.45;
+    padding-bottom: 3px;
+  }
+
+  /* ---- NAV DROPDOWN ----
+     Native <details>/<summary> — same idiom as the year-groups and the
+     timeline's .node, so opening and closing it needs no JS at all;
+     script.js only adds the closes-on-outside-click polish. The trigger
+     sits inline in whichever nav bar it's on and is themed like the a's
+     around it (see the hero-nav variants below), but the menu itself
+     always gets its own solid backing, so its links stay one plain
+     dark-on-light style no matter which hero photo is behind the trigger. */
+  .nav-dropdown{ position: relative; }
+  /* plain inline flow, deliberately not flex — this sits in the same row
+     as the a's either side of it, and a flex <summary> lays its text out
+     on its own terms (cross-axis centring, an anonymous flex-wrapped text
+     run) instead of the ordinary text baseline the a's use, which is what
+     made it sit off from the rest of the line. Text + icon as normal
+     inline content, exactly like an a with an icon in it, keeps it on the
+     same baseline as every other word in the nav. */
+  .nav-dropdown summary{
+    cursor: pointer;
+    list-style: none;
+    -webkit-tap-highlight-color: transparent;
+    color: var(--accent-soft);
+    border-bottom: 2px solid transparent;
+    padding-bottom: 3px;
+    font: inherit;
+    letter-spacing: inherit;
+    white-space: nowrap;
+  }
+  .nav-dropdown summary::-webkit-details-marker{ display:none; }
+  .nav-dropdown summary:hover{ color: var(--accent); }
+  .nav-dropdown.is-current summary{
+    color: var(--accent);
+    border-bottom-color: var(--accent);
+  }
+  .nav-caret{
+    width: 11px; height: 11px;
+    margin-left: 5px;
+    vertical-align: middle;
+    transition: transform 0.25s ease;
+  }
+  .nav-dropdown[open] summary .nav-caret{ transform: rotate(180deg); }
+
+  /* No card, no background of its own on purpose — it's positioned, full
+     stop, and just sits over whatever's already behind the nav (photo,
+     plain page, dark 404 ground). Its a's and spans carry no colour
+     rules here at all: .decade-nav a / .decade-nav span (and the
+     .hero-nav, is-light-corner and .lost-nav variants) already reach
+     these through the cascade, since a nested a is still a descendant of
+     the same .decade-nav — so the dropdown's items pick up exactly
+     the same colour, hover and aria-current treatment as the a's beside
+     the trigger, with nothing dropdown-specific to keep in step. */
+  .nav-dropdown-menu{
+    position: absolute;
+    top: calc(100% + 14px);
+    left: 0;
+    z-index: 20;
+    display: flex;
+    flex-direction: column;
+    gap: 14px;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .nav-caret{ transition: none; }
+  }
+
+  /* ---- FRONT PAGE ---- */
+  .hero-video{
+    position:relative;
+    background:#0a0a0c;
+    overflow:hidden;
+    line-height:0;
+  }
+  .hero-video video,
+  .hero-video img{
+    display:block;
+    width:100%;
+    height:auto;
+  }
+
+  /* Dismissible "recently added" strip, content generated by tools/build.py
+     from data/updates.json, dismiss wired by initUpdateBanner() in script.js.
+     Styled as a news-chyron lower third along the bottom of the hero video —
+     .hero-video is its positioning parent (position:relative, above). No
+     card, no fill: the title card behind it is white for the whole loop, so
+     black type sits straight on the video with just a rule to frame it, the
+     same way .eyebrow's line-plus-caps reads elsewhere on the site. Empty
+     (no children) when there's no update yet, so it just takes up no space
+     rather than needing a hidden state. */
+  .update-banner{
+    position: absolute;
+    z-index: 2;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 10px 20px 18px;
+    border-top: 2px solid var(--label);
+    /* Hidden until initUpdateBanner (script.js) adds is-visible a little
+       way into the first scroll — appearing immediately on load competed
+       with the hero title for attention. */
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 0.3s ease;
+  }
+  .update-banner.is-visible{
+    opacity: 1;
+    pointer-events: auto;
+  }
+  @media (prefers-reduced-motion: reduce){
+    .update-banner{ transition: none; }
+  }
+  /* The hero video rotates through a light cut and a dark one. Dark text
+     on nothing at all — the original design — only ever worked against
+     the light one; script.js marks .hero-video is-dark when the dark cut
+     is playing so this can flip to match, the same way .is-light-corner
+     flips the decade-page nav for a light photo corner. */
+  .hero-video.is-dark .update-banner{ border-top-color: #fff; }
+  .hero-video.is-dark .update-banner .dismiss{ color: rgba(255,255,255,0.6); }
+  .hero-video.is-dark .update-banner .dismiss:hover,
+  .hero-video.is-dark .update-banner .dismiss:focus-visible{ color: #fff; }
+  .hero-video.is-dark .update-banner .date{ color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+  .hero-video.is-dark .update-banner .date .tag{ color: var(--ink-soft); }
+  .hero-video.is-dark .update-banner .breakdown li{ color: #fff; text-shadow: 0 2px 16px rgba(0,0,0,0.5); }
+  .hero-video.is-dark .update-banner .breakdown li + li::before{ color: var(--ink-soft); }
+  .hero-video.is-dark .update-banner .breakdown a{ color: #fff; border-bottom-color: var(--ink-soft); }
+  .hero-video.is-dark .update-banner .breakdown a:hover,
+  .hero-video.is-dark .update-banner .breakdown a:focus-visible{ border-color: #fff; }
+  .update-banner .dismiss{
+    position: absolute;
+    top: 8px; right: 20px;
+    width: 20px; height: 20px;
+    border: none;
+    background: none;
+    color: var(--muted);
+    font: 400 16px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .update-banner .dismiss:hover,
+  .update-banner .dismiss:focus-visible{ color: var(--label); }
+  .update-banner .date{
+    margin: 8px 0 6px;
+    font: 700 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+    letter-spacing: 0.02em;
+  }
+  .update-banner .date .tag{
+    color: var(--muted);
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    margin-right: 8px;
+  }
+  .update-banner .breakdown{
+    list-style: none;
+    margin: 0;
+    padding: 0;
+    display: flex;
+    flex-flow: row wrap;
+    align-items: baseline;
+    row-gap: 4px;
+  }
+  .update-banner .breakdown li{
+    font: 400 13px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+  }
+  .update-banner .breakdown li + li::before{
+    content: "•";
+    display: inline-block;
+    margin: 0 14px;
+    color: var(--accent-soft);
+  }
+  .update-banner .breakdown a{
+    color: var(--label);
+    border-bottom: 1px solid var(--accent-soft);
+    text-decoration: none;
+    transition: border-color 0.2s ease;
+  }
+  .update-banner .breakdown a:hover,
+  .update-banner .breakdown a:focus-visible{ border-color: var(--label); }
+  /* Older updates flatten into the same line as the newest one (see
+     banner_html in build.py) — this is the date folded onto the first
+     bullet of each earlier date's group, quieter than the "New" tag so
+     the eye still lands there first. */
+  .breakdown .prev-date{
+    color: var(--muted);
+    font-weight: 600;
+    margin-right: 2px;
+  }
+  .hero-video.is-dark .breakdown .prev-date{ color: var(--ink-soft); }
+  @media (max-width: 560px){
+    /* Below this width the video shrinks faster than the fixed-size type
+       can follow, so the wordmark and the strip start colliding — confirmed
+       against real phone widths, not just the breakpoint number. Drop the
+       overlay and promote it to a normal band right under the video instead,
+       with its own opaque ground since it's no longer sitting on the white
+       parts of the video. */
+    .update-banner{
+      position: static;
+      background: var(--bg);
+      padding: 14px 20px 18px;
+    }
+  }
+
+  .intro{
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 76px 20px 0;
+  }
+  .intro h2{
+    font: 300 clamp(28px, 4vw, 40px)/1.15 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    margin: 0 0 14px;
+    text-wrap: balance;
+  }
+  .intro p{
+    font: 400 15px/1.7 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0 0 34px;
+    text-wrap: pretty;
+  }
+  .intro .fun-fact{
+    border-left: 2px solid var(--rule);
+    padding-left: 16px;
+    /* the root --missing (#ff6f6b) is brightened for dark backgrounds —
+       too washed out against this page's light --bg, so it's darkened
+       back down here the same way .front does for the card sleeves. */
+    --missing: #b3261e;
+  }
+  .intro .fun-fact strong{
+    color: var(--missing);
+    font-weight: 600;
+  }
+
+  /* Editorial archive pages: readable research context around the collections. */
+  .editorial{ padding-top: 76px; padding-bottom: 80px; }
+  .editorial .page-head{ max-width: 720px; }
+  .editorial .page-head .eyebrow{ margin-bottom: 14px; }
+  .editorial-copy{ max-width: 720px; }
+  .editorial-copy p{
+    font: 400 16px/1.75 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0 0 20px;
+    text-wrap: pretty;
+  }
+  .editorial-copy a{ color: var(--accent); text-decoration-color: var(--accent-soft); text-underline-offset: 3px; }
+  .editorial-section{ margin-top: 62px; max-width: 900px; }
+  .editorial-section h2{
+    font: 300 clamp(28px, 4vw, 40px)/1.15 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    margin: 0 0 24px;
+    color: var(--label);
+  }
+  .editorial-panels{
+    max-width: none;
+    margin: 0;
+    padding: 0;
+  }
+  .editorial-disclaimer{ max-width:720px; margin:62px 0 0; font: 400 12px/1.55 'Helvetica Neue', Helvetica, Arial, sans-serif; color: var(--muted); }
+  .discography-intro{ padding-bottom: 10px; }
+  .discography-intro h2:last-child{ margin-top: 52px; }
+  .discography-outro{ padding-top: 72px; }
+  .discography-outro + .discography-outro{ padding-top: 20px; }
+  .discography-outro p:last-child{ margin-bottom: 0; }
+  .discography-disclaimer{ padding: 62px 20px 80px; margin: 0 auto; }
+  @media (max-width: 639px){
+    .editorial{ padding-top: 52px; padding-bottom: 58px; }
+    .editorial-section{ margin-top: 48px; }
+  }
+
+  .panels{
+    margin-top: 40px;
+    max-width: 1140px;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0 20px;
+  }
+
+  /* Sits between the Timeline panel and the decade grid — a short beat
+     transitioning from the life story to the discography, then the two
+     numbers before the tiles start. grid-column spanning for both lives
+     in the panel-grid media query below, next to .panel.is-timeline's own. */
+  .panels-intro{
+    margin: 24px 0 20px;
+    text-align: center;
+  }
+  .panels-intro p{
+    max-width: 560px;
+    margin: 0 auto;
+    font: 400 15px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+  }
+  /* Two big numbers, same thin-numeral language as the hero title and the
+     year headers on the decade pages. */
+  .site-stats{
+    display:flex;
+    flex-wrap:wrap;
+    justify-content:center;
+    gap: 48px;
+    margin: 36px 0;
+  }
+  /* pulled up close to the numbers it's captioning (36px site-stats
+     bottom margin collapsed against this -28px top one leaves 8px), then
+     its own 36px bottom keeps the whole stats+note unit evenly spaced
+     from what's above and below, not just padded underneath. */
+  .stats-note{
+    margin: -28px 0 36px;
+    text-align: center;
+    font: 400 12px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    font-style: italic;
+  }
+  .stat{
+    display:flex;
+    flex-direction:column;
+    align-items:center;
+    gap: 2px;
+  }
+  .stat-num{
+    font: 300 clamp(32px, 5vw, 48px)/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--accent);
+    letter-spacing: -0.01em;
+  }
+  .stat-label{
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  .panel{
+    position:relative;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    min-height: 42vh;
+    background-size: cover;
+    /* lower --panel-pos pushes the photo down, showing more of the top of the
+       frame — these portraits sit high, so a centred crop loses the face */
+    background-position: 50% var(--panel-pos, 35%);
+    background-repeat: no-repeat;
+    text-decoration:none;
+    overflow:hidden;
+    border-radius: 16px;
+    margin-bottom: 14px;
+  }
+  .panel::after{
+    content:"";
+    position:absolute; inset:0;
+    background: rgba(10,10,12,0.18);
+    transition: background 0.45s ease;
+  }
+  a.panel:hover::after{ background: rgba(10,10,12,0.06); }
+  a.panel:focus-visible{ outline: 3px solid var(--accent); outline-offset: -6px; }
+
+  .panel-label{
+    position:relative;
+    z-index:1;
+    text-align:center;
+    color:#fff;
+    padding: 20px;
+  }
+  .panel-label .decade{
+    display:inline-block;
+    font: 300 clamp(44px, 8vw, 88px)/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.02em;
+    text-shadow: 0 2px 26px rgba(0,0,0,0.45);
+  }
+  a.panel .panel-label .decade{
+    border-bottom: 2px solid rgba(255,255,255,0.9);
+    padding-bottom: 6px;
+  }
+  .panel-label .soon{
+    display:block;
+    margin-top: 16px;
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-transform: uppercase;
+    letter-spacing: 0.2em;
+    opacity: 0.75;
+  }
+  /* unpublished decades sit back visually */
+  .panel.is-soon .panel-label{ opacity: 0.82; }
+  .panel.is-soon::after{ background: rgba(10,10,12,0.40); }
+
+  .panel-timeline{ background-image: url('imgs/story/ins20.jpg'); --panel-pos: 24%; }
+  .panel-1980s{ background-image: url('imgs/hero-1980s.jpg'); --panel-pos: 14%; }
+  .panel-1990s{ background-image: url('imgs/panel-1990s.jpg'); --panel-pos: 8%; }
+  .panel-2000s{ background-image: url('imgs/panel-2000s.jpg'); }
+  .panel-2010s{ background-image: url('imgs/panel-2010s.jpg'); }
+  .panel-2020s{ background-image: url('imgs/panel-2020s.jpg'); --panel-pos: 28%; }
+
+  /* Two tiles per row instead of one full-bleed panel per row — six panels
+     land exactly on three even rows. Below this, a tile would be too narrow
+     for the label at any reasonable size, so it stays one full-width column. */
+  @media (min-width: 560px){
+    .panels{
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+    .panel{
+      min-height: 0;
+      aspect-ratio: 4 / 3;
+      margin-bottom: 0;
+    }
+    /* the one tile that isn't a decade — full width, wide instead of
+       square, so it reads as the entry point sitting above the grid
+       rather than a seventh square breaking the six-tile/three-row math */
+    .panel.is-timeline{
+      grid-column: 1 / -1;
+      aspect-ratio: 21 / 9;
+    }
+    /* same reasoning as .panel.is-timeline above — full width so the
+       decade tiles below still land on even rows */
+    .panels-intro,
+    .site-stats{
+      grid-column: 1 / -1;
+    }
+    .panel-label .decade{
+      font-size: clamp(32px, 6vw, 64px);
+    }
+    .panel-label .decade.is-long{
+      font-size: clamp(20px, 3.4vw, 38px);
+    }
+    .njs-logo{
+      width: 72px;
+      margin-bottom: 16px;
+    }
+  }
+
+  .home-foot{
+    max-width: 1040px;
+    margin: 0 auto;
+    padding: 28px 20px 70px;
+  }
+  .home-foot p{
+    font: 400 12px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin:0;
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .hero-video video{ display:none; }
+    .hero-video{
+      background-image: url('imgs/archives-title-poster.jpg');
+      background-size: cover;
+      background-position: center;
+      /* matches the title card's own 1512x800 */
+      aspect-ratio: 1512 / 800;
+    }
+    .panel::after{ transition: none; }
+  }
+
+  /* New Jack Swing sits on a solid ground: the logo is white line art
+     with a transparent background, so it needs dark behind it */
+  .panel.is-njs{
+    background-color: #121214;
+    background-image: none;
+  }
+  .panel.is-njs::after{ background: transparent; }
+  .njs-logo{
+    display:block;
+    width: 92px;
+    height:auto;
+    margin: 0 auto 24px;
+    opacity: 0.9;
+  }
+  .panel-label .decade.is-long{
+    font-size: clamp(26px, 4.4vw, 50px);
+    letter-spacing: -0.01em;
+  }
+
+  /* same dark-ground-plus-logo treatment as .panel.is-njs, for the page's
+     own header — there's no decade photo to hang --hero-img on */
+  .hero.is-njs{
+    flex-direction: column;
+    gap: 22px;
+    background-color: #121214;
+    background-image: none;
+  }
+  .hero.is-njs::after{ background: transparent; }
+  .hero-njs-logo{
+    position: relative;
+    z-index: 1;
+    display:block;
+    width: 120px;
+    height:auto;
+    opacity: 0.9;
+  }
+  .hero.is-njs .hero-title{
+    font-size: clamp(40px, 7vw, 84px);
+  }
+
+
+  .decade-nav .home-link{
+    color: var(--muted);
+    border-bottom-color: transparent;
+  }
+  .decade-nav .home-link:hover{ color: var(--accent); }
+
+  /* ---- CONTACT ---- */
+  .hero.is-compact{
+    min-height: 46vh;
+    min-height: 46svh;
+    /* a fixed background is sized to the viewport, which leaves this short
+       header no vertical overflow to pan through — so --hero-pos would do
+       nothing. Scrolling it sizes the image to the element instead. */
+    background-attachment: scroll;
+  }
+  .hero.is-compact .hero-title{
+    font-size: clamp(40px, 7vw, 88px);
+  }
+
+  .contact-form{
+    max-width: 620px;
+    margin: 0 0 20px;
+  }
+  .field{ margin-bottom: 22px; }
+  .field label{
+    display:block;
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+  .field label .opt{
+    text-transform: none;
+    letter-spacing: 0;
+    font-weight: 400;
+    color: var(--muted);
+    margin-left: 4px;
+  }
+  .field input,
+  .field textarea{
+    width: 100%;
+    font: 400 15px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+    background: rgba(255,255,255,0.7);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 11px 13px;
+  }
+  .field textarea{ resize: vertical; }
+  .field input:focus,
+  .field textarea:focus{
+    outline: none;
+    border-color: var(--accent);
+    box-shadow: 0 0 0 3px rgba(18,18,20,0.10);
+  }
+  .field .hint{
+    font: 400 12px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 7px 0 0;
+  }
+  /* spam trap stays out of sight and out of the tab order */
+  input[name="_gotcha"]{
+    position:absolute;
+    left:-9999px;
+    width:1px; height:1px;
+    opacity:0;
+  }
+
+  .form-foot{
+    display:flex;
+    align-items:center;
+    gap: 18px;
+    flex-wrap: wrap;
+  }
+  .contact-form button{
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: #fff;
+    background: var(--label);
+    border: none;
+    border-radius: 12px;
+    padding: 14px 26px;
+    cursor: pointer;
+    transition: opacity 0.2s ease;
+  }
+  .contact-form button:hover{ opacity: 0.82; }
+  .contact-form button:disabled{ opacity: 0.45; cursor: default; }
+  .contact-form button:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 3px;
+  }
+  .form-status{
+    font: 400 13px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0;
+  }
+  .form-status.is-error{ color: #b3261e; }
+  .form-status.is-ok{ color: var(--label); font-weight: 600; }
+
+  .home-foot .contact-cta{
+    font: 400 15px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0 0 26px;
+  }
+  .home-foot .contact-cta a{
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 2px solid var(--accent);
+    padding-bottom: 2px;
+  }
+  .home-foot .contact-cta a:hover{ opacity: 0.6; }
+
+  /* ---- PRIVACY POLICY ---- */
+  .policy{ max-width: 720px; }
+  .policy h3{
+    font: 600 20px/1.3 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    margin: 40px 0 12px;
+  }
+  .policy h3:first-child{ margin-top: 0; }
+  .policy p{
+    font: 400 15px/1.7 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+  .policy p:last-child{ margin-bottom: 0; }
+  .policy a{
+    color: var(--label);
+    text-decoration-color: var(--rule);
+    text-underline-offset: 2px;
+  }
+  .policy a:hover{ text-decoration-color: currentColor; }
+
+  /* ---- MISSING FROM COLLECTION ---- */
+  :root{
+    /* brighter than the original red: for .missing-note and the dark YEP
+       widget. The card back overrides this to a darker red of its own,
+       scoped inside .back — see the comment there. */
+    --missing: #ff6f6b;
+  }
+  .tracks li.missing{ color: var(--missing); font-weight: 600; }
+  .tracks li.missing::before{ background: var(--missing); opacity: 1; }
+
+  /* ---- MISSING (page) ----
+     every line here is already a "missing" track by definition, so the
+     .tracks li.missing red above just applies outright rather than as a
+     toggled state. .gap-release reuses .year-group's own year-rule for
+     its year headings (see the decade pages) — no photo, so a plain hero
+     (.is-plain, below) stands in for the usual --hero-img. */
+  .gap-release{ margin: 0 0 30px; }
+  .gap-release-title{
+    font: 600 17px/1.4 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+    margin: 0 0 10px;
+  }
+  .gap-tracks{
+    list-style:none;
+    margin:0; padding:0;
+    font: 400 14px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  .gap-tracks li{
+    display:flex;
+    gap:7px;
+    padding: 2.5px 0;
+    color: var(--missing);
+    font-weight: 600;
+  }
+  .gap-tracks li::before{
+    content:"";
+    width:5px; height:5px;
+    border-radius:50%;
+    background: var(--missing);
+    margin-top:7px;
+    flex-shrink:0;
+  }
+
+  /* a solid ground for heroes with no photo to hang --hero-img on —
+     same treatment .is-njs already uses for its own logo, generalised
+     since this page has no logo either, just a title */
+  .hero.is-plain{
+    background-color: #121214;
+    background-image: none;
+  }
+  .hero.is-plain::after{ background: transparent; }
+
+  .legend{
+    font: 400 10px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    display:flex; align-items:center; gap:6px;
+  }
+  .legend span{
+    width:6px; height:6px;
+    border-radius:50%;
+    background: var(--missing);
+    display:inline-block;
+    flex-shrink:0;
+  }
+  /* legend sits left, button stays right whether or not a legend is present */
+  .back-foot{ justify-content: space-between; }
+  .back-foot button{ margin-left: auto; }
+
+  /* Sits in .list-head, between the page description and the year-jump
+     nav — see .fun-fact on the homepage for the same explanation in the
+     intro copy. Light-background context, same reasoning as there: the
+     root --missing (#ff6f6b) is tuned for the dark card back and washes
+     out here. */
+  .missing-callout{
+    display:flex;
+    align-items:center;
+    gap: 10px;
+    padding: 14px 18px;
+    margin: 20px 0;
+    font: 400 15px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--label);
+    background: rgba(179,38,30,0.06);
+    border: 1px solid rgba(179,38,30,0.2);
+    border-radius: 10px;
+    --missing: #b3261e;
+  }
+  .missing-callout strong{
+    color: var(--missing);
+    font-weight: 700;
+  }
+  .missing-callout .dot{
+    width:8px; height:8px;
+    border-radius:50%;
+    background: var(--missing);
+    flex-shrink:0;
+  }
+
+  /* ---- FOOTER PROMPT ---- */
+  .ask{
+    max-width: 1140px;
+    margin: 56px auto 0;
+    padding: 0 20px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+  .ask-line{
+    display:inline-block;
+    font: 300 clamp(24px, 3.4vw, 38px)/1.2 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.01em;
+    color: var(--accent);
+    text-decoration: none;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 4px;
+    transition: border-color 0.3s ease, opacity 0.3s ease;
+  }
+  .ask:hover .ask-line,
+  .ask.is-open .ask-line,
+  .ask-line:focus-visible{ border-bottom-color: var(--accent); }
+
+  /* the Dropbox drop-off, offered as a quieter second action under the
+     main ask-line rather than a competing headline of its own */
+  .ask-upload{
+    display:flex;
+    align-items:center;
+    gap: 12px;
+    margin-top: 22px;
+    font: 600 15px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.01em;
+    color: var(--label);
+    background: #fff;
+    text-decoration:none;
+    white-space: nowrap;
+    border: 1px solid var(--rule);
+    border-radius: 999px;
+    padding: 8px 28px 8px 8px;
+    box-shadow: var(--shadow);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
+  }
+  .ask-upload-icon{
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    width: 36px;
+    height: 36px;
+    border-radius: 50%;
+    background: var(--label);
+    color: #fff;
+    flex-shrink:0;
+  }
+  .ask-upload:hover,
+  .ask-upload:focus-visible{ transform: translateY(-2px); box-shadow: 0 24px 56px -16px rgba(0,0,0,0.24); border-color: var(--accent-soft); }
+  @media (prefers-reduced-motion: reduce){
+    .ask-upload{ transition: none; }
+  }
+
+  /* 0fr -> 1fr animates the reveal without pinning a max-height */
+  .ask-panel{
+    display: grid;
+    grid-template-rows: 0fr;
+    opacity: 0;
+    align-self: stretch;
+    transition: grid-template-rows 0.45s ease, opacity 0.3s ease;
+  }
+  .ask-panel-inner{ overflow: hidden; }
+  .ask:hover .ask-panel,
+  .ask:focus-within .ask-panel,
+  .ask.is-open .ask-panel{
+    grid-template-rows: 1fr;
+    opacity: 1;
+  }
+  .ask .contact-form{ margin: 26px auto 0; }
+  .ask .field{ margin-bottom: 16px; }
+
+  /* hover-to-reveal is meaningless on touch: leave it open there */
+  @media (hover: none){
+    .ask-panel{ grid-template-rows: 1fr; opacity: 1; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .ask-panel{ transition: none; }
+  }
+
+  /* ---- DECADE INTRO ---- */
+  html{ scroll-behavior: smooth; }
+  @media (prefers-reduced-motion: reduce){
+    html{ scroll-behavior: auto; }
+  }
+
+  .list-head{
+    margin: 0 0 40px;
+    padding-top: 30px;
+    border-top: 1px solid var(--rule);
+  }
+  /* max-width sits on the description text alone, not .list-head itself —
+     .missing-callout and .year-jump are also direct children here (the
+     callout's also a <p>, hence :not()), and both are meant to run the
+     full width of the releases grid below rather than the narrower
+     reading column the description keeps for its own sake. */
+  .list-head p:not(.missing-callout){
+    max-width: 660px;
+    font: 400 15px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0;
+    text-wrap: pretty;
+  }
+
+  /* ---- YEAR JUMP ---- */
+  .year-jump{
+    display:flex;
+    flex-wrap:wrap;
+    align-items:center;
+    gap: 6px 14px;
+    margin-top: 26px;
+  }
+  .year-jump-label{
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-right: 4px;
+  }
+  .year-jump a{
+    font: 400 17px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--accent);
+    text-decoration: none;
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    transition: background 0.2s ease, border-color 0.2s ease;
+  }
+  .year-jump a:hover{
+    background: var(--accent);
+    border-color: var(--accent);
+    color: #fff;
+  }
+  .year-jump a:focus-visible{
+    outline: 2px solid var(--accent);
+    outline-offset: 2px;
+  }
+  /* a year pulled out via releases.json's "hidden" flag — same pill, same
+     spot in the row, styled like the nav dropdown's unpublished decades */
+  .year-jump span{
+    font: 400 17px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    opacity: 0.45;
+    padding: 7px 12px;
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+  }
+  /* so a jumped-to year isn't jammed against the top of the viewport */
+  .year-rule{ scroll-margin-top: 28px; }
+
+  /* ---- FOOTER TEXT ---- */
+  footer p,
+  .home-foot p{
+    margin: 0 0 8px;
+  }
+  footer p:last-child,
+  .home-foot p:last-child{ margin-bottom: 0; }
+
+  .foot-copy{
+    font: 400 12px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+  }
+  /* the disclaimer is the quietest thing on the page */
+  .foot-legal{
+    font: 400 11px/1.65 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    opacity: 0.75;
+    max-width: 760px;
+    margin-top: 12px !important;
+    text-wrap: pretty;
+  }
+  .foot-links{
+    font: 400 12px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+  }
+  .foot-links a{
+    color: var(--muted);
+    text-underline-offset: 2px;
+  }
+  .foot-links a:hover{ color: var(--label); }
+
+  /* ---- YEP YEP WIDGET ---- */
+  .sr-only{
+    position:absolute; width:1px; height:1px;
+    padding:0; margin:-1px; overflow:hidden;
+    clip:rect(0 0 0 0); white-space:nowrap; border:0;
+  }
+
+  .yep{
+    position: fixed;
+    bottom: 24px;
+    left: 24px;
+    z-index: 50;
+  }
+
+  .yep-btn{
+    display:block;
+    height: 128px;
+    padding: 0;
+    border: 0;
+    background: none;
+    cursor: pointer;
+    transition: transform 0.22s ease;
+  }
+  .yep-btn img{
+    width:auto; height:100%;
+    object-fit: contain;
+    display:block;
+  }
+  .yep-btn:hover{ transform: scale(1.06); }
+  .yep-btn:focus-visible{ outline: 3px solid var(--accent); outline-offset: 3px; }
+
+  .yep-bubble{
+    position:absolute;
+    bottom: 136px; left: 0;
+    background: #fff;
+    color: var(--label);
+    border: 1px solid var(--rule);
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.1em;
+    padding: 7px 10px;
+    border-radius: 12px;
+    white-space: nowrap;
+    opacity: 0;
+    transform: translateY(4px);
+    box-shadow: 0 8px 20px -8px rgba(0,0,0,0.22);
+    transition: opacity 0.22s ease, transform 0.22s ease;
+    pointer-events: none;
+  }
+  .yep:hover .yep-bubble,
+  .yep-btn:focus-visible + .yep-bubble,
+  .yep.is-nudging .yep-bubble{ opacity: 1; transform: translateY(0); }
+  /* once the panel is open the bubble would sit on top of it — this must
+     stay after the rule above so it wins at equal specificity */
+  .yep.is-open .yep-bubble{ opacity: 0; }
+
+  .yep-panel{
+    position:absolute;
+    bottom: 80px; left: 0;
+    width: min(320px, calc(100vw - 48px));
+    background: #fff;
+    color: var(--label);
+    border: 1px solid var(--rule);
+    border-radius: 12px;
+    padding: 18px;
+    box-shadow: var(--shadow);
+  }
+  .yep-head{
+    display:flex; align-items:center; justify-content:space-between;
+    margin-bottom: 6px;
+  }
+  .yep-title{
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.16em;
+    margin: 0;
+  }
+  .yep-close{
+    background:none; border:none; cursor:pointer;
+    color: var(--muted);
+    font-size: 22px; line-height:1;
+    padding: 0 2px;
+  }
+  .yep-close:hover{ color: var(--label); }
+  .yep-close:focus-visible{ outline: 2px solid var(--label); outline-offset: 2px; }
+
+  .yep-sub{
+    font: 400 13px/1.5 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: 0 0 14px;
+  }
+
+  /* the shared .contact-form/.field styles already suit this light panel —
+     only the tighter spacing needs restating here */
+  .yep-form{ margin: 0; max-width: none; }
+  .yep-form .field{ margin-bottom: 12px; }
+  .yep-form label{ font-size: 11px; }
+  .yep-form label .opt{ color: var(--muted); }
+  .yep-form input,
+  .yep-form textarea{ font-size: 13px; }
+  .yep-form button[type="submit"]{ padding: 11px 18px; }
+  .yep-form .form-status.is-error{ color: var(--missing); }
+
+  /* .ask-upload is sized for the roomy .ask panels it's shared with — full
+     pill, big shadow, nowrap text. At the yep panel's 320px it overflowed
+     the popup's edge. Sits next to the submit button now, so it needs to
+     read as a quiet secondary link, not a second competing CTA. */
+  .yep-form .ask-upload{
+    margin-top: 0;
+    padding: 0;
+    border: 0;
+    border-radius: 0;
+    background: none;
+    box-shadow: none;
+    gap: 6px;
+    font: 600 12px/1.3 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.02em;
+    white-space: normal;
+    color: var(--muted);
+  }
+  .yep-form .ask-upload-icon{
+    width: 18px; height: 18px;
+    background: none;
+    color: var(--muted);
+  }
+  .yep-form .ask-upload:hover,
+  .yep-form .ask-upload:focus-visible{
+    transform: none;
+    box-shadow: none;
+    color: var(--label);
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    .yep-btn, .yep-bubble{ transition: none; }
+  }
+  /* on a narrow screen the widget would sit on top of the footer prompt */
+  @media (max-width: 560px){
+    .yep{ bottom: 16px; left: 16px; }
+    .yep-btn{ height: 108px; }
+  }
+
+  /* the widget waits until the header has scrolled past */
+  .yep{
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(10px);
+    transition: opacity 0.35s ease, transform 0.35s ease, visibility 0.35s;
+  }
+  .yep.is-visible{
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+  @media (prefers-reduced-motion: reduce){
+    .yep{ transition: none; }
+  }
+
+
+  /* ---- 404: image-led, one screen ---- */
+  .lost{
+    position: relative;
+    min-height: 100vh;
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    background: linear-gradient(160deg, #9ea3ad 0%, #878c96 55%, #767b85 100%);
+    overflow: hidden;
+  }
+  .lost-nav{
+    position: relative;
+    z-index: 2;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 22px;
+    padding: 28px 40px;
+  }
+  .lost-nav a{
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+    text-decoration: none;
+    padding-bottom: 3px;
+    border-bottom: 2px solid transparent;
+  }
+  .lost-nav a:hover{ color:#fff; border-bottom-color: rgba(255,255,255,0.8); }
+  .lost-nav a:focus-visible{ outline: 2px solid #fff; outline-offset: 3px; }
+  .lost-nav .nav-dropdown summary{
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.72);
+  }
+  .lost-nav .nav-dropdown summary:hover{ color:#fff; }
+  .lost-nav .nav-dropdown summary:focus-visible{ outline: 2px solid #fff; outline-offset: 3px; }
+
+  .lost-inner{
+    position: relative;
+    z-index: 1;
+    flex: 1;
+    display: grid;
+    grid-template-columns: minmax(300px, 460px) 1fr;
+    align-items: center;
+    gap: 20px;
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0 40px 40px;
+  }
+
+  .lost-text{ color:#fff; max-width: 520px; }
+
+  /* --- phase 1: the dig --- */
+  .lost-dig-label{
+    font: 600 12px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin: 0 0 18px;
+  }
+  .lost-dig-name{
+    font: 300 clamp(38px, 5.4vw, 68px)/1.05 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.02em;
+    color: #fff;
+    margin: 0;
+    min-height: 1.05em;
+  }
+  .lost-dig-name.is-flip{ animation: digFlip 0.4s ease both; }
+  @keyframes digFlip{
+    from{ opacity: 0; transform: translateY(14px); }
+    to  { opacity: 1; transform: translateY(0); }
+  }
+
+  /* --- phase 2: the answer --- */
+  .lost-reveal{
+    opacity: 0;
+    transform: translateY(16px);
+    transition: opacity 0.6s ease, transform 0.6s ease;
+  }
+  .lost-reveal.is-in{ opacity: 1; transform: none; }
+
+  .lost-eyebrow{
+    font: 600 11px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    color: rgba(255,255,255,0.6);
+    margin: 0 0 16px;
+  }
+  .lost-text h1{
+    font: 300 clamp(44px, 6vw, 76px)/1.02 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.03em;
+    margin: 0 0 20px;
+    color: #fff;
+  }
+  .lost-lede{
+    font: 400 16px/1.65 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: rgba(255,255,255,0.82);
+    margin: 0 0 14px;
+    text-wrap: pretty;
+  }
+  .lost-path, .lost-hint{
+    font: 400 14px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: rgba(255,255,255,0.72);
+    margin: 0 0 8px;
+  }
+  .lost-slug{
+    font-family: ui-monospace, "SF Mono", Menlo, monospace;
+    font-size: 0.9em;
+    background: rgba(0,0,0,0.22);
+    border: 1px solid rgba(255,255,255,0.22);
+    border-radius: 6px;
+    padding: 2px 6px;
+    word-break: break-all;
+  }
+  .lost-hint a{
+    color:#fff;
+    font-weight: 600;
+    text-decoration: none;
+    border-bottom: 2px solid rgba(255,255,255,0.85);
+    padding-bottom: 2px;
+  }
+  .lost-hint a:hover{ opacity: 0.75; }
+
+  .lost-cta{
+    display:inline-block;
+    margin-top: 18px;
+    background:#fff;
+    color:#121214;
+    font: 600 14px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    text-decoration:none;
+    padding: 17px 30px;
+    border-radius: 999px;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    box-shadow: 0 8px 22px -6px rgba(0,0,0,0.22);
+  }
+  .lost-cta:hover{ transform: translateY(-2px); box-shadow: 0 12px 28px -6px rgba(0,0,0,0.3); }
+  .lost-cta:focus-visible{ outline: 3px solid #fff; outline-offset: 4px; }
+
+  .lost-art{ justify-self: center; width: 100%; max-width: 860px; }
+  .lost-art svg{ width: 100%; height: auto; display: block; overflow: visible; }
+  .lost-art .lbl{
+    font-family: 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    fill: #55555d;
+  }
+  .lost-art .lbl-sm    { font-size: 11px; font-weight: 600; letter-spacing: 0.16em; fill:#5d5648; }
+
+  /* the pieces drift, like an exploded diagram that never reassembles */
+  .pc{ animation: pcDrift 7s ease-in-out infinite alternate; transform-box: fill-box;
+       transform-origin: center; }
+  .pc-1{ animation-duration: 7.5s; }
+  .pc-3{ animation-duration: 8.1s; animation-delay: -0.7s; }
+  .pc-4{ animation-duration: 9.0s; animation-delay: -2.1s; }
+  .pc-6{ animation-duration: 7.9s; animation-delay: -1.1s; }
+  .pc-7{ animation-duration: 6.5s; animation-delay: -2.6s; }
+  @keyframes pcDrift{
+    from{ transform: translate3d(0,-8px,0) rotate(-0.6deg); }
+    to  { transform: translate3d(0, 8px,0) rotate(0.6deg); }
+  }
+
+  .lost-real{ padding-top: 60px; }
+  .lost-real .year-rule{ margin-top: 0; }
+  .lost-real-sub{
+    font: 400 14px/1.6 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--muted);
+    margin: -14px 0 26px;
+  }
+  .lost-real .card{ max-width: 347px; }
+  .lost-real-link{
+    display:inline-block;
+    margin-top: 22px;
+    font: 400 16px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    color: var(--accent);
+    text-decoration: none;
+    border-bottom: 2px solid transparent;
+    padding-bottom: 3px;
+  }
+  .lost-real-link:hover{ border-bottom-color: var(--accent); }
+
+  @media (max-width: 900px){
+    .lost-inner{ grid-template-columns: 1fr; padding: 0 24px 40px; gap: 8px; }
+    .lost-art{ order: -1; max-width: 560px; }
+    .lost-nav{ padding: 20px 24px; gap: 16px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .pc{ animation: none; }
+    .lost-cta{ transition: none; }
+  }
+
+  /* the 404 itself, sitting behind everything */
+  .lost-bg{
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font: 700 clamp(320px, 44vw, 880px)/0.78 'Helvetica Neue', Helvetica, Arial, sans-serif;
+    letter-spacing: -0.06em;
+    color: rgba(255,255,255,0.11);
+    pointer-events: none;
+    user-select: none;
+    z-index: 0;
+  }
+  .lost-nav, .lost-inner{ position: relative; z-index: 2; }
+  @media (prefers-reduced-motion: reduce){
+    .lost-dig-name.is-flip{ animation: none; }
+    .lost-reveal{ transition: none; }
+  }
+
+  /* ---- BACK TO TOP ----
+     Deliberately quiet: low opacity at rest, only appears past one screen of
+     scroll, sits bottom-right so it never competes with the YEP YEP widget
+     (bottom-left) or the footer prompt. */
+  .to-top{
+    position: fixed;
+    right: 22px;
+    bottom: 22px;
+    z-index: 40;
+    width: 40px; height: 40px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: var(--label);
+    color: var(--ink);
+    box-shadow: 0 8px 20px -6px rgba(0,0,0,0.22);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(8px);
+    transition: opacity 0.3s ease, transform 0.3s ease, visibility 0.3s;
+  }
+  .to-top.is-visible{ opacity: 0.5; visibility: visible; transform: none; }
+  .to-top:hover,
+  .to-top:focus-visible{ opacity: 1; }
+  .to-top:focus-visible{ outline: 2px solid var(--accent); outline-offset: 3px; }
+  .to-top svg{ width: 15px; height: 15px; }
+
+  @media (max-width: 560px){
+    .to-top{ right: 16px; bottom: 16px; width: 36px; height: 36px; }
+  }
+  @media (prefers-reduced-motion: reduce){
+    .to-top{ transition: none; }
+  }

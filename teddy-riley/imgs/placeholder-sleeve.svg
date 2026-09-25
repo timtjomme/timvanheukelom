@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 600 600" width="600" height="600" role="img" aria-label="Cover art not yet available">
+  <rect width="600" height="600" fill="#1a1a1e"/>
+  <g transform="translate(300 268)">
+    <circle r="132" fill="none" stroke="#2e2e34" stroke-width="1.5"/>
+    <circle r="104" fill="none" stroke="#26262b" stroke-width="1.5"/>
+    <circle r="76" fill="none" stroke="#26262b" stroke-width="1.5"/>
+    <circle r="44" fill="#2a2a30"/>
+    <circle r="5" fill="#0f0f12"/>
+  </g>
+  <text x="300" y="470" text-anchor="middle"
+        font-family="'Open Sans', -apple-system, Helvetica, Arial, sans-serif"
+        font-size="20" font-weight="600" letter-spacing="3.4" fill="#6a6a74">
+    NO COVER YET
+  </text>
+</svg>
