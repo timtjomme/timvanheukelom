@@ -1,0 +1,15 @@
+# Keep every page under /teddy-riley/ out of Google (and other search engines).
+#
+# This sends the header rather than disallowing the path in robots.txt on
+# purpose: if the path were disallowed, a crawler could never fetch a page to
+# see this header (or a <meta noindex> tag), and a URL discovered some other
+# way — a link from outside, someone sharing it — could still turn up in
+# search results with no title or description. Allowing the crawl but
+# tagging every response noindex is what actually keeps it out. See
+# https://developers.google.com/search/docs/crawling-indexing/block-indexing
+#
+# Confirmed mod_headers works on this host: the blog root's .htaccess already
+# sets security headers this way and they show up on the live site.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow"
+</IfModule>
