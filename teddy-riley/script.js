@@ -70,7 +70,7 @@ document.addEventListener('dragstart', function(e){
     'Play it a little louder',
     'Check baby check baby 1-2-3-4'
   ];
-  var base = 'Teddy Riley Productions';
+  var base = 'TR Productions';
   var i = 0;
   document.title = base + ' — ' + lines[0];
   setInterval(function(){

@@ -1,4 +1,4 @@
-# Teddy Riley Productions — archive site
+# TR Productions — archive site
 
 A static discography site. No framework, no build step for the CSS/JS — plain
 HTML, one shared stylesheet, one shared script. The only generated thing is the
