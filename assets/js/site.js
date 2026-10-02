@@ -72,12 +72,16 @@
 		}, { once: true });
 	});
 
-	/* -- the archive: type "tr" and a menu button for /tr/ appears ---------- */
+	/* -- the archive: type "tr", or tap the bar five times, for a /tr/ button -- */
 	/* Nothing on the page hints at it. The button is built here instead of
 	   being written into every page's header, and only shows once the two
 	   letters are typed within 1.5 seconds of each other. Form fields don't
 	   count (a comment about a "trip" would trigger it) and neither do
-	   shortcuts like Cmd+T and Cmd+R. */
+	   shortcuts like Cmd+T and Cmd+R.
+
+	   A phone has no keys to type, so it gets a second way in: five quick taps
+	   on the bare stretch of the top bar between the title and the icons (the
+	   button then fades in right there, no scrolling to look for it). */
 	var lastKey = "", lastAt = 0, archive;
 
 	document.addEventListener("keydown", function (e) {
@@ -90,6 +94,18 @@
 		if (key === "r" && lastKey === "t" && now - lastAt < 1500) reveal();
 		lastKey = key;
 		lastAt = now;
+	});
+
+	var taps = 0, tapAt = 0, bar = document.querySelector(".topbar");
+
+	// the listener sits on the bar itself: iOS only reports a tap on something
+	// that isn't a link when the thing (or a parent short of <body>) listens for it
+	if (bar) bar.addEventListener("click", function (e) {
+		if (e.target.closest("a")) return;   // the title and the icons keep their own taps
+		var now = Date.now();
+		taps = now - tapAt < 800 ? taps + 1 : 1;
+		tapAt = now;
+		if (taps === 5) reveal();
 	});
 
 	function reveal() {

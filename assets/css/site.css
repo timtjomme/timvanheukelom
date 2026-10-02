@@ -88,6 +88,11 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 	background: transparent;
 	font-size: 0.875rem;
 	font-weight: 400;
+	/* Quick taps on the bare stretch of the bar are how a phone finds the
+	   archive (see site.js): left alone they would zoom the page and flash
+	   the tap highlight. Pinching still zooms. */
+	touch-action: manipulation;
+	-webkit-tap-highlight-color: transparent;
 }
 .topbar-brand {
 	min-width: 0;
