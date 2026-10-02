@@ -109,10 +109,9 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 .topbar-nav svg { width: 16px; height: 16px; }
 
 /* The hidden extra site.js adds when someone types "tr": a link through to the
-   Teddy Riley archive. It hangs off the left edge of the icon group instead of
-   joining the row — the group is pushed to the right on most pages but sits
-   left-aligned in its half on a desktop story, so a fourth icon in the flow
-   would nudge the three that are always there in one layout or the other. */
+   archive. It hangs off the left edge of the icon group instead of joining the
+   row, so a fourth icon in the flow never nudges the three that are always
+   there. */
 .topbar-nav .topbar-extra {
 	position: absolute;
 	top: 0;
@@ -124,28 +123,10 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 }
 .topbar-nav .topbar-extra.is-on { opacity: 1; }
 
-/* Story pages on the live site never picked up the header module's own
-   overrides (right-aligned icon group, zeroed row padding) — each story's
-   per-page stylesheet doesn't include them, so the bar falls back to Beaver
-   Builder's unstyled defaults there: 20px padding all round instead of a
-   fixed 36px bar, brand and icons as plain 50/50 columns, icons left-aligned
-   in the second half rather than pushed to the edge. Matched here — rather
-   than cleaned up — so a story page looks like its live counterpart; the
-   single-hero pages (home, the route, Instagram) render correctly on live
-   and keep the compact bar above. Scoped to desktop: every page, including
-   story ones, already got an explicit mobile bar fix earlier and that stays. */
-@media (min-width: 769px) {
-	.topbar:has(+ .hero-dim) {
-		height: auto;
-		min-height: 110px;
-		max-width: 1100px;
-		margin: 0 auto;
-		padding: 20px;
-		gap: 0;
-	}
-	.topbar:has(+ .hero-dim) .topbar-brand { flex: 0 0 50%; }
-	.topbar:has(+ .hero-dim) .topbar-nav { flex: 0 0 50%; margin-left: 0; }
-}
+/* One bar for every page, stories included: the title on the left, the three
+   icons on the right. (The old WordPress site gave story pages a taller bar
+   with the icons starting at the middle, a quirk of its theme that this site
+   no longer copies.) */
 
 /* --- hero ---------------------------------------------------------------
    The photo is a CSS background rather than an <img>, and specifically one
