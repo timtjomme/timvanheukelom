@@ -72,16 +72,17 @@
 		}, { once: true });
 	});
 
-	/* -- the archive: type "tr", or tap the bar five times, for a /tr/ button -- */
+	/* -- the archive: type "tr" for a /tr/ button, double-tap the bar to go in -- */
 	/* Nothing on the page hints at it. The button is built here instead of
 	   being written into every page's header, and only shows once the two
 	   letters are typed within 1.5 seconds of each other. Form fields don't
 	   count (a comment about a "trip" would trigger it) and neither do
 	   shortcuts like Cmd+T and Cmd+R.
 
-	   A phone has no keys to type, so it gets a second way in: five quick taps
-	   on the bare stretch of the top bar between the title and the icons (the
-	   button then fades in right there, no scrolling to look for it). */
+	   A phone has no keys to type, so it gets a second way in: a double tap on
+	   the bare stretch of the top bar between the title and the icons goes
+	   straight to the archive (a 16px button that fades in out of nowhere is a
+	   poor target for a thumb). */
 	var lastKey = "", lastAt = 0, archive;
 
 	document.addEventListener("keydown", function (e) {
@@ -96,16 +97,17 @@
 		lastAt = now;
 	});
 
-	var taps = 0, tapAt = 0, bar = document.querySelector(".topbar");
+	function archiveUrl() { return (document.body.dataset.root || "") + "tr/"; }
+
+	var tapAt = 0, bar = document.querySelector(".topbar");
 
 	// the listener sits on the bar itself: iOS only reports a tap on something
 	// that isn't a link when the thing (or a parent short of <body>) listens for it
 	if (bar) bar.addEventListener("click", function (e) {
 		if (e.target.closest("a")) return;   // the title and the icons keep their own taps
 		var now = Date.now();
-		taps = now - tapAt < 800 ? taps + 1 : 1;
+		if (now - tapAt < 600) location.href = archiveUrl();   // second tap in quick succession
 		tapAt = now;
-		if (taps === 5) reveal();
 	});
 
 	function reveal() {
@@ -114,7 +116,7 @@
 
 		archive = document.createElement("a");
 		archive.className = "topbar-extra";
-		archive.href = (document.body.dataset.root || "") + "tr/";
+		archive.href = archiveUrl();
 		archive.title = "Teddy Riley";
 		archive.setAttribute("aria-label", "Teddy Riley");
 		archive.rel = "nofollow";   // the one on-site link to it; don't hand crawlers a path in

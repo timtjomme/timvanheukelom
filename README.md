@@ -94,7 +94,7 @@ enhancements — the pages read correctly with every one of them blocked.
 
 | file | ~size | what it does |
 |---|---|---|
-| `site.js` | 7 KB | draws the three counter rings while their numbers count up, swaps a video poster for the player on click, opens galleries in a lightbox, and adds a menu button for `/tr/` to the header when a visitor types `tr` (ignored inside form fields) or, on a phone, taps the bare stretch of the top bar between the title and the icons five times in a row (nothing on the page mentions either) |
+| `site.js` | 7 KB | draws the three counter rings while their numbers count up, swaps a video poster for the player on click, opens galleries in a lightbox, and adds a menu button for `/tr/` to the header when a visitor types `tr` (ignored inside form fields) or, on a phone, double-taps the bare stretch of the top bar between the title and the icons, which goes straight to `/tr/` (nothing on the page mentions either) |
 | `panorama.js` | 7 KB | the 360° viewer: an equirectangular sphere in raw WebGL, built only when a viewer scrolls near the viewport |
 | `comments.js` | 6 KB | draws the avatars and relative dates, fetches newly approved comments, submits the form |
 | `tracker.js` | 4 KB | the visit beacon (see below) |
