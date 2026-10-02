@@ -22,12 +22,15 @@ pages if you only want to look at them.
 ## Structure
 
 ```
-index.html                     home: hero with the three counter rings, 17 story cards
+index.html                     home, in three parts: a hero with the totals of everything (three
+                               counter rings), the Vakanties (7 cards, newest first), and the original
+                               blog, De wereldreis, under its own hero with its own rings (16 cards)
 travelblog.html                the same page under its own published URL
 waar-zijn-we-geweest.html      the route: the travelmap.net map and the
                                Polarsteps one, on the same page
 timtjomme.html                 link out to Instagram
-landen/<slug>.html             15 travel stories
+landen/<slug>.html             21 travel stories: 14 from the world trip and 7 holidays after it
+                               (colombia-2018 ... vietnam-2025)
 voorbereidingen/<slug>.html    2 pre-trip posts
 assets/
   css/site.css                 the whole stylesheet, ~17 KB
@@ -73,9 +76,16 @@ the trade for having no build step, and it is 20 lines of markup.
 <footer class="footer">…</footer>
 ```
 
-Adding a story means copying an existing one in `landen/`, changing the hero
-and the blocks, and adding a `<a class="card">` to `index.html` and
-`travelblog.html`. Nothing else knows about it.
+The site is two things: the world trip (2016-2017, the original blog) and the
+holidays after it. Keep them apart. Adding a story means copying an existing
+one in `landen/`, changing the hero and the blocks, and adding a
+`<a class="card">` to `index.html` and `travelblog.html`: a holiday goes at the
+top of the Vakanties group (newest first), and its days and kilometres go into
+the counters of the top hero (210.251 km, 427 days, 22 countries today = the
+world trip's 87.501 / 250 / 12 plus the holidays; Polarsteps gives days and
+miles, 1 mile = 1.609344 km). The previous / next links of a story stay inside
+its own group: the world trip ends at `naarhelan` and the holidays start at
+`colombia-2018`.
 
 ## The scripts
 

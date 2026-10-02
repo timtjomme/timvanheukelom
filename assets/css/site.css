@@ -379,6 +379,26 @@ figure.photo img { width: 100%; }
 	gap: 1.5rem;
 	width: 100%;
 }
+/* the line under the title of the world-trip hero (its years): a story hero's
+   white rule over a smaller line, full width of the column */
+.hero-home .hero-sub {
+	position: relative;
+	justify-self: stretch;
+	margin: 0;
+	padding-top: 1.5rem;
+	font-size: 1.5rem;
+	font-weight: 400;
+	line-height: 1.4;
+}
+.hero-home .hero-sub::before {
+	content: "";
+	position: absolute;
+	top: 0;
+	left: 50%;
+	width: 85%;
+	transform: translateX(-50%);
+	border-top: 3px solid #fff;
+}
 /* three equal columns across the hero, each ring centred in its own — the
    spacing the row has always had. The ring takes its column's width when that
    is under 250px, so three of them still fit on the narrowest phone. */
@@ -435,6 +455,36 @@ figure.photo img { width: 100%; }
 }
 
 /* --- home: story cards -------------------------------------------------- */
+/* The cards come in two groups: the holidays after the world trip, and the
+   world trip itself, which is the original blog. Each group opens with a
+   title on plain white, so the break between them reads at a glance. */
+.cards-head {
+	max-width: var(--prose);
+	margin: 0 auto;
+	padding: 4rem 1.25rem 3rem;
+	text-align: center;
+}
+.cards-head::before {
+	content: "";
+	display: block;
+	width: 3rem;
+	margin: 0 auto 1.5rem;
+	border-top: 3px solid var(--accent);
+}
+.cards-head h2 {
+	font-size: clamp(2rem, 6vw, 3rem);
+	font-weight: 300;
+	line-height: 1.2;
+}
+.cards-head p {
+	margin: .6rem 0 0;
+	color: var(--ink-soft);
+	font-size: 1.05rem;
+}
+@media (max-width: 43.99rem) {
+	.cards-head { padding: 3rem 1.25rem 2rem; }
+}
+
 /* one big square per row on a phone, two side by side from tablet up —
    the same shape the site has always had */
 .cards { display: grid; grid-template-columns: 1fr; }
@@ -468,10 +518,20 @@ figure.photo img { width: 100%; }
 	opacity: 0;
 	transition: opacity .3s;
 }
+/* A group must not end on a half-empty row. A last card that would sit alone
+   (or beside one gap) stretches over the rest of its row; aspect-ratio equals
+   the number of columns it spans, so the row keeps the height of a square. */
+@media (min-width: 44rem) and (max-width: 94.99rem) {
+	.cards > .card:last-child:nth-child(odd) { grid-column: 1 / -1; aspect-ratio: 2; }
+}
+@media (min-width: 95rem) {
+	.cards > .card:last-child:nth-child(3n + 1) { grid-column: 1 / -1; aspect-ratio: 3; }
+	.cards > .card:last-child:nth-child(3n + 2) { grid-column: span 2; aspect-ratio: 2; }
+}
 .card:hover img, .card:focus-visible img { transform: scale(1.05); }
 .card:hover::after, .card:focus-visible::after { opacity: 1; }
 .card-text { position: relative; z-index: 2; }
-.card-text h2 {
+.card-text h3 {
 	font-size: min(2.5rem, 10.3vw);
 	font-weight: 300;
 	line-height: 1.4;
