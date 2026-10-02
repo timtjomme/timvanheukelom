@@ -1,12 +1,12 @@
 # timvanheukelom.nl
 #
-# The Teddy Riley archive lives in /teddy-riley/ (moved here from its own domain).
+# The Teddy Riley archive lives in /tr/ (moved here from its own domain).
 # Crawl rules only work at the domain root, so the analytics backend's rule is
-# kept here. /teddy-riley/ itself is deliberately NOT disallowed below — it
-# carries its own noindex header (see teddy-riley/.htaccess) instead, which is
+# kept here. /tr/ itself is deliberately NOT disallowed below — it
+# carries its own noindex header (see tr/.htaccess) instead, which is
 # the part that actually keeps it out of search results; disallowing the path
 # here as well would stop crawlers from ever seeing that header. Its sitemap
 # is no longer listed here either, for the same reason: it is noindex, so
 # there is nothing to gain from inviting a crawl of it.
 User-agent: *
-Disallow: /teddy-riley/analytics/
+Disallow: /tr/analytics/

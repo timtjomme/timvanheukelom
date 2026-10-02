@@ -30,7 +30,7 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 RELEASES_PATH = ROOT / "data" / "releases.json"
-UA = "TeddyRileyProductionsBot/1.0 +https://timvanheukelom.nl/teddy-riley/"
+UA = "TeddyRileyProductionsBot/1.0 +https://timvanheukelom.nl/tr/"
 
 MATCH_THRESHOLD = 0.55  # below this, a search result is treated as no-match
 

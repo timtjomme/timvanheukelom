@@ -1,4 +1,4 @@
-# Keep every page under /teddy-riley/ out of Google (and other search engines).
+# Keep every page under /tr/ out of Google (and other search engines).
 #
 # This sends the header rather than disallowing the path in robots.txt on
 # purpose: if the path were disallowed, a crawler could never fetch a page to

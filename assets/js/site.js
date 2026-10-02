@@ -5,7 +5,7 @@
 
    All four are progressive enhancements — with this file blocked the numbers
    still read correctly, the videos still link out, photos still open on
-   their own, and the archive is still there at /teddy-riley/.
+   their own, and the archive is still there at /tr/.
 --------------------------------------------------------------------------- */
 (function () {
 	"use strict";
@@ -72,7 +72,7 @@
 		}, { once: true });
 	});
 
-	/* -- the archive: type "tr" and a menu button for /teddy-riley/ appears - */
+	/* -- the archive: type "tr" and a menu button for /tr/ appears ---------- */
 	/* Nothing on the page hints at it. The button is built here instead of
 	   being written into every page's header, and only shows once the two
 	   letters are typed within 1.5 seconds of each other. Form fields don't
@@ -98,7 +98,7 @@
 
 		archive = document.createElement("a");
 		archive.className = "topbar-extra";
-		archive.href = (document.body.dataset.root || "") + "teddy-riley/";
+		archive.href = (document.body.dataset.root || "") + "tr/";
 		archive.title = "Teddy Riley";
 		archive.setAttribute("aria-label", "Teddy Riley");
 		archive.rel = "nofollow";   // the one on-site link to it; don't hand crawlers a path in
