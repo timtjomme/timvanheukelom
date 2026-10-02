@@ -192,6 +192,10 @@ The footer is hand-written markup repeated in index.html, 1980s.html,
   portraits sit high, so a centred crop cuts the face off.
 - The source page occasionally **merges two tracks onto one line** where a `<br>`
   is missing. Check tracklists against the source when they look short.
+- **Public pages don't ask for files.** No upload or drop-off links (the Dropbox file
+  request is gone from every page and from the floating widget), and no copy inviting
+  lossless files or photos; corrections and missing credits come in through the contact
+  form only. A new page's footer panel is just the `.ask-line`.
 
 ## Favicon
 

@@ -1841,42 +1841,6 @@
   .ask.is-open .ask-line,
   .ask-line:focus-visible{ border-bottom-color: var(--accent); }
 
-  /* the Dropbox drop-off, offered as a quieter second action under the
-     main ask-line rather than a competing headline of its own */
-  .ask-upload{
-    display:flex;
-    align-items:center;
-    gap: 12px;
-    margin-top: 22px;
-    font: 600 15px/1 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    letter-spacing: 0.01em;
-    color: var(--label);
-    background: #fff;
-    text-decoration:none;
-    white-space: nowrap;
-    border: 1px solid var(--rule);
-    border-radius: 999px;
-    padding: 8px 28px 8px 8px;
-    box-shadow: var(--shadow);
-    transition: transform 0.2s ease, box-shadow 0.2s ease, border-color 0.2s ease;
-  }
-  .ask-upload-icon{
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    width: 36px;
-    height: 36px;
-    border-radius: 50%;
-    background: var(--label);
-    color: #fff;
-    flex-shrink:0;
-  }
-  .ask-upload:hover,
-  .ask-upload:focus-visible{ transform: translateY(-2px); box-shadow: 0 24px 56px -16px rgba(0,0,0,0.24); border-color: var(--accent-soft); }
-  @media (prefers-reduced-motion: reduce){
-    .ask-upload{ transition: none; }
-  }
-
   /* 0fr -> 1fr animates the reveal without pinning a max-height */
   .ask-panel{
     display: grid;
@@ -2103,35 +2067,6 @@
   .yep-form textarea{ font-size: 13px; }
   .yep-form button[type="submit"]{ padding: 11px 18px; }
   .yep-form .form-status.is-error{ color: var(--missing); }
-
-  /* .ask-upload is sized for the roomy .ask panels it's shared with — full
-     pill, big shadow, nowrap text. At the yep panel's 320px it overflowed
-     the popup's edge. Sits next to the submit button now, so it needs to
-     read as a quiet secondary link, not a second competing CTA. */
-  .yep-form .ask-upload{
-    margin-top: 0;
-    padding: 0;
-    border: 0;
-    border-radius: 0;
-    background: none;
-    box-shadow: none;
-    gap: 6px;
-    font: 600 12px/1.3 'Helvetica Neue', Helvetica, Arial, sans-serif;
-    letter-spacing: 0.02em;
-    white-space: normal;
-    color: var(--muted);
-  }
-  .yep-form .ask-upload-icon{
-    width: 18px; height: 18px;
-    background: none;
-    color: var(--muted);
-  }
-  .yep-form .ask-upload:hover,
-  .yep-form .ask-upload:focus-visible{
-    transform: none;
-    box-shadow: none;
-    color: var(--label);
-  }
 
   @media (prefers-reduced-motion: reduce){
     .yep-btn, .yep-bubble{ transition: none; }

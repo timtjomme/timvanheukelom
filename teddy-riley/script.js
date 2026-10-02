@@ -336,10 +336,6 @@ function buildYepWidget(){
         '<input type="text" name="_gotcha" tabindex="-1" autocomplete="off" ' +
           'aria-hidden="true">' +
         '<div class="form-foot"><button type="submit">Yep, send it</button>' +
-        '<a class="ask-upload" href="https://www.dropbox.com/request/grc5mo0e10xu1hvgebyw" target="_blank" rel="noopener noreferrer" ' +
-          'title="Upload photos or lossless files">' +
-          '<span class="ask-upload-icon"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 16V4M12 4l-5 5M12 4l5 5M4 20h16"/></svg></span>' +
-          'Upload files</a>' +
         '<p class="form-status" role="status" aria-live="polite"></p></div>' +
       '</form>' +
     '</div>';
@@ -1248,8 +1244,6 @@ initEraLinks();
   document.addEventListener('click', function(e){
     if(e.target.closest('.card-inner')){
       send({ type: 'event', name: 'card_flip', page: page, sid: visitorId });
-    } else if(e.target.closest('.ask-upload')){
-      send({ type: 'event', name: 'upload_click', page: page, sid: visitorId });
     } else if(e.target.closest('.yep-btn')){
       send({ type: 'event', name: 'yep_open', page: page, sid: visitorId });
     }
