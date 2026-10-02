@@ -125,7 +125,7 @@ arsort($devices);
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
-<title>Visits — Teddy Riley Productions</title>
+<title>Visits — TR Productions</title>
 <link rel="icon" href="../favicon.png" type="image/png">
 <style>
   *{box-sizing:border-box}
