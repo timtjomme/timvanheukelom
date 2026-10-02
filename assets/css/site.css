@@ -278,6 +278,14 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 .prose a { color: var(--accent); }
 .story > * + * { margin-top: 2.5rem; }
 
+/* The Vietnam 2025 notes form one travelogue, just like the original posts:
+   uninterrupted prose with a photo break only when the scene changes. */
+.story-day-header { display: none; }
+.story-day + .story-day { margin-top: 10px; }
+.story-day.gallery-break + .story-day { margin-top: 2.5rem; }
+.story-day > .prose + .gallery,
+.story-day > .prose + .photo { margin-top: 2.5rem; }
+
 /* --- galleries ---------------------------------------------------------- */
 .gallery {
 	display: grid;
@@ -875,7 +883,10 @@ body.is-locked { overflow: hidden; }
 	.story > .gallery,
 	.story > .photo,
 	.story > .video,
-	.story > .panorama { margin-left: -20px; margin-right: -20px; }
+	.story > .panorama,
+	.story-day > .gallery,
+	.story-day > .photo,
+	.story-day > .video { margin-left: -20px; margin-right: -20px; }
 }
 
 @media (prefers-reduced-motion: reduce) {

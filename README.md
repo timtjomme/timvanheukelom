@@ -1,6 +1,6 @@
 # timvanheukelom.nl
 
-A plain static site: 20 hand-editable HTML pages, one stylesheet, four small
+A plain static site: 21 hand-editable HTML pages, one stylesheet, four small
 scripts and the photos. No framework, no build step, no CMS.
 
 It started life as a WordPress + Beaver Builder site; that export was rewritten
@@ -22,12 +22,12 @@ pages if you only want to look at them.
 ## Structure
 
 ```
-index.html                     home: hero with the three counter rings, 16 story cards
+index.html                     home: hero with the three counter rings, 17 story cards
 travelblog.html                the same page under its own published URL
 waar-zijn-we-geweest.html      the route: the travelmap.net map and the
                                Polarsteps one, on the same page
 timtjomme.html                 link out to Instagram
-landen/<slug>.html             14 travel stories
+landen/<slug>.html             15 travel stories
 voorbereidingen/<slug>.html    2 pre-trip posts
 assets/
   css/site.css                 the whole stylesheet, ~17 KB
