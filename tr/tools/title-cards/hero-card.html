@@ -1,0 +1,133 @@
+<!doctype html>
+<meta charset="utf-8">
+<title>TR Productions title cards</title>
+<body style="margin:0;background:#777">
+<canvas id="c" width="1512" height="790"></canvas>
+<script>
+// Deterministic title-card renderer: render(variant, t) draws one frame at time t (seconds).
+// Every cycle is   hold -> letters leave -> empty -> letters arrive -> hold,
+// so the first frame equals the poster and the loop point is seamless.
+const W = 1512, H = 790, FS = 176;
+const FONT = `700 ${FS}px "Helvetica Neue", Helvetica, Arial, sans-serif`;
+const LINES = ['TR', 'Productions'];
+const BASE = [382, 382 + 158];
+const T = 6.4, OUT0 = 1.0, OUT1 = 2.3, IN0 = 2.7, IN1 = 4.0, DUR = 0.7;
+
+const c = document.getElementById('c');
+const x = c.getContext('2d');
+const clamp = (v, a = 0, b = 1) => Math.min(b, Math.max(a, v));
+const easeOutCubic = p => 1 - Math.pow(1 - p, 3);
+const easeOutQuart = p => 1 - Math.pow(1 - p, 4);
+const easeInCubic = p => p * p * p;
+const easeInOut = p => p < .5 ? 4 * p * p * p : 1 - Math.pow(-2 * p + 2, 3) / 2;
+
+function layout() {
+  x.font = FONT; x.textBaseline = 'alphabetic'; x.textAlign = 'left';
+  const gl = []; let g = 0;
+  LINES.forEach((L, li) => {
+    const w = x.measureText(L).width, x0 = (W - w) / 2;
+    for (let i = 0; i < L.length; i++) {
+      const ch = L[i];
+      const cw = x.measureText(ch).width;
+      const xi = x.measureText(L.slice(0, i + 1)).width - cw;   // keeps the pair kerning
+      gl.push({ ch, li, x: x0 + xi, w: cw, base: BASE[li], g: g++, cx: x0 + w / 2 });
+    }
+  });
+  return gl;
+}
+
+// where is glyph g in the cycle?  ph = hold | out | gap | in ; p = 0..1 progress of that move
+function state(t, g, n) {
+  t = ((t % T) + T) % T;
+  if (t < OUT0) return { ph: 'hold', p: 1 };
+  if (t < OUT1) return { ph: 'out', p: clamp((t - OUT0 - g * ((OUT1 - OUT0 - DUR) / (n - 1))) / DUR) };
+  if (t < IN0)  return { ph: 'gap', p: 1 };
+  if (t < IN1)  return { ph: 'in', p: clamp((t - IN0 - g * ((IN1 - IN0 - DUR) / (n - 1))) / DUR) };
+  return { ph: 'hold', p: 1 };
+}
+// presence 0..1 (1 = fully there)
+function presence(s) {
+  if (s.ph === 'hold') return 1;
+  if (s.ph === 'gap') return 0;
+  return s.ph === 'in' ? s.p : 1 - s.p;
+}
+function bg(col) { x.globalCompositeOperation = 'source-over'; x.filter = 'none'; x.globalAlpha = 1; x.fillStyle = col; x.fillRect(0, 0, W, H); }
+
+// 1  RISE (light) - letters rise out of a slot under each line and leave through the top
+function V1(t) {
+  bg('#fff'); x.font = FONT; x.fillStyle = '#000';
+  const gl = layout(), n = gl.length;
+  for (let li = 0; li < 2; li++) {
+    x.save(); x.beginPath(); x.rect(0, BASE[li] - .86 * FS, W, 1.16 * FS); x.clip();
+    gl.filter(o => o.li === li).forEach(o => {
+      const s = state(t, o.g, n); if (s.ph === 'gap') return;
+      let dy = 0;
+      if (s.ph === 'in') dy = (1 - easeOutQuart(s.p)) * 1.25 * FS;
+      if (s.ph === 'out') dy = -easeInCubic(s.p) * 1.25 * FS;
+      x.fillText(o.ch, o.x, o.base + dy);
+    });
+    x.restore();
+  }
+}
+
+// 2  FLIP (dark) - every letter flips about its own horizontal axis
+function V2(t) {
+  bg('#000'); x.font = FONT;
+  const gl = layout(), n = gl.length;
+  gl.forEach(o => {
+    const s = state(t, o.g, n); if (s.ph === 'gap') return;
+    let th = 0;
+    if (s.ph === 'in') th = (1 - easeOutCubic(s.p)) * Math.PI / 2;
+    if (s.ph === 'out') th = easeInCubic(s.p) * Math.PI / 2;
+    const sc = Math.cos(th); if (sc < 0.02) return;
+    const ym = o.base - .36 * FS, v = Math.round(255 * (.4 + .6 * sc));
+    x.save(); x.translate(0, ym); x.scale(1, sc); x.translate(0, -ym);
+    x.fillStyle = `rgb(${v},${v},${v})`; x.fillText(o.ch, o.x, o.base); x.restore();
+  });
+}
+
+// 3  SPLIT (light) - cyan / magenta / yellow plates slide together into black type
+function V3(t) {
+  bg('#fff'); x.font = FONT;
+  const gl = layout(), n = gl.length;
+  x.globalCompositeOperation = 'multiply';
+  gl.forEach(o => {
+    const s = state(t, o.g, n); if (s.ph === 'gap') return;
+    let off = 0, a = 1;
+    if (s.ph === 'in') { const e = easeOutCubic(s.p); off = (1 - e) * 92; a = clamp(e * 1.6); }
+    if (s.ph === 'out') { const e = easeInCubic(s.p); off = e * 92; a = clamp(1 - e * 1.4); }
+    if (a <= 0) return;
+    x.globalAlpha = a;
+    x.fillStyle = '#00ffff'; x.fillText(o.ch, o.x - off, o.base);
+    x.fillStyle = '#ff00ff'; x.fillText(o.ch, o.x + off * .12, o.base - off * .22);
+    x.fillStyle = '#ffff00'; x.fillText(o.ch, o.x + off, o.base);
+  });
+  x.globalAlpha = 1; x.globalCompositeOperation = 'source-over';
+}
+
+// 4  TRACKING (dark) - the line breathes: wide, soft and faint, then tight and sharp
+function V4(t) {
+  bg('#000'); x.font = FONT;
+  const gl = layout(), n = gl.length;
+  gl.forEach(o => {
+    const p = presence(state(t, o.li, 2)); if (p <= 0) return;   // a line moves as one, line 2 a beat later
+    const k = 1 + 0.42 * (1 - easeOutCubic(p));
+    const gx = o.cx + (o.x + o.w / 2 - o.cx) * k;
+    const sc = 1 + .18 * (1 - p);
+    x.save();
+    x.filter = `blur(${((1 - p) * 11).toFixed(2)}px)`;
+    x.globalAlpha = Math.pow(p, 1.25);
+    x.fillStyle = '#fff';
+    x.translate(gx, o.base - .36 * FS); x.scale(sc, sc); x.translate(-o.w / 2, .36 * FS);
+    x.fillText(o.ch, 0, 0);
+    x.restore();
+  });
+}
+
+const VARIANTS = { 1: V1, 2: V2, 3: V3, 4: V4 };
+window.render = function (v, t) { VARIANTS[v](t); return c.toDataURL('image/png'); };
+window.renderRaw = function (v, t) { VARIANTS[v](t); };
+window.META = { W, H, T };
+const q = new URLSearchParams(location.search);
+if (q.has('v')) window.renderRaw(+q.get('v'), +(q.get('t') || 3.4));
+</script>

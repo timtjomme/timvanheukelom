@@ -34,7 +34,8 @@ data/releases.json               THE SOURCE OF TRUTH for releases
 data/updates.json                source for the homepage's dismissible update banner
 tools/build.py                   releases.json -> the grids in the decade pages
 tools/extract.py                 one-off, already run: pages -> releases.json
-imgs/                            covers (one per release), heroes, decade panels, story/ and 404/ art
+tools/title-cards/               renders the four hero title cards (headless Chrome + node + ffmpeg): edit LINES in hero-card.html, run make.sh
+imgs/                            covers (one per release), heroes, tr-title-1..4 (hero title cards + posters), decade panels, story/ and 404/ art
 fonts/                           Open Sans variable, self-hosted
 robots.txt                       (not in this folder: the crawl rules and sitemap pointer live in ../robots.txt)
 sitemap.xml                      hand-maintained list of the 10 indexable pages (sampled.html is noindex'd and nav-hidden while its list is still thin)
@@ -202,6 +203,24 @@ The footer is hand-written markup repeated in index.html, 1980s.html,
   key into the file name, so they have to match). Release data is the exception to the
   naming: credits such as "Remix: New Jack Swing Productions" stay exactly as printed on
   the records. The menu link and the update banner say "NJS"; the genre name in running text is unchanged.
+
+## Hero title cards
+
+The front page and the Discography page open on a looping title card, not a photo:
+`imgs/tr-title-1..4.mp4` (1512x790, 6.4 s, no sound), each with a `-poster.jpg` still.
+`script.js` picks one at random per visit and keeps the pick in `sessionStorage`; the
+`dark` flag in its playlist (cards 2 and 4 are black, 1 and 3 white) puts `is-dark` on
+`.hero-video` so the update banner reads on either ground. The markup loads card 1; its
+poster is also the share image (`og:image`, `twitter:image`) and the reduced-motion
+background in `style.css`.
+
+The words live in `tools/title-cards/hero-card.html` (`LINES`, now "TR" over
+"Productions"; the four looks are the `V1`..`V4` functions). `sh tools/title-cards/make.sh`
+renders all four with headless Chrome, node (>= 22) and ffmpeg in about fifteen seconds and
+writes into `imgs/` (`OUT=/some/folder sh tools/title-cards/make.sh` to look first).
+The old six `archives-title*.mp4` cuts had the former name "Teddy Riley Productions" drawn
+into the picture, so they could not be re-worded; nothing refers to them any more, but the
+files are still in `imgs/`.
 
 ## Favicon
 

@@ -1535,7 +1535,7 @@
   @media (prefers-reduced-motion: reduce){
     .hero-video video{ display:none; }
     .hero-video{
-      background-image: url('imgs/archives-title-poster.jpg');
+      background-image: url('imgs/tr-title-1-poster.jpg');
       background-size: cover;
       background-position: center;
       /* matches the title card's own 1512x800 */

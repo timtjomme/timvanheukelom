@@ -15,21 +15,21 @@ document.addEventListener('dragstart', function(e){
 });
 
 // ---- HERO VIDEO ROTATION ------------------------------------------------
-// Six title-reveal cuts. One is picked at random and looped for the
-// whole visit, rather than cycling through all of them in one sitting —
-// the choice is kept in sessionStorage so it stays the same across
-// reloads within a visit, and only re-rolls for a fresh session.
+// Four title cards (tools/title-cards renders them: light, dark, light,
+// dark). One is picked at random and looped for the whole visit, rather
+// than cycling through all of them in one sitting — the choice is kept in
+// sessionStorage so it stays the same across reloads within a visit, and
+// only re-rolls for a fresh session (or when a stored pick no longer
+// exists in the list).
 (function(){
   var wrap = document.querySelector('.hero-video');
   var video = wrap && wrap.querySelector('video');
   if(!video) return;
   var playlist = [
-    {src: 'imgs/archives-title.mp4',   poster: 'imgs/archives-title-poster.jpg',   dark: false},
-    {src: 'imgs/archives-title-2.mp4', poster: 'imgs/archives-title-2-poster.jpg', dark: false},
-    {src: 'imgs/archives-title-3.mp4', poster: 'imgs/archives-title-3-poster.jpg', dark: true},
-    {src: 'imgs/archives-title-4.mp4', poster: 'imgs/archives-title-4-poster.jpg', dark: true},
-    {src: 'imgs/archives-title-5.mp4', poster: 'imgs/archives-title-5-poster.jpg', dark: false},
-    {src: 'imgs/archives-title-6.mp4', poster: 'imgs/archives-title-6-poster.jpg', dark: true}
+    {src: 'imgs/tr-title-1.mp4', poster: 'imgs/tr-title-1-poster.jpg', dark: false},
+    {src: 'imgs/tr-title-2.mp4', poster: 'imgs/tr-title-2-poster.jpg', dark: true},
+    {src: 'imgs/tr-title-3.mp4', poster: 'imgs/tr-title-3-poster.jpg', dark: false},
+    {src: 'imgs/tr-title-4.mp4', poster: 'imgs/tr-title-4-poster.jpg', dark: true}
   ];
   var idx = NaN;
   try {
