@@ -144,6 +144,21 @@
 		box.querySelector(".lb-prev").addEventListener("click", function (e) { e.stopPropagation(); show(index - 1); });
 		box.querySelector(".lb-next").addEventListener("click", function (e) { e.stopPropagation(); show(index + 1); });
 		box.addEventListener("click", function (e) { if (e.target === box || e.target === pic) close(); });
+
+		// swipe sideways to step through the photos (a pinch has two fingers and is ignored)
+		var x0 = null, y0 = 0;
+		box.addEventListener("touchstart", function (e) {
+			if (e.touches.length !== 1) { x0 = null; return; }
+			x0 = e.touches[0].clientX;
+			y0 = e.touches[0].clientY;
+		}, { passive: true });
+		box.addEventListener("touchend", function (e) {
+			if (x0 === null) return;
+			var dx = e.changedTouches[0].clientX - x0, dy = e.changedTouches[0].clientY - y0;
+			x0 = null;
+			if (Math.abs(dx) > 50 && Math.abs(dx) > Math.abs(dy) * 1.5) show(index + (dx < 0 ? 1 : -1));
+		}, { passive: true });
+
 		document.body.appendChild(box);
 	}
 
@@ -152,6 +167,8 @@
 		var a = group[index];
 		pic.src = a.href;
 		pic.alt = (a.querySelector("img") || {}).alt || "";
+		// warm the neighbours so stepping through a long gallery doesn't wait on the network
+		[1, -1].forEach(function (d) { new Image().src = group[(index + d + group.length) % group.length].href; });
 	}
 
 	function close() {

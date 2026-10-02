@@ -586,10 +586,18 @@ a.pnav-item:hover .pnav-label { color: var(--accent); }
 	place-items: center;
 	padding: 1.5rem;
 	background: rgba(0, 0, 0, .9);
+	touch-action: pan-y pinch-zoom;   /* a sideways drag is ours: site.js turns it into prev/next */
 }
+/* display:grid above beats the browser's own [hidden] rule, so without this a closed
+   lightbox stayed on screen as a dark sheet over the page */
+.lightbox[hidden] { display: none; }
 .lightbox img {
 	max-width: 100%;
-	max-height: 100%;
+	/* Viewport units rather than 100%: a percentage max-height does not resolve
+	   against the grid's auto row, so a portrait photo opened at its natural
+	   size and ran off the bottom of the screen. 3rem = the padding above. */
+	max-height: calc(100vh - 3rem);
+	max-height: calc(100dvh - 3rem);
 	object-fit: contain;
 }
 .lightbox button {
