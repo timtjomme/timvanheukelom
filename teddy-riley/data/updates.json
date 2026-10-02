@@ -6,7 +6,7 @@
       { "label": "Added a life-story timeline, 1967 to now", "href": "timeline.html" },
       { "name": "1990's", "href": "1990s.html", "count": 22 },
       { "name": "1980's", "href": "1980s.html", "count": 1 },
-      { "name": "New Jack Swing", "href": "new-jack-swing-productions.html", "count": 1 }
+      { "name": "NJS", "href": "njs-productions.html", "count": 1 }
     ]
   },
   {
@@ -70,7 +70,7 @@
     "date": "2026-09-12",
     "count": 5,
     "pages": [
-      { "name": "New Jack Swing", "href": "new-jack-swing-productions.html", "count": 5 }
+      { "name": "NJS", "href": "njs-productions.html", "count": 5 }
     ]
   },
   {

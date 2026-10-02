@@ -20,7 +20,8 @@ in the repo-root `../robots.txt`, not in this folder.
 index.html                       front page: video hero, intro, decade panels
 1980s.html                       decade page: 1980s releases
 1990s.html                       decade page: 1990s releases
-new-jack-swing-productions.html  straight hip-hop cuts and other one-offs
+njs-productions.html             "NJS Productions": straight hip-hop cuts and other one-offs
+new-jack-swing-productions.html  redirect stub: the old address of the page above (keeps ?query and #hash)
 sampled.html                     tracks that sample a Teddy Riley record
 missing.html                     known mixes/edits not yet in the lossless collection
 timeline.html                    life-story chronology, 1967 to now
@@ -196,6 +197,11 @@ The footer is hand-written markup repeated in index.html, 1980s.html,
   request is gone from every page and from the floating widget), and no copy inviting
   lossless files or photos; corrections and missing credits come in through the contact
   form only. A new page's footer panel is just the `.ask-line`.
+- **The section is called "NJS Productions".** Its page is `njs-productions.html` and its
+  data key in `releases.json` is `njs-productions` (the build and the search both turn the
+  key into the file name, so they have to match). Release data is the exception to the
+  naming: credits such as "Remix: New Jack Swing Productions" stay exactly as printed on
+  the records. The menu link and the update banner say "NJS"; the genre name in running text is unchanged.
 
 ## Favicon
 
