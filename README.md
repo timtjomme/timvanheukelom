@@ -76,6 +76,13 @@ the trade for having no build step, and it is 20 lines of markup.
 <footer class="footer">…</footer>
 ```
 
+Above the bar, on every page, sits the tip strip (`<aside class="deal-banner">`,
+a dated Amex referral tip, written as a note from Tim: "via mijn referral-link"
+is deliberate). `site.js` hides it from 1 November 2026. To take it
+down for good, delete that block from the pages (`grep -l deal-banner *.html
+landen/*.html voorbereidingen/*.html` lists them), then the `.deal-banner` rules in `site.css` and the
+few lines at the top of `site.js`.
+
 The site is two things: the world trip (2016-2017, the original blog) and the
 holidays after it. Keep them apart. Adding a story means copying an existing
 one in `landen/`, changing the hero and the blocks, and adding a

@@ -78,6 +78,53 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
    will, left alone): the line breaks in front of it instead. */
 [lang="ko"] { white-space: nowrap; }
 
+/* --- the tip strip ------------------------------------------------------ */
+/* A short personal note above the bar on every page (the markup is repeated in
+   each page, right before the header): paper colour, centred, a few short
+   lines instead of one long one, and a plain link, so it reads as a tip and
+   not as an ad. It says "mijn referral-link" on purpose, because that is what
+   it is. site.js hides it after the deal's last day, so it can't go stale. */
+.deal-banner {
+	padding: 10px 20px 12px;
+	border-bottom: 1px solid #ebe7dd;
+	background: #f8f6f1;
+	color: var(--ink);
+	font-size: 1rem;
+	font-weight: 400;
+	line-height: 1.5;
+	text-align: center;
+}
+.deal-banner[hidden] { display: none; }
+.deal-banner p,
+.deal-banner ul { margin: 0; text-wrap: balance; }
+.deal-banner strong { font-weight: 600; }
+.deal-banner .deal-label { color: #1f5fb8; font-weight: 700; }
+/* the offer is one running sentence; the three things in it are joined by big bold
+   plus signs (a plus is tied to the word after it, so none is left at a line end) */
+.deal-banner .deal-offer { margin: 3px 0 5px; }
+.deal-banner .deal-plus {
+	margin-right: .1em;
+	font-size: 1.8em;
+	font-weight: 800;
+	line-height: 0;
+	vertical-align: -.1em;
+}
+.deal-banner a {
+	color: #1f5fb8;   /* --accent is too light for 16px text on the paper */
+	text-underline-offset: 2px;
+	white-space: nowrap;   /* keeps the arrow with its words */
+}
+.deal-banner small { color: #5f6673; font-size: max(.85em, 12px); }
+.deal-banner a strong { font-weight: 700; }
+.deal-banner .deal-go::after {
+	content: " \2192";
+	content: " \2192" / "";   /* decoration: keep it out of the accessible name where supported */
+}
+.deal-banner a:hover { color: var(--ink); }
+@media (max-width: 34rem) {
+	.deal-banner { padding: 8px 16px 10px; font-size: .875rem; line-height: 1.45; }
+}
+
 /* --- the bar ------------------------------------------------------------ */
 .topbar {
 	display: flex;
