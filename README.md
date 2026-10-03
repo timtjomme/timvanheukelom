@@ -29,6 +29,8 @@ travelblog.html                the same page under its own published URL
 waar-zijn-we-geweest.html      the route: the travelmap.net map and the
                                Polarsteps one, on the same page
 timtjomme.html                 link out to Instagram
+amex.html                      the Amex Platinum offer page (card icon in the bar); same referral
+                               link and end date as the deal strip, so change them together
 landen/<slug>.html             21 travel stories: 14 from the world trip and 7 holidays after it
                                (colombia-2018 ... vietnam-2025)
 voorbereidingen/<slug>.html    2 pre-trip posts
@@ -51,7 +53,7 @@ the trade for having no build step, and it is 20 lines of markup.
 ## How a page is put together
 
 ```html
-<header class="topbar">…</header>          the bar: title left, three icons right
+<header class="topbar">…</header>          the bar: title left, four icons right
                                             (brand text is the home link)
 
 <section class="hero" style="background-image:url('…')">
