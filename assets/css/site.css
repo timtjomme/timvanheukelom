@@ -296,8 +296,9 @@ h1, h2, h3 { font-weight: 400; line-height: 1.25; margin: 0; }
 
 /* the wide, shallow white notch cut into the foot of a story's hero band —
    live's own shape divider (uabb-xlarge_triangle), reproduced with its exact
-   path so the cut lines up the same way at every width. Only story heroes
-   carry it; home, route and Instagram end in a plain edge. */
+   path so the cut lines up the same way at every width. Every hero carries
+   it, the home, route, Instagram and Amex ones included (live gave those a
+   plain edge; they were given the cut later so the pages match). */
 .hero-divider {
 	position: absolute;
 	left: 0;
