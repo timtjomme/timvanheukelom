@@ -100,8 +100,10 @@
 
 		var key = e.key.toLowerCase(), now = Date.now();
 		if (key === "r" && lastKey === "t" && now - lastAt < 1500) reveal();
-		// the Kleinenberg archive: no button, straight in
-		if (key === "k" && lastKey === "5" && now - lastAt < 1500) location.href = skUrl();
+		// the Kleinenberg archive: "5k" after the album, "sk" after his initials —
+		// both land in the same place, because both are what you reach for
+		if (key === "k" && (lastKey === "5" || lastKey === "s")
+		    && now - lastAt < 1500) location.href = skUrl();
 		lastKey = key;
 		lastAt = now;
 	});
