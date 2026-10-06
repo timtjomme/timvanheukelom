@@ -52,15 +52,20 @@ h1.logo svg{display:block;width:100%;height:auto}
          drop-shadow(calc(5px*var(--lift)) calc(8px*var(--lift)) calc(10px*var(--lift)) rgba(var(--shadow),.20))}
 /* the cards are clip-path'd, which would clip their own focus ring - so the
    ring goes on .tilt, which is unclipped and rotates with the card */
-.slot:focus-within .tilt{outline:2px solid var(--accent);outline-offset:4px}
-.slot:hover,.slot:focus-within{z-index:900;transform:translate(-50%,-50%) translateY(-10px);
+/* Keyboard focus only. The old rule used focus-within, which fires however
+   focus arrived, so a mouse click left the ring behind - and shut() returns
+   focus to the card you opened on purpose, so closing the lightbox lit one
+   up every time. has(focus-visible) is the browser's own
+   "did this come from the keyboard" test. */
+.slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);outline-offset:4px}
+.slot:hover,.slot:has(:focus-visible){z-index:900;transform:translate(-50%,-50%) translateY(-10px);
   filter:drop-shadow(calc(1.8px*var(--lift)) calc(2.6px*var(--lift)) calc(2.2px*var(--lift)) rgba(var(--shadow),.28))
          drop-shadow(calc(11px*var(--lift)) calc(18px*var(--lift)) calc(22px*var(--lift)) rgba(var(--shadow),.24))}
 .tilt{position:relative;perspective:1000px;
   transform:rotate(var(--rot));filter:brightness(var(--bri));
   transition:transform .34s cubic-bezier(.22,.9,.3,1);
   animation:drop .5s cubic-bezier(.24,.92,.32,1) backwards}
-.slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot)) scale(1.04)}
+.slot:hover .tilt,.slot:has(:focus-visible) .tilt{transform:rotate(var(--rot)) scale(1.04)}
 
 .print{display:block;width:100%;margin:0;position:relative;
   padding:6.3cqw 5.6cqw 24.2cqw;border:0;border-radius:2px;
@@ -334,11 +339,11 @@ h1.logo svg{display:block;width:100%;height:auto}
 @media (max-width:760px){
   .pile{aspect-ratio:0.1471}
   .slot{left:var(--mx);top:var(--my);width:var(--mw);--rot:var(--mr)}
-  .slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot)) scale(1.03)}}
+  .slot:hover .tilt,.slot:has(:focus-visible) .tilt{transform:rotate(var(--rot)) scale(1.03)}}
 @media (prefers-reduced-motion:reduce){
   .tilt{animation:none;transition:none}.slot{transition:none}.box-print{animation:none}
-  .slot:hover,.slot:focus-within{transform:translate(-50%,-50%)}
-  .slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot))}}
+  .slot:hover,.slot:has(:focus-visible){transform:translate(-50%,-50%)}
+  .slot:hover .tilt,.slot:has(:focus-visible) .tilt{transform:rotate(var(--rot))}}
 </style>
 
 <div class="room">
