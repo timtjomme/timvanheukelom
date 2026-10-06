@@ -1,0 +1,31 @@
+# Sander Kleinenberg archive — a private work-in-progress, not part of the blog.
+#
+# Keep it out of search engines. Same reasoning as tr/.htaccess: send the
+# header rather than disallowing the path in robots.txt, because a disallowed
+# path can never be crawled to SEE a noindex, and a URL discovered some other
+# way can still surface with no title. Allow the crawl, tag every response.
+<IfModule mod_headers.c>
+  Header set X-Robots-Tag "noindex, nofollow, noarchive, nosnippet"
+</IfModule>
+
+# ---- password ------------------------------------------------------------
+# Turn this on in Plesk: Websites & domeinen → timvanheukelom.nl →
+# Wachtwoordbeveiligde mappen → map "/5k" toevoegen, then add the user. That
+# writes the auth config itself and cannot break the directory.
+#
+# The alternative is the block below. It needs AuthUserFile as an ABSOLUTE
+# server path, which differs depending on whether this domain is the main one
+# or an add-on under another subscription — a wrong path returns 500 for the
+# whole folder, so it is left commented rather than guessed. The .htpasswd
+# next to this file is already generated (user "sander", password "sanne");
+# check the real path in Plesk's File Manager, then uncomment and paste it in.
+#
+# AuthType Basic
+# AuthName "Kleinenberg archive"
+# AuthUserFile /var/www/vhosts/timvanheukelom.nl/httpdocs/5k/.htpasswd
+# Require valid-user
+
+# Never serve the password file itself, whichever route is used.
+<Files ".htpasswd">
+  Require all denied
+</Files>

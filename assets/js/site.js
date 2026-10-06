@@ -78,7 +78,8 @@
 		}, { once: true });
 	});
 
-	/* -- the archive: type "tr" for a /tr/ button, double-tap the bar to go in -- */
+	/* -- hidden doors: type "tr" for a /tr/ button, type "5k" to go to /5k/,
+	      double-tap the bar to go into /tr/ -- */
 	/* Nothing on the page hints at it. The button is built here instead of
 	   being written into every page's header, and only shows once the two
 	   letters are typed within 1.5 seconds of each other. Form fields don't
@@ -99,11 +100,14 @@
 
 		var key = e.key.toLowerCase(), now = Date.now();
 		if (key === "r" && lastKey === "t" && now - lastAt < 1500) reveal();
+		// the Kleinenberg archive: no button, straight in
+		if (key === "k" && lastKey === "5" && now - lastAt < 1500) location.href = skUrl();
 		lastKey = key;
 		lastAt = now;
 	});
 
 	function archiveUrl() { return (document.body.dataset.root || "") + "tr/"; }
+	function skUrl()      { return (document.body.dataset.root || "") + "5k/"; }
 
 	var tapAt = 0, bar = document.querySelector(".topbar");
 

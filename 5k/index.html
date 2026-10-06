@@ -1,0 +1,1103 @@
+<!doctype html><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style></head><body>
+<title>Sander Kleinenberg</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&family=Reenie+Beanie&display=swap">
+<style>
+:root{
+  color-scheme: light;
+  /* sampled off the tour poster: paper #f0eeea, ink #1c1c1c, pink #dd6691 */
+  /* measured off the tour poster: paper #f1f1ec, ink #181817, pink #de6d96 */
+  --wall:#f1f1ec;
+  --paper:#fdfcfa; --paper-aged:#f5eddd; --ink:#181817;
+  --body:#4a4640;
+  --accent:#de6d96; --shadow:72,64,52;
+  --sans:"Archivo",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--wall) url("p/surface.jpg") center/cover no-repeat;
+  color:var(--body);font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ---- the table: light from above, edges falling into shadow ---- */
+.room{position:relative;padding-block:clamp(28px,5vw,64px) clamp(56px,9vw,120px);
+  padding-inline:clamp(16px,4vw,64px)}
+.room::before,.room::after{content:"";position:fixed;inset:0;z-index:0;pointer-events:none}
+.room::before{background:
+  radial-gradient(150% 115% at 50% 42%, transparent 55%, rgba(120,108,88,.13) 100%)}
+.room::after{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='180' height='180'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='180' height='180' filter='url(%23n)'/%3E%3C/svg%3E");
+  opacity:.045;mix-blend-mode:multiply}
+.room>*{position:relative;z-index:1}
+
+/* ---- wall label ---- */
+/* wordmark left, the standfirst tucked into the open wedge under its rising
+   right end; it drops underneath once there is no room beside it */
+header{max-width:none;--lw:clamp(250px,42vw,660px);display:flex;flex-wrap:wrap;
+  align-items:flex-end;gap:clamp(18px,3.5vw,54px);
+  margin-bottom:calc(clamp(34px,5vw,62px) + 0.1267*var(--lw))}
+h1.logo{flex:0 0 auto;margin:0;width:var(--lw);color:var(--ink);line-height:0}
+h1.logo svg{display:block;width:100%;height:auto}
+.lede{flex:1 1 240px;margin:0 0 .4em;max-width:38ch;color:var(--body);font-size:clamp(14px,1.5vw,16px);line-height:1.55}
+
+/* ---- the pile: prints tipped out loose, overlapping ---- */
+.pile{position:relative;width:100%;aspect-ratio:0.7143}
+/* .slot is NOT rotated, so its shadows fall from one fixed light however the item
+   is turned; .tilt inside carries the rotation. --lift scales the shadow with how
+   high the item sits in the pile. */
+.slot{position:absolute;left:var(--x);top:var(--y);width:var(--w);z-index:var(--z);
+  --rot:var(--r);container-type:inline-size;transform:translate(-50%,-50%);
+  transition:transform .34s cubic-bezier(.22,.9,.3,1),filter .34s ease;
+  filter:drop-shadow(calc(1.1px*var(--lift)) calc(1.6px*var(--lift)) calc(1.4px*var(--lift)) rgba(var(--shadow),.30))
+         drop-shadow(calc(5px*var(--lift)) calc(8px*var(--lift)) calc(10px*var(--lift)) rgba(var(--shadow),.20))}
+/* the cards are clip-path'd, which would clip their own focus ring - so the
+   ring goes on .tilt, which is unclipped and rotates with the card */
+.slot:focus-within .tilt{outline:2px solid var(--accent);outline-offset:4px}
+.slot:hover,.slot:focus-within{z-index:900;transform:translate(-50%,-50%) translateY(-10px);
+  filter:drop-shadow(calc(1.8px*var(--lift)) calc(2.6px*var(--lift)) calc(2.2px*var(--lift)) rgba(var(--shadow),.28))
+         drop-shadow(calc(11px*var(--lift)) calc(18px*var(--lift)) calc(22px*var(--lift)) rgba(var(--shadow),.24))}
+.tilt{position:relative;perspective:1000px;
+  transform:rotate(var(--rot));filter:brightness(var(--bri));
+  transition:transform .34s cubic-bezier(.22,.9,.3,1);
+  animation:drop .5s cubic-bezier(.24,.92,.32,1) backwards}
+.slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot)) scale(1.04)}
+
+.print{display:block;width:100%;margin:0;position:relative;
+  padding:6.3cqw 5.6cqw 24.2cqw;border:0;border-radius:2px;
+  background:var(--paper);cursor:pointer;font:inherit;text-align:center;
+  -webkit-appearance:none;appearance:none;
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7),inset 1px 0 0 rgba(255,255,255,.34),
+    inset 0 -1px 0 rgba(0,0,0,.11),inset -1px 0 0 rgba(0,0,0,.08)}
+.print.aged{background:var(--paper-aged)}
+.shot{position:relative;display:block;aspect-ratio:.977;background:#111;overflow:hidden;max-width:100%}
+.shot img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
+/* handling wear, offset per item so no two prints carry the same dust */
+.shot::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:url("p/wear.png") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.34}
+/* the sheen counter-rotates, so every surface catches the same overhead light */
+.shot::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),inset 0 3px 9px rgba(0,0,0,.3);
+  background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.12),
+    rgba(255,255,255,0) 34%,rgba(255,255,255,0) 72%,rgba(255,255,255,.06))}
+/* Two things make paper read as handled. The outline is irregular - every card
+   gets a softly rippling silhouette, re-dealt each visit, because a machine-cut
+   rectangle is the real giveaway. And paper no longer lies flat: .warp lays a
+   broad, very low-contrast undulation over the card. Only paper gets either -
+   a record sleeve is stiff card (it takes corner rub instead) and the bio is a
+   fresh press sheet, so both keep straight edges and a flat surface. */
+.warp{position:absolute;inset:0;z-index:5;pointer-events:none;opacity:.42;
+  background:var(--warp,none) center/100% 100% no-repeat}
+
+/* record sleeve: a bare printed card - no frame, no chin */
+.sleeve{display:block;width:100%;margin:0;padding:0;position:relative;aspect-ratio:var(--ar,1);
+  border:0;border-radius:1px;background:#15130f;cursor:pointer;font:inherit;overflow:hidden;
+  -webkit-appearance:none;appearance:none}
+.sleeve img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
+/* the ring the record presses into its sleeve, plus rubbed corners */
+.sleeve::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:url("p/sleevewear.png") center/100% 100% no-repeat;opacity:.8}
+.sleeve::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.42);
+  background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.10),
+    rgba(255,255,255,0) 30%,rgba(255,255,255,0) 74%,rgba(255,255,255,.05))}
+
+/* flyer: printed paper, keeps its own proportions - no frame, no ring wear */
+.flyer{display:block;width:100%;margin:0;padding:0;position:relative;aspect-ratio:var(--ar);
+  border:0;border-radius:1px;background:var(--paper);cursor:pointer;font:inherit;overflow:hidden;
+  -webkit-appearance:none;appearance:none}
+.flyer img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
+.flyer::before{content:"";position:absolute;inset:0;pointer-events:none;
+  background:url("p/wear.png") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.26}
+.flyer::after{content:"";position:absolute;inset:0;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
+  background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.22),
+    rgba(255,255,255,0) 32%,rgba(255,255,255,0) 74%,rgba(255,255,255,.10))}
+
+/* the mixtape: opens the docked player where the embed can load, and stays a
+   plain link out to SoundCloud where it cannot - never a dead player */
+.mixtape{display:block;width:100%;margin:0;padding:0;position:relative;aspect-ratio:var(--ar,1);
+  border:0;border-radius:1px;background:#15130f;cursor:pointer;overflow:hidden}
+.mixtape img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
+.mixtape::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  background:url("p/wear.png") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.2}
+.mixtape::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.42);
+  background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.10),
+    rgba(255,255,255,0) 30%,rgba(255,255,255,0) 74%,rgba(255,255,255,.05))}
+.mixtape .play{position:absolute;left:50%;top:50%;width:30cqw;height:30cqw;z-index:2;
+  transform:translate(-50%,-50%);border-radius:50%;pointer-events:none;
+  background:rgba(14,11,9,.46);box-shadow:inset 0 0 0 .9cqw rgba(255,255,255,.82);
+  transition:background .25s ease,transform .25s ease}
+.mixtape .play::after{content:"";position:absolute;left:56%;top:50%;width:0;height:0;
+  transform:translate(-50%,-50%);border-style:solid;
+  border-width:5cqw 0 5cqw 8cqw;border-color:transparent transparent transparent #fff}
+.slot:hover .mixtape .play,.mixtape:focus-visible .play{
+  background:rgba(222,109,150,.88);transform:translate(-50%,-50%) scale(1.07)}
+.mixtape.playing .play{background:rgba(222,109,150,.92)}
+
+/* ---- in-page player ----------------------------------------------------
+   SoundCloud's own embed, which is the sanctioned way to stream their audio -
+   no custom transport reimplementing their controls. Docked small, bottom left. */
+#scHost{display:block}
+#scHost iframe{display:block;width:100%;height:120px;border:0}
+.player{position:fixed;left:clamp(12px,3vw,30px);bottom:clamp(12px,3vw,26px);z-index:80;
+  width:min(92vw,342px);border-radius:2px;overflow:hidden;background:#17161a;
+  box-shadow:0 12px 34px -10px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.26)}
+.player[hidden]{display:none!important}
+.player-close{position:absolute;top:6px;right:6px;z-index:2;width:22px;height:22px;
+  border-radius:50%;border:1px solid rgba(255,255,255,.22);background:rgba(20,18,16,.72);
+  color:#e6e1d8;font-size:11px;line-height:1;cursor:pointer;display:grid;place-items:center}
+.player-close:hover{background:rgba(20,18,16,.92)}
+.player-close:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+
+/* ---- tour agenda --------------------------------------------------------
+   Set the way the tour artwork sets it: a mono kicker, then a date column
+   (month over day) against a hairline rule, the city in condensed caps and
+   the venue beneath in letterspaced grey. Everything is sized in cqw, so the
+   same markup reads both as a card in the pile and blown up in the lightbox.
+   Only this sheet is styled - the bio keeps the button defaults it had. */
+/* A sheet is a card like any other: it takes the slot's proportions and clips.
+   Without this the bio button sized itself to ten paragraphs of text, so at
+   narrower widths it grew to ~700px and lay across the wordmark. */
+.sheet{display:block;width:100%;margin:0;position:relative;aspect-ratio:var(--ar,.7071);
+  padding:clamp(5px,4.2cqw,28px);border:0;border-radius:1px;background:var(--paper);
+  color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;text-align:left;
+  -webkit-appearance:none;appearance:none}
+.sheet .sheet-body{font-size:clamp(2px,1.75cqw,11px);line-height:1.5;color:#2c2924}
+.sheet .sheet-body p{margin:0 0 .85em}
+.sheet .sheet-body em{font-style:italic}
+.sheet .sheet-body .sheet-kicker{font-family:var(--mono);letter-spacing:.2em;
+  text-transform:uppercase;color:#8d867c;font-size:.92em;margin:0 0 1.5em}
+.agenda{font-family:var(--sans);color:var(--ink);text-align:left}
+.agenda .ag-t{margin:0 0 .16em;font-weight:800;font-stretch:76%;text-transform:uppercase;
+  font-size:clamp(13px,8.6cqw,48px);line-height:.92;letter-spacing:-.015em;color:var(--ink)}
+/* The card in the pile is one big button, so a ticket cannot be a link there.
+   It travels as data and becomes a real link in the enlarged view. */
+.agenda .ag-x{display:inline-block;margin-top:.45em;font-family:var(--mono);
+  font-size:clamp(4px,1.85cqw,10px);letter-spacing:.17em;text-transform:uppercase;
+  color:#8d867c}
+.agenda a.ag-x{color:var(--ink);text-decoration:underline;text-underline-offset:.28em;
+  text-decoration-thickness:.07em;text-decoration-color:var(--accent)}
+.agenda a.ag-x:hover{color:var(--accent)}
+.agenda a.ag-x::after{content:" \2197"}
+.agenda .ag-k{font-family:var(--mono);font-size:clamp(3px,2.4cqw,12px);letter-spacing:.3em;
+  text-transform:uppercase;color:#8d867c;margin:0 0 clamp(3px,2.9cqw,22px)}
+.agenda .ag-l{list-style:none;margin:0;padding:0}
+.agenda .ag-l li{display:grid;grid-template-columns:clamp(9px,8.2cqw,54px) 1px 1fr;
+  gap:0 clamp(2px,2.3cqw,16px);align-items:center;
+  padding:clamp(1px,1.4cqw,10px) 0;border-top:1px solid rgba(24,24,23,.12)}
+.agenda .ag-l li:first-child{border-top:0;padding-top:0}
+.agenda .ag-d{grid-column:1;line-height:1}
+.agenda .ag-d b{display:block;font-family:var(--mono);font-weight:400;
+  font-size:clamp(2px,1.8cqw,10px);letter-spacing:.18em;text-transform:uppercase;color:#8d867c}
+.agenda .ag-d i{display:block;font-style:normal;font-weight:700;font-stretch:80%;
+  font-size:clamp(6px,5.4cqw,30px);letter-spacing:-.01em;margin-top:.06em}
+.agenda .ag-l li::before{content:"";grid-column:2;align-self:stretch;
+  background:rgba(24,24,23,.17)}
+.agenda .ag-i{grid-column:3;min-width:0}
+.agenda .ag-i strong{display:block;font-weight:700;font-stretch:80%;line-height:1.1;
+  font-size:clamp(3px,3.1cqw,17px);letter-spacing:.055em;text-transform:uppercase}
+.agenda .ag-i strong em{font-style:normal;font-weight:500;font-size:.66em;
+  letter-spacing:.14em;color:#8d867c;margin-left:.5em}
+.agenda .ag-i>span{display:block;font-family:var(--mono);line-height:1.38;
+  font-size:clamp(2px,1.9cqw,10px);letter-spacing:.15em;text-transform:uppercase;
+  color:#8d867c;margin-top:.3em}
+.agenda .ag-f{margin:clamp(4px,3.4cqw,26px) 0 clamp(2px,1.7cqw,12px)}
+.agenda .ag-f span{padding:.12em .46em;background:var(--accent);color:var(--ink);
+  font-weight:700;font-stretch:80%;text-transform:uppercase;
+  font-size:clamp(3px,3cqw,16px);letter-spacing:.08em}
+.agenda .ag-m{margin:0;line-height:1.05}
+.agenda .ag-m + .ag-m{margin-top:clamp(5px,2.2cqw,16px);
+  padding-top:clamp(5px,2.2cqw,16px);border-top:1px solid rgba(24,24,23,.12)}
+.agenda .ag-m strong{font-weight:800;font-stretch:78%;text-transform:uppercase;
+  font-size:clamp(6px,6cqw,34px);letter-spacing:-.01em}
+.agenda .ag-m strong em{font-style:normal;font-weight:500;font-size:.4em;vertical-align:.52em;
+  letter-spacing:.14em;color:#8d867c;margin-left:.4em}
+.agenda .ag-m b{font-family:var(--mono);font-weight:400;margin-left:.5em;
+  font-size:clamp(3px,2.5cqw,13px);letter-spacing:.14em}
+.agenda .ag-m>span{display:block;font-family:var(--mono);margin-top:.45em;
+  font-size:clamp(2px,1.9cqw,10px);letter-spacing:.15em;text-transform:uppercase;color:#8d867c}
+
+
+/* ---- lightbox ---- */
+/* Not a modal: nothing is dimmed. The print lifts off the table and the pile
+   behind it simply goes out of focus, so the page reads as one surface. */
+.box{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:clamp(14px,3vw,40px)}
+.box-veil{position:absolute;inset:0;pointer-events:none;
+  backdrop-filter:blur(5px) saturate(.94);-webkit-backdrop-filter:blur(5px) saturate(.94)}
+.box[hidden]{display:none!important}
+.box-stage{container-type:inline-size;perspective:1700px;
+  width:min(86vw,560px,calc((100vh - 150px) * var(--boxar,.8)))}
+/* Turning it over, the way you would pick a print up off the table. The back
+   only exists for things that are objects - a sheet of paper is already text. */
+.box-flip{position:relative;width:100%;transform-style:preserve-3d;
+  transition:transform .62s cubic-bezier(.3,.85,.25,1)}
+.box-flip.flipped{transform:rotateY(180deg)}
+.box-flip.turnable .box-print,.box-flip.turnable .box-back{cursor:pointer}
+.box-print{backface-visibility:hidden;-webkit-backface-visibility:hidden}
+.box-back{position:absolute;inset:0;transform:rotateY(180deg);border-radius:2px;
+  backface-visibility:hidden;-webkit-backface-visibility:hidden;overflow:hidden;
+  background:#efebe1;padding:clamp(22px,8cqw,52px);
+  display:flex;flex-direction:column;justify-content:center;gap:.9em;
+  box-shadow:inset 0 0 90px rgba(122,106,84,.17),0 2px 6px rgba(0,0,0,.14),
+    0 26px 60px -18px rgba(0,0,0,.42)}
+.box-back[hidden]{display:none!important}
+/* A photograph gets written on; a record gets printed. The release back is set
+   in the page's own language - mono kicker, condensed caps, hairline rules -
+   the way the sleeve it belongs to would have been. */
+.box-back.is-rel{background:var(--paper);justify-content:flex-start;
+  padding:clamp(20px,7cqw,46px);overflow-y:auto;overscroll-behavior:contain}
+.bk-rel[hidden]{display:none!important}
+.bk-rel{font-family:var(--sans);color:var(--ink);text-align:left;width:100%}
+.rl-k{margin:0 0 .75em;font-family:var(--mono);font-size:clamp(7px,2.4cqw,12px);
+  letter-spacing:.26em;text-transform:uppercase;color:#8d867c}
+.rl-t{margin:0;font-weight:800;font-stretch:76%;text-transform:uppercase;
+  font-size:clamp(17px,6.6cqw,38px);line-height:.96;letter-spacing:-.012em}
+.rl-a{margin:.32em 0 0;font-weight:600;font-stretch:84%;text-transform:uppercase;
+  font-size:clamp(9px,2.9cqw,16px);letter-spacing:.11em;color:#6b6459}
+.rl-h{margin:clamp(12px,3.6cqw,24px) 0 .2em;font-family:var(--mono);
+  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.2em;text-transform:uppercase;color:#8d867c}
+.rl-l{list-style:none;margin:clamp(10px,3cqw,20px) 0 0;padding:0}
+.rl-l li{display:grid;grid-template-columns:clamp(14px,5cqw,30px) 1fr;
+  gap:0 clamp(6px,2.2cqw,14px);align-items:baseline;
+  padding:clamp(3px,1.3cqw,9px) 0;border-top:1px solid rgba(24,24,23,.12)}
+.rl-l li:first-child{border-top:0}
+.rl-l i{font-style:normal;font-family:var(--mono);color:#8d867c;
+  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.1em}
+.rl-l span{font-weight:600;font-stretch:84%;text-transform:uppercase;line-height:1.2;
+  font-size:clamp(8px,2.75cqw,15px);letter-spacing:.045em}
+.rl-l li.disc{display:block;border-top:0;font-family:var(--mono);color:#8d867c;
+  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.2em;text-transform:uppercase;
+  padding:clamp(11px,3.2cqw,22px) 0 clamp(2px,.8cqw,6px)}
+.rl-l li.disc:first-child{padding-top:0}
+.rl-l li.disc + li{border-top:0}
+.rl-l li.mix span{color:var(--ink)}
+.rl-l li.mix i{color:var(--accent)}
+.bk-hand{filter:url(#ink);color:#253163}
+.bk-hand[hidden]{display:none!important}
+.bk-note{margin:0 0 .42em;font-family:"Reenie Beanie",ui-rounded,cursive;
+  font-size:clamp(23px,7.4cqw,44px);line-height:1.14;transform:rotate(-1.2deg)}
+.bk-tracks{list-style:none;margin:0 0 .5em;padding:0;
+  font-family:"Reenie Beanie",ui-rounded,cursive;
+  font-size:clamp(20px,6.4cqw,38px);line-height:1.42}
+.bk-tracks li{display:flex;gap:.85em;transform-origin:left center}
+.bk-tracks li i{font-style:normal;flex:none;min-width:1.05em}
+/* a hand does not rule itself: every line sits at its own slight angle, with its
+   own ink pressure, so no two lines are parallel and none is perfectly even */
+.bk-note{opacity:.96}
+.bk-tracks li:nth-child(1){transform:rotate(-.55deg) translateX(.05em);opacity:.97}
+.bk-tracks li:nth-child(2){transform:rotate(.3deg)  translateX(-.03em);opacity:.9}
+.bk-tracks li:nth-child(3){transform:rotate(-.2deg) translateX(.09em);opacity:.99}
+.bk-tracks li:nth-child(4){transform:rotate(.5deg)  translateX(.02em);opacity:.93}
+.bk-tracks li:nth-child(5){transform:rotate(-.4deg) translateX(.07em);opacity:.96}
+.bk-tracks li:nth-child(6){transform:rotate(.25deg);opacity:.98}
+.bk-more{margin:0;font-family:"Reenie Beanie",ui-rounded,cursive;
+  font-size:clamp(16px,5cqw,29px);line-height:1.3;opacity:.84;
+  transform:rotate(.6deg);max-width:34ch}
+.bk-corner{position:absolute;right:-14%;bottom:-16%;width:46%;aspect-ratio:1;
+  border-radius:50%;background:radial-gradient(circle,rgba(150,131,104,.16),transparent 68%)}
+.flip{position:fixed;top:0;right:0;z-index:2;
+  margin:calc(12px + env(safe-area-inset-top,0px)) 60px 0 0;height:40px;padding:0 15px;
+  border-radius:20px;border:1px solid rgba(24,24,23,.14);background:rgba(252,251,247,.82);
+  color:#2c2924;font:inherit;font-size:13px;cursor:pointer;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.flip:hover{background:#fff}
+.flip[hidden]{display:none!important}
+.flip:focus-visible,.close:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.box-print{position:relative;width:100%;background:var(--paper);
+  padding:6.3cqw 5.6cqw 24.2cqw;border-radius:2px;
+  box-shadow:0 2px 6px rgba(0,0,0,.14),0 26px 60px -18px rgba(0,0,0,.42),
+    0 60px 120px -40px rgba(0,0,0,.3)}
+.box-print .shot{background:#0d0d0d}
+.box-print.is-bare{padding:0}
+.box-print.is-bare .shot{aspect-ratio:var(--boxar,1)}
+.box-print.is-sleeve{background:#15130f}
+.box-print.is-flyer{background:var(--paper)}
+/* a shrunk A4 is unreadable, so enlarging the bio shows the text, not a bigger page */
+.box-stage.wide{width:min(92vw,660px)}
+.box-print.is-sheet{padding:clamp(26px,5cqw,46px);background:var(--paper);
+  max-height:calc(100vh - 150px);overflow-y:auto}
+.sheet-read{color:#2c2924;font-size:clamp(14px,1.55cqw,16px);line-height:1.62;text-align:left}
+.sheet-read p{margin:0 0 1em}
+.sheet-read em{font-style:italic}
+.sheet-read .sheet-kicker{font-family:var(--mono);font-size:11px;letter-spacing:.24em;
+  text-transform:uppercase;color:#8d867c;margin:0 0 1.8em}
+.close:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+.close{position:fixed;top:0;right:0;margin:calc(12px + env(safe-area-inset-top,0px)) 12px 0 0;
+  z-index:2;width:40px;height:40px;border-radius:50%;border:1px solid rgba(24,24,23,.14);
+  background:rgba(252,251,247,.82);color:#2c2924;font-size:19px;line-height:1;cursor:pointer;
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  box-shadow:0 2px 8px rgba(0,0,0,.12)}
+.close:hover{background:#fff}
+
+@media (max-width:760px){
+  .pile{aspect-ratio:0.1471}
+  .slot{left:var(--mx);top:var(--my);width:var(--mw);--rot:var(--mr)}
+  .slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot)) scale(1.03)}}
+@media (prefers-reduced-motion:reduce){
+  .tilt{animation:none;transition:none}.slot{transition:none}.box-print{animation:none}
+  .slot:hover,.slot:focus-within{transform:translate(-50%,-50%)}
+  .slot:hover .tilt,.slot:focus-within .tilt{transform:rotate(var(--rot))}}
+</style>
+
+<div class="room">
+ <header>
+  <h1 class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="25.03 9.87 1040.27 546.01" role="img" aria-label="Sander Kleinenberg">
+<defs><filter id="s" x="-3%" y="-4%" width="106%" height="108%" color-interpolation-filters="sRGB">
+<!-- Worn screenprint, fitted to the tour artwork rather than eyeballed. Measured off
+     the poster: its ink is almost solid (median L .024) and the wear lives entirely in
+     the top few percent of pixels - p97 .169, p99.5 .400, only .8% above L .33. So the
+     masks use a SOFT ramp, which thins ink to grey, instead of a hard threshold, which
+     punches white holes. Thresholds are stated in standard deviations of each noise's
+     real distribution: fractalNoise is centred on .500 with sd .1186, turbulence on
+     .254 with sd .1452 - not on 0, as the raw numbers suggest.
+     The poster's dust is also clustered in bands, not spread evenly, so both the dust
+     and the craquelure are gated by a low-frequency "where the wear happens" field. -->
+
+<!-- where the ink is worn at all: broad, soft-edged bands -->
+<feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="fn"/>
+<feColorMatrix in="fn" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8.0 0 0 0 -3.4307" result="field"/>
+
+<!-- dust: a fine pass and a coarser one, so speck sizes vary the way real ones do -->
+<feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="7" result="d1"/>
+<feColorMatrix in="d1" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.25 0 0 0 3.3034" result="m1"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.2" numOctaves="2" seed="31" result="d2"/>
+<feColorMatrix in="d2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.0 0 0 0 3.2152" result="m2"/>
+<feComposite in="m1" in2="m2" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="dust"/>
+<feComposite in="dust" in2="field" operator="arithmetic" k1="1" k2="0" k3="-1" k4="1" result="dustg"/>
+<feComposite in="SourceGraphic" in2="dustg" operator="in" result="s0"/>
+
+<!-- craquelure: turbulence branches where fractalNoise only speckles. Gated tightly so
+     it shows up in a couple of places, like a real flake, instead of everywhere. -->
+<feTurbulence type="turbulence" baseFrequency="0.35" numOctaves="3" seed="19" result="c0"/>
+<feColorMatrix in="c0" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2154" result="cm"/>
+<feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="2" seed="9" result="qn"/>
+<feColorMatrix in="qn" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8.0 0 0 0 -4.5693" result="qfield"/>
+<feComposite in="cm" in2="qfield" operator="arithmetic" k1="1" k2="0" k3="-1" k4="1" result="crack"/>
+<feComposite in="s0" in2="crack" operator="in" result="s1"/>
+
+<!-- hairline squeegee drag along the print direction -->
+<feTurbulence type="fractalNoise" baseFrequency="0.01 0.8" numOctaves="2" seed="23" result="x0"/>
+<feColorMatrix in="x0" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -7.0 0 0 0 6.8246" result="xm"/>
+<feComposite in="s1" in2="xm" operator="in"/>
+</filter></defs>
+<path fill="currentColor" filter="url(#s)" d="M77.3830 349.5839 87.5233 346.8137C117.5944 338.5989 127.6967 324.1762 127.2019 303.5771L126.1084 266.2951C125.5381 251.1595 117.9903 245.1869 97.7127 234.9165L79.6246 225.8623C74.0078 222.9906 72.3288 220.8575 72.2437 216.2156L71.3613 184.0595C71.3046 180.9648 72.0385 179.4684 75.1855 178.6088C78.6822 177.6535 80.1092 178.8188 80.1029 181.6714L81.1901 221.8061L122.1008 210.6301L120.9569 167.4008C120.5125 152.7491 106.2014 145.2548 76.4800 153.3741L66.6894 156.0487C36.6183 164.2635 27.0262 177.7693 27.5273 195.5157L28.4727 227.9138C28.9517 241.2602 36.0175 249.6970 53.6300 258.3629L71.3055 267.2707C78.1602 270.5816 80.5386 272.5237 80.7151 278.9549L81.6826 315.7530C81.5787 319.6690 81.3204 321.5538 77.4741 322.6045C73.9774 323.5598 72.2007 322.4901 72.0810 319.1535L70.7889 271.0403L28.8292 282.5028L30.1213 330.6160C30.6507 349.9097 47.3119 357.7987 77.3830 349.5839ZM179.8181 256.8063 169.3282 259.6719 171.8412 185.8974ZM186.3868 317.9919 227.6471 306.7204 199.3034 121.6354 144.7558 136.5367 129.3916 333.5619 166.8056 323.3411 168.1535 288.2431 182.8394 284.2312ZM227.3028 113.9866 232.5687 305.3760 268.5841 295.5373 265.0579 179.8708 288.5150 290.0926 328.0270 279.2987 322.4114 88.0048 287.0954 97.6524 290.2970 202.0038 270.6611 102.1420ZM337.4679 276.7196 403.5544 258.6661C423.4853 253.2214 433.0427 241.0209 432.4219 219.9379L428.8356 88.2188C428.2432 68.6832 412.6247 63.3603 390.9456 69.2826L332.2020 85.3302ZM375.6929 99.8854 379.5392 98.8347C384.0849 97.5929 385.0646 99.9170 385.1843 103.2536L388.6571 228.7835C388.8336 235.2147 387.1483 235.9343 383.3020 236.9850L379.4557 238.0358ZM440.9408 55.6181 446.2068 247.0075 520.6852 226.6615 520.0202 196.7785 488.2008 205.4710 486.5432 150.2007 512.4183 143.1321 511.6273 112.7652 485.7522 119.8338 484.4885 73.2679 515.2589 64.8621 514.3703 35.5586ZM564.7001 46.1721 567.8471 45.3125C571.6934 44.2617 572.8337 45.7644 572.8905 48.8591L574.0912 95.1830C574.4976 98.1821 573.4770 100.0160 569.9803 100.9712L566.1340 102.0219ZM569.2885 213.3840 566.8683 129.2941 570.0153 128.4344C573.8616 127.3837 575.2886 128.5489 575.2823 131.4016L577.2866 202.3870C577.3087 206.7870 579.1137 209.4040 580.8274 210.2318L622.7871 198.7692L622.9477 197.9478C621.3947 196.2986 620.6040 194.7004 620.5189 190.0585L618.4579 115.9784C618.1333 104.6633 608.9916 101.1995 602.1306 100.7412C610.6548 96.0800 616.9613 88.6553 616.7974 76.5187L615.5620 31.5001C615.1523 15.5430 601.0869 11.8693 584.6527 16.3588L521.0139 33.7437L526.2798 225.1331ZM124.8938 542.1263 122.3287 466.1105 137.8313 538.5920 182.9380 526.2698 158.2746 430.1139 175.9237 335.3580 133.2647 347.0116 121.0020 419.3027 119.2782 350.8324 76.6192 362.4860 81.8851 553.8755ZM179.4204 334.4027 184.6863 525.7922 254.9688 506.5924 254.1778 476.2255 226.5543 483.7717 222.0794 322.7491ZM249.6983 315.2022 254.9642 506.5916 329.4426 486.2455 328.7776 456.3626 296.9582 465.0551 295.3007 409.7847 321.1758 402.7162 320.3848 372.3493 294.5096 379.4179 293.2459 332.8520 324.0164 324.4461 323.1277 295.1427ZM372.7800 281.5786 329.7713 293.3278 335.0373 484.7172 378.0459 472.9681ZM381.6248 279.1653 386.8907 470.5547 422.9061 460.7160 419.3799 345.0495 442.8370 455.2713 482.3490 444.4774 476.7334 253.1835 441.4173 262.8311 444.6190 367.1825 424.9831 267.3206ZM486.5240 250.5089 491.7899 441.8983 566.2684 421.5522 565.6034 391.6693 533.7839 400.3618 532.1264 345.0914 558.0015 338.0229 557.2105 307.6560 531.3354 314.7246 530.0717 268.1587 560.8421 259.7528 559.9534 230.4494ZM565.8531 228.8389 571.1190 420.2283 607.1344 410.3896 603.6082 294.7231 627.0653 404.9449 666.5773 394.1510 660.9617 202.8571 625.6456 212.5047 628.8473 316.8561 609.2114 216.9942ZM676.0182 391.5719 743.5034 373.1363C765.8819 367.0229 772.6419 355.5866 772.1125 336.2929L770.6093 283.0539C770.2280 268.6441 757.5896 266.1356 750.0923 266.1103C756.4209 263.0855 766.7627 255.3360 766.2207 241.7477L765.3288 199.4862C764.7301 182.8032 751.1750 178.2126 732.6428 183.2752L670.7523 200.1825ZM717.2358 211.8468C721.4318 210.7005 722.7328 211.3818 723.0416 215.4443L724.2139 260.2209C724.3336 263.5575 722.5507 265.3404 719.4037 266.2001L715.5574 267.2509L714.0888 212.7064ZM719.9552 289.8938C724.1512 288.7475 725.8649 289.5753 726.2366 293.8797L727.5162 347.6983C727.6359 351.0349 726.9019 352.5312 722.7060 353.6775L718.1603 354.9193L716.4586 290.8490ZM778.6944 170.6906 783.9603 362.0801 858.4388 341.7340 857.7738 311.8511 825.9543 320.5435 824.2968 265.2732 850.1719 258.2046 849.3809 227.8378 823.5058 234.9064 822.2421 188.3405 853.0125 179.9346 852.1239 150.6312ZM902.4537 161.2447 905.6007 160.3850C909.4470 159.3343 910.5873 160.8370 910.6441 163.9316L911.8448 210.2555C912.2512 213.2546 911.2305 215.0885 907.7339 216.0437L903.8876 217.0945ZM907.0421 328.4565 904.6219 244.3667 907.7688 243.5070C911.6151 242.4563 913.0422 243.6215 913.0359 246.4742L915.0401 317.4596C915.0622 321.8596 916.8673 324.4766 918.5810 325.3043L960.5407 313.8418L960.7013 313.0204C959.1483 311.3712 958.3576 309.7730 958.2725 305.1310L956.2115 231.0509C955.8869 219.7358 946.7452 216.2721 939.8842 215.8138C948.4084 211.1525 954.7149 203.7278 954.5509 191.5913L953.3156 146.5727C952.9059 130.6156 938.8405 126.9419 922.4063 131.4314L858.7675 148.8162L864.0334 340.2057ZM1002.8950 304.0883C1017.2312 300.1719 1025.4813 290.1428 1029.5638 282.8073C1031.1798 284.6984 1033.5803 291.0405 1034.2733 293.7021L1063.2955 285.7738L1060.1756 173.1064L1010.5233 186.6704L1010.9772 211.4275L1020.0685 208.9439L1021.5938 266.5830C1021.4898 270.4990 1019.8329 272.7659 1015.6369 273.9122C1011.4410 275.0584 1009.4753 273.2628 1009.2295 269.4423L1005.6716 139.2705C1005.5519 135.9339 1006.1598 133.9536 1010.0061 132.9028C1013.1531 132.0431 1015.2165 132.7754 1015.3992 136.3539L1016.5148 178.0359L1058.1248 166.6689L1057.0722 125.2288C1056.4105 108.3039 1042.9026 96.7025 1008.2859 106.1592L1002.3416 107.7830C968.0745 117.1441 961.1129 133.5598 961.7053 153.0955L965.1435 279.9307C965.7359 299.4663 978.4185 310.7748 1001.4963 304.4704Z"/>
+</svg></h1>
+  <p class="lede">Twenty-eight prints, three sleeves, a flyer, a mixtape, the tour dates and a biography from the booth, the road and the back of the plane. Tipped out in no particular order &mdash; pick one up.</p>
+ </header>
+ <div class="pile">
+   <div class="slot" style="--x:71.37%;--y:78.95%;--w:18.73%;--r:-24.7deg;--z:20;--mx:30.25%;--my:35.66%;--mw:44.50%;--mr:16.6deg;--lift:1.021;--bri:0.968;--wx:77%;--wy:54%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="0" aria-label="Enlarge: C'est chic">
+      <span class="shot"><img src="p/08-c-est-chic.jpg" alt="C'est chic" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:37.20%;--y:9.71%;--w:16.76%;--r:19.3deg;--z:14;--mx:72.50%;--my:40.54%;--mw:39.83%;--mr:-17.6deg;--lift:0.879;--bri:0.987;--wx:91%;--wy:35%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="1" aria-label="Enlarge: Ibiza '11">
+      <span class="shot"><img src="p/02-ibiza-11.jpg" alt="Ibiza '11" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:12.08%;--y:44.08%;--w:18.72%;--r:-8.1deg;--z:26;--mx:69.63%;--my:12.72%;--mw:44.48%;--mr:-17.0deg;--lift:1.162;--bri:1.007;--wx:6%;--wy:15%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="2" aria-label="Enlarge: The crew">
+      <span class="shot"><img src="p/20-the-crew.jpg" alt="The crew" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:27.26%;--y:80.69%;--w:14.09%;--r:1.8deg;--z:12;--mx:30.10%;--my:3.86%;--mw:33.49%;--mr:21.2deg;--lift:0.832;--bri:1.026;--wx:20%;--wy:96%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="3" aria-label="Enlarge: Under the tent">
+      <span class="shot"><img src="p/27-under-the-tent.jpg" alt="Under the tent" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:86.45%;--y:46.16%;--w:17.40%;--r:24.9deg;--z:11;--mx:30.71%;--my:92.18%;--mw:41.35%;--mr:20.3deg;--lift:0.809;--bri:0.971;--wx:34%;--wy:76%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="4" aria-label="Enlarge: Stay high">
+      <span class="shot"><img src="p/11-stay-high.jpg" alt="Stay high" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:20.23%;--y:91.50%;--w:14.85%;--r:15.6deg;--z:10;--mx:80.21%;--my:51.75%;--mw:35.30%;--mr:-2.5deg;--lift:0.785;--bri:0.991;--wx:48%;--wy:56%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="5" aria-label="Enlarge: Paul van Dyk">
+      <span class="shot"><img src="p/15-paul-van-dyk.jpg" alt="Paul van Dyk" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:59.14%;--y:65.84%;--w:16.04%;--r:-28.4deg;--z:22;--mx:21.24%;--my:56.00%;--mw:38.13%;--mr:2.4deg;--lift:1.068;--bri:1.01;--wx:62%;--wy:37%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="6" aria-label="Enlarge: Sold out">
+      <span class="shot"><img src="p/13-sold-out.jpg" alt="Sold out" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:85.76%;--y:10.78%;--w:18.07%;--r:-27.0deg;--z:19;--mx:30.49%;--my:41.66%;--mw:42.94%;--mr:20.6deg;--lift:0.997;--bri:1.03;--wx:77%;--wy:17%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="7" aria-label="Enlarge: Off duty">
+      <span class="shot"><img src="p/06-off-duty.jpg" alt="Off duty" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:57.26%;--y:91.19%;--w:16.55%;--r:-8.1deg;--z:30;--mx:26.12%;--my:74.39%;--mw:39.33%;--mr:14.2deg;--lift:1.256;--bri:0.975;--wx:91%;--wy:98%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="8" aria-label="Enlarge: Peace">
+      <span class="shot"><img src="p/17-peace.jpg" alt="Peace" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:87.47%;--y:21.24%;--w:18.75%;--r:-10.7deg;--z:27;--mx:72.26%;--my:45.69%;--mw:44.57%;--mr:9.7deg;--lift:1.185;--bri:0.994;--wx:5%;--wy:78%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="9" aria-label="Enlarge: Danny Tenaglia">
+      <span class="shot"><img src="p/09-danny-tenaglia.jpg" alt="Danny Tenaglia" width="1000" height="1000" decoding="async"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:56.15%;--y:33.45%;--w:16.74%;--r:-21.7deg;--z:34;--mx:44.16%;--my:17.47%;--mw:39.78%;--mr:-13.4deg;--lift:1.35;--bri:1.014;--wx:19%;--wy:59%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="10" aria-label="Enlarge: Pacha Festival">
+      <span class="shot"><img src="p/24-pacha-festival.jpg" alt="Pacha Festival" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:12.14%;--y:55.25%;--w:16.30%;--r:-19.1deg;--z:15;--mx:71.81%;--my:85.10%;--mw:38.73%;--mr:22.9deg;--lift:0.903;--bri:0.958;--wx:33%;--wy:39%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="11" aria-label="Enlarge: Just landed">
+      <span class="shot"><img src="p/03-just-landed.jpg" alt="Just landed" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:71.46%;--y:90.69%;--w:15.56%;--r:-24.4deg;--z:32;--mx:23.02%;--my:68.81%;--mw:36.99%;--mr:9.1deg;--lift:1.303;--bri:0.978;--wx:48%;--wy:19%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="12" aria-label="Enlarge: Lights down">
+      <span class="shot"><img src="p/19-lights-down.jpg" alt="Lights down" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:44.24%;--y:57.87%;--w:16.49%;--r:-7.8deg;--z:21;--mx:72.35%;--my:95.55%;--mw:39.20%;--mr:19.5deg;--lift:1.044;--bri:0.998;--wx:62%;--wy:100%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="13" aria-label="Enlarge: Sasha">
+      <span class="shot"><img src="p/16-sasha.jpg" alt="Sasha" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:73.74%;--y:38.02%;--w:15.06%;--r:-23.6deg;--z:25;--mx:20.50%;--my:15.34%;--mw:35.79%;--mr:3.8deg;--lift:1.138;--bri:1.017;--wx:76%;--wy:80%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="14" aria-label="Enlarge: Encore">
+      <span class="shot"><img src="p/25-encore.jpg" alt="Encore" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:73.95%;--y:27.34%;--w:17.41%;--r:10.7deg;--z:29;--mx:72.34%;--my:22.76%;--mw:41.37%;--mr:14.9deg;--lift:1.232;--bri:0.962;--wx:90%;--wy:61%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="15" aria-label="Enlarge: Le Freak">
+      <span class="shot"><img src="p/05-le-freak.jpg" alt="Le Freak" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:73.93%;--y:8.77%;--w:14.51%;--r:25.3deg;--z:9;--mx:21.47%;--my:3.62%;--mw:34.47%;--mr:8.9deg;--lift:0.762;--bri:0.982;--wx:4%;--wy:41%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="16" aria-label="Enlarge: Lee Burridge">
+      <span class="shot"><img src="p/21-lee-burridge.jpg" alt="Lee Burridge" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:12.24%;--y:85.92%;--w:15.33%;--r:-26.7deg;--z:17;--mx:19.44%;--my:96.56%;--mw:36.44%;--mr:0.0deg;--lift:0.95;--bri:1.001;--wx:19%;--wy:21%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="17" aria-label="Enlarge: We love Sander K">
+      <span class="shot"><img src="p/10-we-love-sander-k.jpg" alt="We love Sander K" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:11.30%;--y:29.81%;--w:18.17%;--r:-5.5deg;--z:16;--mx:26.09%;--my:86.13%;--mw:43.18%;--mr:-7.6deg;--lift:0.926;--bri:1.021;--wx:33%;--wy:2%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="18" aria-label="Enlarge: Joshua Tree">
+      <span class="shot"><img src="p/12-joshua-tree.jpg" alt="Joshua Tree" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:33.61%;--y:68.22%;--w:15.12%;--r:-9.9deg;--z:13;--mx:74.89%;--my:90.00%;--mw:35.93%;--mr:18.3deg;--lift:0.856;--bri:0.965;--wx:47%;--wy:82%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="19" aria-label="Enlarge: Headspace">
+      <span class="shot"><img src="p/18-headspace.jpg" alt="Headspace" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:38.58%;--y:26.48%;--w:15.30%;--r:-33.4deg;--z:33;--mx:20.37%;--my:20.94%;--mw:36.36%;--mr:-2.6deg;--lift:1.326;--bri:0.985;--wx:61%;--wy:63%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="20" aria-label="Enlarge: Front row">
+      <span class="shot"><img src="p/23-front-row.jpg" alt="Front row" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:27.38%;--y:49.76%;--w:14.34%;--r:-16.8deg;--z:24;--mx:81.10%;--my:35.94%;--mw:34.07%;--mr:1.9deg;--lift:1.115;--bri:1.005;--wx:75%;--wy:43%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="21" aria-label="Enlarge: Wheels up">
+      <span class="shot"><img src="p/01-wheels-up.jpg" alt="Wheels up" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:27.00%;--y:59.59%;--w:14.58%;--r:17.3deg;--z:23;--mx:81.01%;--my:17.81%;--mw:34.66%;--mr:1.3deg;--lift:1.091;--bri:1.024;--wx:90%;--wy:24%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="22" aria-label="Enlarge: Hands up">
+      <span class="shot"><img src="p/22-hands-up.jpg" alt="Hands up" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:86.71%;--y:90.19%;--w:15.98%;--r:34.5deg;--z:8;--mx:24.40%;--my:79.74%;--mw:37.97%;--mr:11.5deg;--lift:0.738;--bri:0.969;--wx:4%;--wy:4%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="23" aria-label="Enlarge: Hernán Cattáneo">
+      <span class="shot"><img src="p/14-hernan-cattaneo.jpg" alt="Hernán Cattáneo" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:89.31%;--y:79.42%;--w:15.88%;--r:-10.0deg;--z:18;--mx:21.94%;--my:47.68%;--mw:37.73%;--mr:-4.9deg;--lift:0.974;--bri:0.989;--wx:18%;--wy:84%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="24" aria-label="Enlarge: Backstage">
+      <span class="shot"><img src="p/26-backstage.jpg" alt="Backstage" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:36.03%;--y:90.19%;--w:17.02%;--r:-18.7deg;--z:7;--mx:73.36%;--my:62.09%;--mw:40.46%;--mr:-13.6deg;--lift:0.715;--bri:1.008;--wx:32%;--wy:65%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print aged" data-i="25" aria-label="Enlarge: This is our house">
+      <span class="shot"><img src="p/07-this-is-our-house.jpg" alt="This is our house" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:88.54%;--y:34.83%;--w:15.71%;--r:-16.7deg;--z:28;--mx:76.98%;--my:57.24%;--mw:37.33%;--mr:-8.5deg;--lift:1.209;--bri:1.028;--wx:46%;--wy:45%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="26" aria-label="Enlarge: Studio Dub Syntax">
+      <span class="shot"><img src="p/04-studio-dub-syntax.jpg" alt="Studio Dub Syntax" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:25.21%;--y:34.16%;--w:18.67%;--r:7.3deg;--z:31;--mx:44.55%;--my:52.30%;--mw:44.38%;--mr:19.6deg;--lift:1.279;--bri:0.973;--wx:61%;--wy:26%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="27" aria-label="Enlarge: Sander & Lee On Tour">
+      <span class="shot"><img src="p/28-sander-and-lee-on-tour.jpg" alt="Sander & Lee On Tour" width="1000" height="1000" decoding="async" loading="lazy"></span><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:81.67%;--y:63.44%;--w:30.27%;--r:8.1deg;--z:1;--mx:61.50%;--my:69.25%;--mw:61.90%;--mr:-13.5deg;--lift:0.574;--bri:0.992;--wx:75%;--wy:6%;--ar:1.0;">
+    <div class="tilt">
+     <button class="sleeve" data-i="28" aria-label="Enlarge: Free Frogs &mdash; Bombay">
+      <img src="p/s/07.jpg" alt="Free Frogs &mdash; Bombay" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:20.87%;--y:14.90%;--w:30.22%;--r:-22.0deg;--z:2;--mx:61.67%;--my:5.64%;--mw:61.79%;--mr:-13.2deg;--lift:0.597;--bri:1.012;--wx:89%;--wy:86%;--ar:1.0;">
+    <div class="tilt">
+     <button class="sleeve" data-i="29" aria-label="Enlarge: Sander Kleinenberg &mdash; 4 Seasons EP 1 Of 3 Signed">
+      <img src="p/s/45.jpg" alt="Sander Kleinenberg &mdash; 4 Seasons EP 1 Of 3 Signed" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:49.09%;--y:77.59%;--w:27.11%;--r:-22.2deg;--z:3;--mx:68.93%;--my:78.21%;--mw:55.44%;--mr:4.6deg;--lift:0.621;--bri:0.956;--wx:3%;--wy:67%;--ar:1.0;">
+    <div class="tilt">
+     <button class="sleeve" data-i="30" aria-label="Enlarge: S'n'S &mdash; Y.D.W. (Strictly Rhythm)">
+      <img src="p/s/37.jpg" alt="S'n'S &mdash; Y.D.W. (Strictly Rhythm)" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:13.67%;--y:70.75%;--w:21.15%;--r:-7.7deg;--z:4;--mx:22.90%;--my:27.72%;--mw:42.97%;--mr:0.4deg;--lift:0.644;--bri:0.976;--wx:17%;--wy:47%;--ar:0.7082;">
+    <div class="tilt">
+     <button class="flyer" data-i="31" aria-label="Enlarge: Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03">
+      <img src="p/flyer-renaissance-everybody.jpg" alt="Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03" decoding="async" loading="lazy"><span class="warp" aria-hidden="true"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:42.46%;--y:41.41%;--w:21.71%;--r:-14.4deg;--z:5;--mx:25.81%;--my:9.75%;--mw:44.66%;--mr:-6.2deg;--lift:0.668;--bri:0.996;--wx:32%;--wy:28%;--ar:1.0;">
+    <div class="tilt">
+     <a class="mixtape" href="https://soundcloud.com/sanderkleinenberg/sander-kleinenberg-the-deepest" target="_blank" rel="noopener noreferrer" aria-label="Listen on SoundCloud: The Deepest Mixtape In The Universe #68">
+      <img src="p/mixtape-deepest-68.jpg" alt="The Deepest Mixtape In The Universe #68" decoding="async" loading="lazy"><span class="play" aria-hidden="true"></span>
+     </a>
+    </div>
+   </div>
+   <div class="slot" style="--x:55.49%;--y:14.86%;--w:25.11%;--r:-9.6deg;--z:6;--mx:68.50%;--my:29.64%;--mw:50.05%;--mr:9.1deg;--lift:0.691;--bri:1.015;--wx:46%;--wy:8%;--ar:0.7071;">
+    <div class="tilt">
+     <button class="sheet" data-i="32" aria-label="Enlarge: Biography">
+      <div class="sheet-body"><p class="sheet-kicker">Biography</p><p>Sander Kleinenberg has never been particularly good at standing still.</p><p>For more than three decades, the Dutch DJ and producer has followed one fairly simple instinct: play the records that excite him. Preferably before someone decides what genre they belong to.</p><p>That instinct has taken him from small, dark rooms to some very large ones, through progressive house, techno, disco, psychedelia, electronic pop and a fair amount of music that was probably a bad idea on paper. The common thread was never a genre. It was curiosity.</p><p>Emerging from the Netherlands in the 1990s, Sander became part of a generation of DJs who somehow found themselves taking underground electronic music around the world. Records like <em>My Lexicon</em>, <em>The Fruit</em>, <em>This Is Miami</em> and <em>Can You Feel It</em> became markers along the way, while his DJ sets built a reputation for joining dots between records that didn’t always appear to have much business being in the same room.</p><p>It took him around the planet more times than he can reasonably remember, from sweaty basements to Coachella, Glastonbury and Ultra, and through a long list of clubs, afterparties, airports and questionable hotel breakfasts.</p><p>The studio has been equally difficult to keep in one lane. Over the years Sander has produced, remixed and collaborated with Madonna, Daft Punk, Janet Jackson, Justin Timberlake, Halsey, LANY, Eurythmics, Jamie Cullum, Audio Bullys, Gwen McCrae and James Vincent McMorrow — which probably says more about his musical attention span than any genre description ever could.</p><p>And, inconveniently, he’s still curious.</p><p>A new generation of artists and a more adventurous corner of electronic music have pulled him back towards the reason he started doing this in the first place: finding strange, beautiful records and figuring out what happens when you play them very loud in the right order.</p><p>The sets are getting deeper again. The edges are getting stranger. New music is being made, new collaborations are taking shape, old friends are resurfacing and younger artists are introducing him to records he wishes he’d found first.</p><p>This isn’t about recreating a particular period of Sander Kleinenberg. That would be far too easy. It’s about continuing what was there from the beginning.</p></div>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:63.29%;--y:50.67%;--w:22.6%;--r:14.0deg;--z:7;--mx:27.05%;--my:62.08%;--mw:45.2%;--mr:7.0deg;--lift:0.712;--bri:1.004;--wx:40%;--wy:40%;--ar:0.60;">
+    <div class="tilt">
+     <button class="sheet" data-i="33" aria-label="Enlarge: Tour dates, October — November 2026">
+      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct &mdash; Dec 2026</p><ol class="ag-l"><li><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>MeWe &mdash; ADE</span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Event &mdash; ADE (venue TBA)</span></span></li><li><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event &mdash; ADE</span></span></li><li><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>TIDE @ MeWe &mdash; ADE, with Meloko + very special guest</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p></div></div>
+     </button>
+    </div>
+   </div>
+ </div>
+<script>
+ /* Three sleeves out of the crate, re-drawn on every visit like the pile itself.
+    The markup ships with three so the page still stands up without JS; this
+    swaps in a fresh trio before paint, and the lightbox is re-pointed at them
+    further down. Each entry is [file, caption]. */
+ (function(){
+   var CRATE = [["01.jpg","2B Continued — Laydown (I Feel You)"],["02.jpg","3 Drives On A Vinyl — Greece 2000"],["03.jpg","5K"],["04.jpg","Birds of Love (Sander Kleinenberg Remix)"],["05.jpg","Bitch I'm Madonna"],["06.jpg","Blue Bittersweet (Sander Kleinenberg Remix)"],["07.jpg","Free Frogs — Bombay"],["08.jpg","Breeder — New York FM"],["09.jpg","Brother Brown — Star Catching Girl FFR"],["10.jpg","Mevrouw Spoelstra — Grand Bazaar"],["11.jpg","Conflicts"],["12.jpg","Europe — Europe Transporter"],["13.jpg","Eye'n'Ear — Movin' On"],["14.jpg","For Your Love"],["15.jpg","Janet — All Nite (Don't Stop)"],["16.jpg","Justin Timberlake — Rock Your Body"],["17.jpg","King Dale — Bonus"],["18.jpg","Kinky Bros — Hot"],["19.jpg","Kleinenberg — Crazy"],["20.jpg","Kleinenberg — Dancin' (All Night)"],["21.jpg","Lamya — Empires Promo"],["22.jpg","Lexicon Avenue — From Dusk Till Dawn"],["23.jpg","London Girl (feat. Baby Sol)"],["24.jpg","M.T.F. — It Moves"],["25.jpg","Melk"],["26.jpg","Miks (Cyber Records)"],["27.jpg","Sander Kleinenberg — My Lexicon (2009 Remixes)"],["28.jpg","Sander Kleinenberg x Helsloot — My Lexicon"],["29.jpg","Sander Kleinenberg — My Lexicon (T. Mo's Ibiza Sunset Mix)"],["30.jpg","Sander Kleinenberg — My Lexicon"],["31.jpg","N*E*R*D — Maybe"],["32.jpg","PMT — Deeper Water"],["33.jpg","Penso Positivo EP"],["34.jpg","Rainbox — Seed, Scattered"],["35.jpg","Royksopp — Poor Leno"],["36.jpg","MTF — Running"],["37.jpg","S'n'S — Y.D.W. (Strictly Rhythm)"],["38.jpg","Sakan — Time Fax"],["39.jpg","Sander 3"],["40.jpg","Sander 4"],["41.jpg","Sander Kleinenberg & Lee Burridge — This Is Everybody! On Tour — Lee's"],["42.jpg","Sander Kleinenberg — 4 Dubs EP"],["43.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 CF007"],["44.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 Essential"],["45.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed"],["46.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 WLP"],["47.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3 Essential Promo"],["48.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3"],["49.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3 Signed"],["50.jpg","Sander Kleinenberg — 4.S.E.P.P.3.3 50% Digital"],["51.jpg","Sander Kleinenberg — Feelin' Good"],["52.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 CF Promo"],["53.jpg","Sander Kleinenberg — Sacred"],["54.jpg","Sander Kleinenberg — Sander 5"],["55.jpg","Sander Kleinenberg — The Rhythm"],["56.jpg","Sander Kleinenberg — This Is Miami France"],["57.jpg","Sander Kleinenberg — This Is Sander Kleinenberg 2"],["58.jpg","Sander Kleinenberg — This Is The Remixes"],["59.jpg","Spork — Freek Like Me"],["60.jpg","Sander Kleinenberg — The Fruit (Remixes)"],["61.jpg","This Is Everybody Too"],["62.jpg","Y.D.W."],["63.jpg","Global Underground Nubreed 004: Sander Kleinenberg"],["64.jpg","Sander Kleinenberg — Everybody"],["65.jpg","Renaissance: Sander Kleinenberg — This Is Everybody Too"],["66.jpg","Renaissance: Sander Kleinenberg — This Is Sander Kleinenberg"]];
+   var els = document.querySelectorAll(".pile .sleeve");
+   if (!els.length || CRATE.length < els.length) return;
+   var pool = CRATE.slice();
+   els.forEach(function(el){
+     var pick = pool.splice((Math.random()*pool.length)|0, 1)[0];
+     var img = el.querySelector("img");
+     img.src = "p/s/" + pick[0];
+     img.alt = pick[1];
+     el.setAttribute("aria-label", "Enlarge: " + pick[1]);
+   });
+ })();
+</script>
+ <script>
+ /* Re-deal the pile on every visit. The server-rendered positions stay as the
+    no-JS fallback; this runs before paint and replaces them, so the table looks
+    like someone tipped the box out again. Same relaxation as the build step:
+    seed a few clusters, then push overlapping items apart until they settle. */
+ (function(){
+   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.7082, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0]], H_D = 1.4000, H_M = 6.8000;
+   var slots = document.querySelectorAll('.pile .slot');
+   if (!slots.length || slots.length !== LAY.length) return;
+   var R = Math.random;
+
+   /* Walk the perimeter pushing each point in by a smooth, seamless wave, so the
+      card's silhouette ripples the way handled paper does. amp is in % of the
+      card, and the offset never goes negative (nothing can spill outside). */
+   function wavy(amp){
+     var k1 = 2 + ((R()*3)|0), k2 = 5 + ((R()*4)|0),
+         p1 = R()*6.283, p2 = R()*6.283, w = .3 + R()*.35, N = 9, pts = [], i, u, t;
+     function off(t){
+       return amp + amp*((Math.sin(6.283*k1*t + p1) + w*Math.sin(6.283*k2*t + p2))/(1+w));
+     }
+     for (i=0;i<N;i++){ u=i/N*100;     t=i/(4*N);          pts.push([u, off(t)]); }
+     for (i=0;i<N;i++){ u=i/N*100;     t=(N+i)/(4*N);      pts.push([100-off(t), u]); }
+     for (i=0;i<N;i++){ u=100-i/N*100; t=(2*N+i)/(4*N);    pts.push([u, 100-off(t)]); }
+     for (i=0;i<N;i++){ u=100-i/N*100; t=(3*N+i)/(4*N);    pts.push([off(t), u]); }
+     return 'polygon(' + pts.map(function(p){
+       return p[0].toFixed(2)+'% '+p[1].toFixed(2)+'%'; }).join(',') + ')';
+   }
+
+   function relax(items, H, overlap, iters, rots){
+     var n = items.length, dim = [], rad = [], box = [], pos = [], cl = [], i, j, k;
+     for (i=0;i<n;i++){ var w=items[i][0], h=w/items[i][1];
+       dim.push([w,h]); rad.push(Math.sqrt(w*w+h*h)/2);
+       /* the footprint the card actually occupies once it is turned - clamping by
+          the straight rectangle let tall items hang off the top of the pile */
+       var t=Math.abs(rots[i])*Math.PI/180, ct=Math.cos(t), st=Math.sin(t);
+       box.push([w*ct+h*st, w*st+h*ct]); }
+     for (k=0;k<7;k++) cl.push([.08+R()*.84, (.08+R()*.84)*H]);
+     for (i=0;i<n;i++){ var c=cl[(R()*7)|0];
+       pos.push([c[0]+(R()-.5)*.62, c[1]+(R()-.5)*.62*H]); }
+     for (var it=0; it<iters; it++){
+       for (i=0;i<n;i++) for (j=i+1;j<n;j++){
+         var dx=pos[j][0]-pos[i][0], dy=pos[j][1]-pos[i][1];
+         var d=Math.sqrt(dx*dx+dy*dy)||1e-6, want=(rad[i]+rad[j])*(1-overlap);
+         if (d<want){ var push=(want-d)*.275, ux=dx/d, uy=dy/d;
+           pos[i][0]-=ux*push; pos[i][1]-=uy*push;
+           pos[j][0]+=ux*push; pos[j][1]+=uy*push; }
+       }
+       for (i=0;i<n;i++){ var w2=box[i][0], h2=box[i][1];
+         pos[i][0]=w2+.024>=1 ? .5 : Math.min(Math.max(pos[i][0], w2/2+.012), 1-w2/2-.012);
+         pos[i][1]=h2+.024>=H ? H/2 : Math.min(Math.max(pos[i][1], h2/2+.012), H-h2/2-.012); }
+     }
+     return pos;
+   }
+
+   /* turn every card first, so the relaxation can keep its real footprint inside */
+   var rot = LAY.map(function(it){ return (R()-.5)*(it[3]?76:46); });
+   var mrot= LAY.map(function(it){ return (R()-.5)*(it[3]?46:30); });
+   var D = relax(LAY.map(function(i){return [i[0],i[2]];}), H_D, .20, 220, rot);
+   var M = relax(LAY.map(function(i){return [i[1],i[2]];}), H_M, .18, 220, mrot);
+
+   /* flat things settle underneath; the prints shuffle on top */
+   var prints=[], flats=[], zs=new Array(LAY.length), i2;
+   LAY.forEach(function(it,i){ (it[3]?prints:flats).push(i); });
+   flats.forEach(function(i,k){ zs[i]=k+1; });
+   var pz = prints.map(function(_,k){ return flats.length+k+1; });
+   for (i2=pz.length-1;i2>0;i2--){ var kk=(R()*(i2+1))|0, t=pz[i2]; pz[i2]=pz[kk]; pz[kk]=t; }
+   prints.forEach(function(i,k){ zs[i]=pz[k]; });
+
+   var MAXZ = LAY.length;
+   Array.prototype.forEach.call(slots, function(el,i){
+     var st=el.style, isPrint=LAY[i][3];
+     st.setProperty('--x',  (D[i][0]*100).toFixed(2)+'%');
+     st.setProperty('--y',  (D[i][1]/H_D*100).toFixed(2)+'%');
+     st.setProperty('--mx', (M[i][0]*100).toFixed(2)+'%');
+     st.setProperty('--my', (M[i][1]/H_M*100).toFixed(2)+'%');
+     st.setProperty('--r',  rot[i].toFixed(1)+'deg');
+     st.setProperty('--mr', mrot[i].toFixed(1)+'deg');
+     st.setProperty('--z',  zs[i]);
+     st.setProperty('--lift',(.55+.80*(zs[i]/MAXZ)).toFixed(3));
+     st.setProperty('--bri', (.955+R()*.075).toFixed(3));
+     st.setProperty('--wx', ((R()*100)|0)+'%');
+     st.setProperty('--wy', ((R()*100)|0)+'%');
+     /* deal the damage: a soft panel fold, or a bent-over corner, or neither */
+     /* an irregular, rippling outline - no real print has a straight edge */
+     var card = el.querySelector('.print,.flyer');
+     if (card){
+       card.style.clipPath = wavy(R() < .22 ? .9 + R()*.9 : .30 + R()*.26);
+       st.setProperty('--warp', 'url("p/warp' + (1 + ((R()*6)|0)) + '.png")');
+     }
+   });
+ })();
+ </script>
+</div>
+
+<svg class="ink-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
+<filter id="ink" x="-6%" y="-16%" width="112%" height="132%">
+ <feTurbulence type="fractalNoise" baseFrequency="0.026 0.047" numOctaves="3" seed="11" result="n"/>
+ <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+</filter></defs></svg>
+<div class="box" id="box" hidden role="dialog" aria-modal="true" aria-label="Enlarged photo">
+ <span class="box-veil" aria-hidden="true"></span>
+ <button class="flip" id="flip" aria-pressed="false" hidden>Turn over</button>
+ <button class="close" id="close" aria-label="Close">&#10005;</button>
+ <div class="box-stage" id="boxStage">
+  <div class="box-flip" id="boxFlip">
+   <div class="box-print" id="boxPrint">
+    <span class="shot" id="boxShot"><img id="boxImg" alt=""></span>
+    <div class="sheet-read" id="boxSheet" hidden></div>
+   </div>
+   <div class="box-back" id="boxBack" aria-hidden="true">
+    <div class="bk-hand" id="bkHand">
+     <p class="bk-note" id="bkNote"></p>
+     <ul class="bk-tracks" id="bkTracks" hidden></ul>
+     <p class="bk-more" id="bkMore"></p>
+    </div>
+    <div class="bk-rel" id="bkRel" hidden>
+     <p class="rl-k" id="rlK"></p>
+     <p class="rl-t" id="rlT"></p>
+     <p class="rl-a" id="rlA"></p>
+     <p class="rl-h" id="rlH" hidden></p>
+     <ol class="rl-l" id="rlL"></ol>
+    </div>
+    <span class="bk-corner" aria-hidden="true"></span>
+   </div>
+  </div>
+ </div>
+</div>
+
+<div class="player" id="player" hidden role="region" aria-label="Mixtape player">
+ <button class="player-close" id="plClose" aria-label="Close player">&#10005;</button>
+ <div id="scHost"></div>
+</div>
+
+<script src="https://w.soundcloud.com/player/api.js"></script>
+<script>
+const SHOTS = [{"src": "p/08-c-est-chic.jpg", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.jpg", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.jpg", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.jpg", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.jpg", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.jpg", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.jpg", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.jpg", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.jpg", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.jpg", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.jpg", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.jpg", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.jpg", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.jpg", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.jpg", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.jpg", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.jpg", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.jpg", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.jpg", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.jpg", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.jpg", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.jpg", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.jpg", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.jpg", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.jpg", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.jpg", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.jpg", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.jpg", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/s/07.jpg", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/45.jpg", "cap": "Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/37.jpg", "cap": "S'n'S — Y.D.W. (Strictly Rhythm)", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.jpg", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}];
+/* the sleeves were re-dealt before paint, so take their captions from the DOM */
+document.querySelectorAll(".pile .sleeve").forEach(el => {
+  const i = +el.dataset.i, img = el.querySelector("img");
+  if (SHOTS[i]) { SHOTS[i].src = img.getAttribute("src"); SHOTS[i].cap = img.alt; }
+});
+const $ = id => document.getElementById(id);
+const box = $('box'); let at = 0, opener = null;
+
+document.querySelectorAll('.print, .sleeve, .flyer, .sheet').forEach((el, i) => {
+  el.style.animationDelay = Math.min(i * 22, 460) + 'ms';
+  el.addEventListener('click', () => openAt(+el.dataset.i, el));
+});
+
+function show(i){
+  at = (i + SHOTS.length) % SHOTS.length;
+  const s = SHOTS[at];
+  const isSheet = s.kind === 'sheet';
+  const bare = s.kind === 'sleeve' || s.kind === 'flyer';
+  // a Polaroid is taller than its image because of the chin, hence .8 not s.ar
+  $('boxStage').style.setProperty('--boxar', isSheet ? 1 : (bare ? s.ar : .8));
+  $('boxPrint').classList.toggle('is-bare', bare);
+  $('boxPrint').classList.toggle('is-sleeve', s.kind === 'sleeve');
+  $('boxPrint').classList.toggle('is-flyer', s.kind === 'flyer');
+  $('boxPrint').classList.toggle('is-sheet', isSheet);
+  $('boxStage').classList.toggle('wide', isSheet);
+  $('boxShot').hidden = isSheet;
+  $('boxSheet').hidden = !isSheet;
+  if (isSheet) {
+    const src = document.querySelector('.sheet[data-i="' + at + '"] .sheet-body');
+    $('boxSheet').innerHTML = src ? src.innerHTML : '';
+    // tickets ride along as data on the card, because the card is a button;
+    // here there is no button around them, so they become real links
+    $('boxSheet').querySelectorAll('[data-tix]').forEach(el => {
+      const a = document.createElement('a');
+      a.href = el.getAttribute('data-tix');
+      a.target = '_blank'; a.rel = 'noopener noreferrer';
+      a.className = el.className; a.textContent = el.textContent;
+      el.replaceWith(a);
+    });
+  } else {
+    $('boxImg').src = s.src; $('boxImg').alt = s.cap;
+  }
+  const turnable = !isSheet;
+  const flip = $('flip'), face = $('boxFlip');
+  face.classList.toggle('turnable', turnable);
+  turn(false);
+  flip.hidden = !turnable;
+  $('boxBack').hidden = !turnable;
+  if (turnable) {
+    const raw = BACKS[s.cap];
+    const b = typeof raw === 'string' ? { foot: raw } : (raw || {});
+    // a photograph is written on; a record is printed, in the page's own language
+    const printed = s.kind === 'sleeve';
+    $('boxBack').classList.toggle('is-rel', printed);
+    $('bkHand').hidden = printed;
+    $('bkRel').hidden = !printed;
+    const dash = (s.cap || '').indexOf('\u2014');
+    const artist = dash > 0 ? s.cap.slice(0, dash).trim() : '';
+    const title  = dash > 0 ? s.cap.slice(dash + 1).trim() : (s.cap || '');
+    if (printed) {
+      // "4 Seasons EP 1 Of 3 CF007" - the pressing is ours, not the record's
+      const PRESS = /\s+(CF Promo|Essential Promo|Signed|WLP|Essential|CF007|50% Digital|Promo)$/i;
+      let t2 = title, press = '';
+      const pm = t2.match(PRESS);
+      if (pm) { press = pm[1]; t2 = t2.slice(0, pm.index).trim(); }
+      $('rlT').textContent = b.title || t2;
+      const kick = [b.label || b.foot || '', press].filter(Boolean).join('  \u00b7  ');
+      $('rlK').textContent = kick;  $('rlK').hidden = !kick;
+      $('rlA').textContent = artist || b.artist || '';
+      $('rlA').hidden = !$('rlA').textContent;
+      const mixes = b.mixes || [], tracks = b.tracks || [];
+      const rows = mixes.length ? mixes : tracks;
+      $('rlH').textContent = mixes.length ? 'Sander Kleinenberg versions' : 'Tracklist';
+      $('rlH').hidden = !rows.length;
+      const l = $('rlL'); l.textContent = '';
+      // a double album is "1-01, 1-02 ... 2-01" on Discogs; on the sleeve it is
+      // two sides of a record, so break it into CD 1 / CD 2 and drop the prefix
+      const DISC = /^(\d+)[-.](\d+)$/;
+      let disc = null;
+      rows.forEach(t => {
+        if (t[0] === '#') {           // a side heading printed on the record
+          const h = document.createElement('li');
+          h.className = 'disc'; h.textContent = t[1];
+          l.append(h); return;
+        }
+        const dm = DISC.exec(t[0] || '');
+        if (dm && dm[1] !== disc) {
+          disc = dm[1];
+          const h = document.createElement('li');
+          h.className = 'disc'; h.textContent = 'CD ' + disc;
+          l.append(h);
+        }
+        const li = document.createElement('li');
+        if (mixes.length) li.className = 'mix';
+        const pos = document.createElement('i');
+        pos.textContent = dm ? dm[2].padStart(2, '0') : (t[0] || '');
+        const nm = document.createElement('span'); nm.textContent = t[1];
+        li.append(pos, nm); l.append(li);
+      });
+    } else {
+      $('bkNote').textContent = s.cap || '';
+      const tl = $('bkTracks');
+      tl.textContent = '';
+      (b.tracks || []).forEach(t => {
+        const li = document.createElement('li');
+        const side = document.createElement('i'); side.textContent = t[0];
+        const name = document.createElement('span'); name.textContent = t[1];
+        li.append(side, name); tl.append(li);
+      });
+      tl.hidden = !(b.tracks && b.tracks.length);
+      $('bkMore').textContent = b.foot || '';
+      $('bkMore').hidden = !b.foot;
+    }
+  }
+  if (!box.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches)
+    $('boxPrint').animate([{opacity:.35, transform:'scale(.986)'}, {opacity:1, transform:'none'}],
+                          {duration:220, easing:'ease-out'});
+}
+/* The print lifts off the table. It starts exactly where its card lies - same
+   size, same angle - and rises to the middle, so opening reads as a zoom out of
+   the pile rather than a panel arriving over a dimmed page. Closing flies it
+   back to the card it came from. */
+/* What is written on the back of a thing. A print carries its own label - that is
+   what is on the back of a real one - and anything here is added underneath it.
+   To give an item more, add a line keyed by its caption:
+       "Ibiza '11": "Pacha, August. Shot from the balcony.",
+   Sheets get no back; they are already text. */
+const BACKS = {
+  /* What is on the back. A photograph is written on by hand; a record is printed,
+     so it gets the page's own typography. A plain string is one line of credit;
+     {label, tracks} prints a tracklist; {label, mixes} prints only the Sander
+     Kleinenberg versions carried on that release.
+     The release rows came from Discogs and were checked by eye; six that resolved
+     to the wrong record were thrown out. The two EPs at the end are Tim's own
+     listings and deliberately replace what Discogs returned for them. */
+  "3 Drives On A Vinyl — Greece 2000": {label:"188.244-6, Discoboll, 1999", mixes:[["5", "Greece 2000 (S'N'S Deal Remix)"]]},
+  "5K": {label:"LMRCD5K01, This Is Recordings, 2010", artist:"Sander Kleinenberg", tracks:[["1", "This Love"], ["2", "Remember When"], ["3", "Follow Me"], ["4", "The Healer"], ["5", "The Journey"], ["6", "M.A.N.I.A.C."], ["7", "Closer"], ["8", "R.Y.A.N.L."], ["9", "Disko Riot"], ["10", "This Is Our Dub"], ["11", "Chemically"], ["12", "This Love (Reprise)"], ["13", "Wish I Said"]]},
+  "Birds of Love (Sander Kleinenberg Remix)": {label:"ARDP394, Armada Deep, 2018", artist:"Monn", mixes:[["", "Birds Of Love (Sander Kleinenberg Remix)"], ["", "Birds Of Love (Sander Kleinenberg Extended Remix)"]]},
+  "Bitch I'm Madonna": {label:"Not On Label (Madonna)", artist:"Madonna / Nicki Minaj", mixes:[["B2", "Bitch I'm Madonna (Sander Kleinenberg Remix)"], ["", "Bitch I'm Madonna (Sander Kleinenberg Video Edit)"]]},
+  "Breeder — New York FM": {label:"Not On Label, 2000", mixes:[["", "New York FM (Sander Kleinenberg Remix)"]]},
+  "Brother Brown — Star Catching Girl FFR": {label:"BBR 003, Brother Brown Records, 2001", mixes:[["", "Star Catching Girl (Sander Kleinenberg's No Way Out Mix)"], ["", "Star Catching Girl (Sander Kleinenberg's Dubby Mix)"]]},
+  "Conflicts": {label:"deal 002, Deal Records, 1996", artist:"S 'N' S", tracks:[["A", "Conflicts"], ["B1", "Arab"], ["B2", "Summer Feeling"]]},
+  "Europe — Europe Transporter": {label:"SUPERSTITION 2029, Superstition, 1994", tracks:[["A1", "Music Madness"], ["A2", "24 Hours Of Contact"], ["B1", "Quasi Midi"], ["B2", "Play'n"]]},
+  "Eye'n'Ear — Movin' On": {label:"WU 97132EP, What's Up Records, 1997", mixes:[["B", "Movin' On (Sander's Vision Mix)"]]},
+  "For Your Love": {label:"569 467-1, Sound Of Barclay, 1998", artist:"Sander Kleinenberg", tracks:[["A1", "For Your Love (Original Mix)"], ["A2", "For Your Love (Alex Gopher's For Your Daddy Mix)"], ["B1", "For Your Love (S.K.'s Flanged Dub Mix)"], ["B2", "The Other Shit (From The Mothership)"]]},
+  "Justin Timberlake — Rock Your Body": {label:"82876 55220 2, Jive, 2003", mixes:[["", "Rock Your Body (Sander Kleinenberg's Just In The Club Mix)"], ["", "Rock Your Body (Sander Kleinenberg's Just In The Radio)"], ["", "Rock Your Body (Sander Kleinenberg's Just In The Dub)"], ["", "Rock Your Body (Sander Kleinenberg Unreleased 1999 Mix)"]]},
+  "King Dale — Bonus": {label:"MD005, Massive Drive Recordings, 1998", mixes:[["", "Bonus (S'N'S Tunermix By DJ Stef And Sander Kleinenberg)"]]},
+  "Kleinenberg — Crazy": {label:"DEAL003, Deal Records, 1996", tracks:[["A", "Crazy"], ["B", "Breakbeatznoizeandmoreshittodancetwo"]]},
+  "Kleinenberg — Dancin' (All Night)": {label:"deal 005, Deal Records, 1996", tracks:[["A", "Dancin' (All Night)"], ["B1", "Warriors"], ["B2", "All Night (Dancin')"]]},
+  "Lamya — Empires Promo": {label:"J Records, 2002", mixes:[["", "Empires (Sander Kleinenberg Audio Paranoid Remix)"], ["", "Empires (Sander Kleinenberg Audio Paranoid Club)"], ["", "Empires (Sander Kleinenberg Audio Paranoid Radio Edit (USA))"], ["", "Empires (Sander Kleinenberg Audio Paranoid Short Cut)"], ["", "Empires (Sander Kleinenberg Audio Paranoid Dub)"]]},
+  "London Girl (feat. Baby Sol)": {label:"SPDEEP461, Spinnin' Deep, 2018", artist:"Sander Kleinenberg / Baby Sol", tracks:[["1", "London Girl (Extended Mix)"]]},
+  "M.T.F. — It Moves": {label:"deal 008, Deal Records, 1996", tracks:[["A", "It Moves (S'n'S Hard And Long Dub)"], ["B", "It Moves (Vincent De Moor Remix)"]]},
+  "MTF — Running": {label:"DEAL 014, Deal Records, 1997", tracks:[["A", "Running"], ["B", "Getting High"]]},
+  "Melk": {label:"531 838-2, Sound Of Barclay, 1998", artist:"Sander Kleinenberg", tracks:[["1", "Electro Pathfinder"], ["2", "Here It Comes"], ["3", "Just Wanna Drive"], ["4", "Yes, I Stole This Breakbeat"], ["5", "Gangster Boogie"], ["6", "Moog Change"], ["7", "Penso Positivo"], ["8", "The Other Shit (From The Mothership)"], ["9", "Bubble Gum Gangster"], ["10", "For Your Love"], ["11", "Energy"], ["12", "Dawn Is Breaking"], ["13", "Lament My Love"], ["14", "Art Of Trash"]]},
+  "Miks (Cyber Records)": {label:"CR 024, Cyber Records, 1998", artist:"Fetzan", mixes:[["B1", "She Left Me... (Sander Kleinenberg Mix)"]]},
+  "Penso Positivo EP": {label:"12INF009, Infusion, 2000", artist:"Sander Kleinenberg", tracks:[["A1", "Penso Positivo"], ["A2", "Moog Change"], ["B1", "Here It Comes"], ["B2", "For Your Love"]]},
+  "Rainbox — Seed, Scattered": {label:"MD 001, Massive Drive Recordings, 1997", mixes:[["B1", "Seed, Scattered (S'N'S Remix By DJ Stef And Sander Kleinenberg)"]]},
+  "Renaissance: Sander Kleinenberg — This Is Everybody Too": {label:"REN16CD, Renaissance, 2004", tracks:[["1-1", "Disappearing Objects"], ["1-2", "Birthday"], ["1-3", "Dining Room"], ["1-4", "Mindtrip"], ["1-5", "In Your Eyes"], ["1-6", "Into Nothing (Hamel Last Time For 9 Vox Mix)"], ["1-7", "Filth (Greed Is Evil Mix)"], ["1-8", "Do To You (In '82)"], ["1-9", "Kinda New (Tiefschwarz Dub)"], ["1-10", "The Deutsche Song"], ["1-11", "The Switch (King Unique Pushin' Vocal)"], ["1-12", "Don't Stop Go (Mirabeau Main Room Remix)"], ["1-13", "The Right Time"], ["2-1", "Hugendubel"], ["2-2", "The Fruit"], ["2-3", "Mir Geht's Gut"], ["2-4", "Rollin' On (Garbo & Liede Remix)"], ["2-5", "Talk Like A Stranger (Nic Fanciulli Skylark Dub Mix)"], ["2-6", "Ya Don't Stop"], ["2-7", "Why (Wally Lopez Dubby Remix)"], ["2-8", "808"], ["2-9", "7th Morning"], ["2-10", "Work Together"], ["2-11", "Party To The Music (René Amesz Remix)"], ["2-12", "Waves (E-Mission Mix)"], ["2-13", "Waves (Bay Of Islands Mix)"]]},
+  "Royksopp — Poor Leno": {label:"WALLT073, Wall Of Sound, 2001", mixes:[["", "Poor Leno (Sander Kleinenberg's Northern Beach Mix)"], ["", "Poor Leno (Sander Kleinenberg Remix)"], ["", "Poor Leno (Sander Kleinenberg Dub)"]]},
+  "S'n'S — Y.D.W. (Strictly Rhythm)": {label:"DEAL 001, Deal Records, 1996", tracks:[["A", "Y.D.W."], ["B", "La Haya"]]},
+  "Sander 3": {label:"2654, Going Global Series, 1996", artist:"Sander Kleinenberg", tracks:[["A", "Untitled"]]},
+  "Sander 4": {label:"2655, Going Global Series, 1996", artist:"Sander Kleinenberg", tracks:[["A", "Untitled"]]},
+  "Sander Kleinenberg & Lee Burridge — This Is Everybody! On Tour — Lee's": {label:"EQLMR001CD, EQ Recordings, 2005", tracks:[["1-1", "Livedriver (Sascha Funke Remix)"], ["1-2", "Easy Ride"], ["1-3", "Closer"], ["1-4", "Acid In My Fridge"], ["1-5", "Extra Stop"], ["1-6", "One Earth Beat (Gardner & Star Rave Lizard Remix)"], ["1-7", "Wanna Get Wet (Buick Project Remix)"], ["1-8", "Future Now (Tim Paris Mix)"], ["1-9", "I Love You"], ["1-10", "Du What U Du (Trentemøller Remix)"], ["1-11", "Esplanade '97"], ["1-12", "The Dude"], ["1-13", "2 Bullets"], ["2-1", "Our House (Papa Remix)"], ["2-2", "Muscle Car (DJ T Remix)"], ["2-3", "Until She Rises"], ["2-4", "Swordfight (Trent Cantrelle Remix)"], ["2-5", "Lemon Sherbert"], ["2-6", "Yeah Yeah (Pearn & Bridges Dub)"], ["2-7", "Earthquake (Dan Sanders Remix)"], ["2-8", "Dark Matter"], ["2-9", "Bounce Back"], ["2-10", "Mr. Roboto"], ["2-11", "Nobody Never (Hamel & Jamieson's Audiomagnetics Remix)"], ["2-12", "Atto D'Amore (Dub)"], ["2-13", "Look (Dub)"]]},
+  "Sander Kleinenberg — 4 Dubs EP": {label:"015194 CF, Combined Forces, 2001", tracks:[["A", "Makes You Wanna Dance"], ["B", "Punk Yeah"], ["C", "The Warning"], ["D", "Make You Mine"]]},
+  "Sander Kleinenberg — Everybody": {label:"REN10CD, Renaissance, 2003", tracks:[["1-01", "The Intro - The Club"], ["1-02", "Midnight"], ["1-03", "City Lights"], ["1-04", "Zamba"], ["1-05", "Symbiosis"], ["1-06", "In Destiny (Juan Magan & Cesar Del Rio Mix)"], ["1-07", "Nu Bluez"], ["1-08", "Nativa"], ["1-09", "Be As One"], ["1-10", "Stars (Lee Cabrera Main Mix)"], ["1-11", "Addiction"], ["1-12", "Ride"], ["1-13", "Higher Thoughts"], ["2-01", "Come Into My Kitchen"], ["2-02", "Manila (Ewan Pearson Remix)"], ["2-03", "New New York"], ["2-04", "Troubled Soul"], ["2-05", "The Voyager"], ["2-06", "Natural Sound"], ["2-07", "Funk The Key Word"], ["2-08", "Therapy (Speedy's Session)"], ["2-09", "My Memory (Romania Edit)"], ["2-10", "Definite Form"], ["2-11", "Corrective Tones"], ["2-12", "2 Bags Of Grass (Reprise)"], ["2-13", "Repeat To Specify"]]},
+  "Sander Kleinenberg — Feelin' Good": {label:"DEAL 017, Deal Records, 1998", tracks:[["A", "Feelin' Good (Feelin' Dub)"], ["B1", "Feelin' Better (S.K.'s Glitter Mix)"], ["B2", "Feelin' Beats"]]},
+  "Sander Kleinenberg — My Lexicon": {label:"ESX16, Essential Recordings, 2000", tracks:[["A1", "My Lexicon (Full Length Version)"], ["B1", "Storm"], ["B2", "My Lexicon (12\" Version)"]]},
+  "Sander Kleinenberg — Sacred": {label:"CF 005, Combined Forces, 1999", tracks:[["A", "Sacred (Vocal Mix)"], ["B", "Sacred (Dub)"]]},
+  "Sander Kleinenberg — Sander 5": {label:"527 932-1, Going Global Series, 1995", tracks:[["A1", "37°C"], ["A2", "37,6°C (Funky Fever)"], ["B1", "Rheine Station 11:00pm"], ["B2", "Dreamin' Of You Sim 1"], ["B3", "Beat That"]]},
+  "Sander Kleinenberg — The Rhythm": {label:"DEAL 013, Deal Records, 1997", tracks:[["A", "The Rhythm"], ["B", "Passion"]]},
+  "Sander Kleinenberg — This Is Sander Kleinenberg 2": {label:"LMRCD0901, Little Mountain Recordings, 2009", tracks:[["1", "Summer Rain"], ["2", "Silver Surfer"], ["3", "Feuervogel"], ["4", "Replika"], ["5", "Downstairs (H.O.S.H. Remix)"], ["6", "Push Push (Rainer Weichhold Remix)"], ["7", "Smokin Hawt"], ["8", "Teenage Love (Kevin Yost Remix)"], ["9", "Graffiti"], ["10", "Asteroidz (Sultan & Ned Shepard Remix)"], ["11", "Magic Bottle"], ["12", "Tblisi"], ["13", "Ridicule"], ["14", "Heart To Ear"], ["15", "Put A Name To This"], ["16", "Foxy"], ["17", "Massive (Dirty Flavor Remix)"], ["18", "Please You (2009)"], ["19", "The Music Got Me (Block & Crown Paradise Mix)"], ["20", "Yoko"], ["21", "The Answer (Dabruck & Klein Remix)"], ["22", "Time 2 Werk (Sean McCaff 2009 Remix)"], ["23", "Homeboys"], ["24", "Autumnbomb"], ["25", "Kippschwinger (Refurb)"]]},
+  "This Is Everybody Too": {label:"REN16CD, Renaissance, 2004", artist:"Sander Kleinenberg", tracks:[["1-1", "Disappearing Objects"], ["1-2", "Birthday"], ["1-3", "Dining Room"], ["1-4", "Mindtrip"], ["1-5", "In Your Eyes"], ["1-6", "Into Nothing (Hamel Last Time For 9 Vox Mix)"], ["1-7", "Filth (Greed Is Evil Mix)"], ["1-8", "Do To You (In '82)"], ["1-9", "Kinda New (Tiefschwarz Dub)"], ["1-10", "The Deutsche Song"], ["1-11", "The Switch (King Unique Pushin' Vocal)"], ["1-12", "Don't Stop Go (Mirabeau Main Room Remix)"], ["1-13", "The Right Time"], ["2-1", "Hugendubel"], ["2-2", "The Fruit"], ["2-3", "Mir Geht's Gut"], ["2-4", "Rollin' On (Garbo & Liede Remix)"], ["2-5", "Talk Like A Stranger (Nic Fanciulli Skylark Dub Mix)"], ["2-6", "Ya Don't Stop"], ["2-7", "Why (Wally Lopez Dubby Remix)"], ["2-8", "808"], ["2-9", "7th Morning"], ["2-10", "Work Together"], ["2-11", "Party To The Music (René Amesz Remix)"], ["2-12", "Waves (E-Mission Mix)"], ["2-13", "Waves (Bay Of Islands Mix)"]]},
+  "Y.D.W.": {label:"DEAL 001, Deal Records, 1996", artist:"S 'N' S", tracks:[["A", "Y.D.W."], ["B", "La Haya"]]},
+  "Bullits (air\u00b7eight)": "air\u00b7eight",
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3 Essential Promo": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3 Signed": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3 Essential Promo": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg — 4 Seasons EP 2 Of 3 Signed": {label:"CF 029, Combined Forces, 2000", tracks:[["A", "Venus & Mars"], ["B", "Observator"], ["C", "Slipper Sleaze"], ["D", "Sound Family (Is All I Need)"]]},
+  "Sander Kleinenberg \u2014 4 Seasons EP 1 Of 3 CF007": {tracks:[["A","My Lexicon"],["B","Storm"],["C","Sacred (Dub)"],["D","Frog Dancing (Way Down In My Soul)"]], foot:"CF007 Combined Forces 1999"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 1 Of 3 Essential": {tracks:[["A","My Lexicon"],["B","Storm"],["C","Sacred (Dub)"],["D","Frog Dancing (Way Down In My Soul)"]], foot:"CF007 Combined Forces 1999"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 1 Of 3 Signed": {tracks:[["A","My Lexicon"],["B","Storm"],["C","Sacred (Dub)"],["D","Frog Dancing (Way Down In My Soul)"]], foot:"CF007 Combined Forces 1999"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 1 Of 3 WLP": {tracks:[["A","My Lexicon"],["B","Storm"],["C","Sacred (Dub)"],["D","Frog Dancing (Way Down In My Soul)"]], foot:"CF007 Combined Forces 1999"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 1 Of 3 CF Promo": {tracks:[["A","My Lexicon"],["B","Storm"],["C","Sacred (Dub)"],["D","Frog Dancing (Way Down In My Soul)"]], foot:"CF007 Combined Forces 1999"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 2 Of 3": {tracks:[["A","Venus & Mars"],["B","Observator"],["C","Slipper Sleaze"],["D","Sound Family (Is All I Need)"]], foot:"CF 029, Combined Forces 2000"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 2 Of 3 Signed": {tracks:[["A","Venus & Mars"],["B","Observator"],["C","Slipper Sleaze"],["D","Sound Family (Is All I Need)"]], foot:"CF 029, Combined Forces 2000"},
+  "Sander Kleinenberg \u2014 4 Seasons EP 2 Of 3 Essential Promo": {tracks:[["A","Venus & Mars"],["B","Observator"],["C","Slipper Sleaze"],["D","Sound Family (Is All I Need)"]], foot:"CF 029, Combined Forces 2000"},
+  "Sakan — Time Fax": {label:"579 065-1, Going Global Series, 1995", tracks:[["A", "Time Fax (Rex Vs Roxy Mix)"], ["B1", "Kweetnie"], ["B2", "Time Fax (Peage Den Haag-Paris)"]]},
+  "Sander Kleinenberg — My Lexicon (2009 Remixes)": {label:"LMR062, Little Mountain Recordings, 2009", tracks:[["1", "My Lexicon (PrinsJan & Dennis Ruyer Remix)"], ["2", "My Lexicon (Calvertron & Paul Thomas Remix)"], ["3", "My Lexicon (Eelke Kleijn Space Mix)"], ["4", "My Lexicon (Original Mix)"]]},
+  "Lexicon Avenue — From Dusk Till Dawn": {label:"FOR-019, Forensic Records, 2002", mixes:[["", "From Dusk Till Dawn (Sander Kleinenberg Audio Paranoid Remix)"], ["", "From Dusk Till Dawn (Sander Kleinenberg Audio Paranoid Dubapella)"]]},
+  "Sander Kleinenberg x Helsloot — My Lexicon": {label:"ARMNWSV007, Armada Music, 2025", tracks:[["A", "My Lexicon (Original Mix)"], ["B", "My Lexicon (Helsloot Remix)"]]},
+  "Sander Kleinenberg — My Lexicon (T. Mo's Ibiza Sunset Mix)": {label:"ARMAS3584, Armada (4), 2025", tracks:[["1", "My Lexicon (Extended Mix)"]]},
+  "Sander Kleinenberg — This Is The Remixes": {label:"LMR025R, Little Mountain Recordings, 2006", tracks:[["A", "This Is...(Cedric Gervais' This Is Not Ibiza Mix)"], ["B", "This Is...(Sander Kleinenberg's This Is Not Miami Mix)"], ["C", "This Is...(Delta Sierra Clinic Mix)"], ["D1", "This Is...(Instrumental)"], ["D2", "This Is...(Acapella's)"]]},
+  "Sander Kleinenberg — 4.S.E.P.P.3.3 50% Digital": {label:"CF 052, Combined Forces, 2002", tracks:[["A", "Soul Shelter"], ["B", "Hidden Agenda"]]},
+  "N*E*R*D — Maybe": {label:"Virgin, 2004", mixes:[["", "Maybe (Sander Kleinenberg Maybe Remix)"], ["", "Maybe (Sander Kleinenberg Radio Mix)"], ["", "Maybe (Sander Kleinenberg Dub)"]]},
+  "Spork — Freek Like Me": {label:"ECB51R, Southern Fried Records, 2003", mixes:[["A1", "Freek Like Me (Stereosonic Remix)"]]},
+  "PMT — Deeper Water": {label:"ACE008, Acetate Ltd, 2001", mixes:[["", "Deeper Water (Sander Kleinenberg's Caffeine Remix)"]]},
+  "Kinky Bros — Hot": {label:"TRIP 035, Outland Records, 1997", mixes:[["A1", "Hot (S 'N' S The Hague Kick Mix)"]]},
+  "2B Continued — Laydown (I Feel You)": {label:"ASPRO 015, Aspro, 1997", mixes:[["A1", "Laydown - I Feel U (Vocal Club Mix)"], ["A2", "Laydown (S'N'S Mix)"]]},
+  "Janet — All Nite (Don't Stop)": {label:"Virgin, 2004", mixes:[["", "All Nite (Don't Stop) (Sander Kleinenberg's Everybody Club Mix)"], ["", "All Nite (Don't Stop) (Sander Kleinenberg Everybody Remix)"], ["", "All Nite (Don't Stop) (Sander Kleinenberg's Radio Mix)"], ["", "All Nite (Don't Stop) (Sander Kleinenberg Dub)"]]},
+  "Free Frogs — Bombay": {label:"WONKA 1015, Wonka Beats, 1993", tracks:[["A", "Bombay"], ["B1", "Nightdreamer"], ["B2", "Yaric"]]},
+  "Renaissance: Sander Kleinenberg — This Is Sander Kleinenberg": {label:"REN36CD, Renaissance, 2007", tracks:[["1-1", "Folk I Farta"], ["1-2", "Loosen Up Children"], ["1-3", "Anymore (Phonique Remix)"], ["1-4", "Moscow Traffic (Beep Yeah Mix)"], ["1-5", "Dusty Horizon (Interlude)"], ["1-6", "Got Bread"], ["1-7", "Police Squid (16 Bit Lolita's Strictly Dancefloor Mix)"], ["1-8", "Moscow Never Sleeps (Tom Novy's Sanderground Remix)"], ["1-9", "Dancing With Strangers"], ["1-10", "Arabesque"], ["1-11", "Battle Of Flowers"], ["1-12", "Sin (Gui Boratto Remix)"], ["1-13", "Emotions Of The Night (Trent Cantrelle Remix)"], ["1-14", "Beautiful Life"], ["2-1", "Mutual Dependency (Acapella)"], ["2-2", "Jah Rule"], ["2-3", "Remember (Dub)"], ["2-4", "Chinese Drip"], ["2-5", "Tucan (Nic Fanciulli Remix)"], ["2-6", "Incoming (Motorcitysoul Mix)"], ["2-7", "Summer's Gone (Bushwacka! Dub)"], ["2-8", "Lost"], ["2-9", "Dancing In Dark Rooms"], ["2-10", "Last Night In Vegas (Schossow & Sagstad Remix)"], ["2-11", "Shockadelic"], ["2-12", "Game Over"], ["2-13", "Carbon Occasions"], ["2-14", "Transit Time (Dubfire Remix)"]]},
+  "Global Underground Nubreed 004: Sander Kleinenberg": {title:"Global Underground Nubreed 004", label:"NU:004CD, Boxed, 2001", artist:"Sander Kleinenberg", tracks:[["1-01", "Atari (Acappella)"], ["1-02", "A Day In The Life Of An Eastern Assassin"], ["1-03", "Ain't Gonna (Dark Stereo Dub)"], ["1-04", "Deep Funk"], ["1-05", "Spooky"], ["1-06", "Money Shot"], ["1-07", "Karma"], ["1-08", "Scorchio! (Sander Kleinenberg Remix)"], ["1-09", "Innocente (Falling In Love) (Deep Dish's Gladiator Remix)"], ["1-10", "Stay With Me (Mike Monday Remix)"], ["1-11", "Obsidian (PFN Vs. The Light Remix)"], ["1-12", "Onix-1"], ["2-01", "Story Of The Heaviest Bassline Ever"], ["2-02", "State Of Grace (Silicon Scally Remix)"], ["2-03", "Fly Baby (Tom Middleton's Cosmos Remix)"], ["2-04", "Once I've Been There (Remix By Lexicon Avenue)"], ["2-05", "Yebo (The Arkarna Dub)"], ["2-06", "Krystal (Remix By Stripped Inc.)"], ["2-07", "Disappear (East Side Movement Remix)"], ["2-08", "Stauffenberg"], ["2-09", "Keep The Peace (Android Page Remix)"], ["2-10", "Modified"], ["2-11", "Ghosts (Redanka's Eerie Disko Dub)"], ["2-12", "Hidden Agenda"]]},
+  "Blue Bittersweet (Sander Kleinenberg Remix)": {title:"Blue Bittersweet", artist:"Ilse DeLange", label:"Firefly Music, 2013", mixes:[["1", "Blue Bittersweet (Sander Kleinenberg Remix)"]]},
+  "Sander Kleinenberg — This Is Miami France": {label:"P035, Paradise Records (12), 2006", tracks:[["#", "That Side"], ["A1", "This Is Miami (Club Mix)"], ["A2", "This Is Ibiza (Club Mix)"], ["#", "This Side"], ["B1", "This Is Ibiza (David Vendetta Remix)"], ["B2", "This Is Paris"]]},
+  "Sander Kleinenberg — The Fruit (Remixes)": {label:"LMR011-R1, Little Mountain Recordings, 2005", tracks:[["A", "The Fruit (Sander Kleinenberg \"B.M.K.\" Remix)"], ["B", "The Fruit (Tom Novy Club Remix)"]]},
+  "Mevrouw Spoelstra — Grand Bazaar": {label:"AIR 004, Airtight, 1999", tracks:[["A", "Bullits (Ian Pooley's Fierce Dub)"], ["B1", "Ultra Low Tar"], ["B2", "Bullits (Original Mix)"]]},
+};
+
+const CALM = matchMedia('(prefers-reduced-motion: reduce)');
+function flight(el, back){
+  const stage = $('boxStage'), veil = document.querySelector('.box-veil');
+  stage.getAnimations().forEach(a => a.cancel());
+  if (veil) veil.animate(back ? [{opacity:1},{opacity:0}] : [{opacity:0},{opacity:1}],
+                         {duration: back ? 230 : 300, easing:'ease-out', fill:'both'});
+  const slot = el && el.closest && el.closest('.slot');
+  if (!slot || CALM.matches) return null;
+  const a = slot.getBoundingClientRect(), b = stage.getBoundingClientRect();
+  if (!a.width || !b.width) return null;
+  let rot = 0;
+  try {                                   // the angle the card is lying at
+    const m = new DOMMatrixReadOnly(getComputedStyle(slot.querySelector('.tilt')).transform);
+    rot = Math.atan2(m.b, m.a) * 180 / Math.PI;
+  } catch (err) {}
+  const f = [{transform:'translate(' + ((a.left + a.width/2) - (b.left + b.width/2)) + 'px,'
+                                     + ((a.top + a.height/2) - (b.top + b.height/2)) + 'px) '
+                      + 'rotate(' + rot.toFixed(2) + 'deg) '
+                      + 'scale(' + Math.max(.05, a.width / b.width).toFixed(4) + ')',
+             opacity:.35},
+            {transform:'none', opacity:1}];
+  return stage.animate(back ? [f[1], f[0]] : f,
+    {duration: back ? 300 : 440, fill:'both',
+     easing: back ? 'cubic-bezier(.45,0,.75,.35)' : 'cubic-bezier(.22,.9,.26,1)'});
+}
+function turn(to){
+  const face = $('boxFlip'), flip = $('flip');
+  const on = face.classList.contains('turnable') && (to === undefined
+             ? !face.classList.contains('flipped') : !!to);
+  face.classList.toggle('flipped', on);
+  flip.setAttribute('aria-pressed', on ? 'true' : 'false');
+  flip.textContent = on ? 'Turn back' : 'Turn over';
+  $('boxBack').setAttribute('aria-hidden', on ? 'false' : 'true');
+  $('boxPrint').setAttribute('aria-hidden', on ? 'true' : 'false');
+}
+function openAt(i, el){ opener = el; show(i); box.hidden = false; flight(el, false); $('close').focus(); }
+function shut(){
+  if (box.hidden) return;
+  const done = () => { box.hidden = true; if (opener) opener.focus(); };
+  const a = flight(opener, true);
+  if (a) a.addEventListener('finish', done, {once:true}); else done();
+}
+
+$('close').addEventListener('click', shut);
+$('flip').addEventListener('click', () => turn());
+$('boxFlip').addEventListener('click', () => turn());
+box.addEventListener('click', e => {
+  if ($('boxFlip').contains(e.target) || e.target.closest('.close')
+      || e.target.closest('.flip')) return;
+  shut();
+});
+addEventListener('keydown', e => {
+  if (box.hidden) return;
+  if (e.key === 'Escape') shut();
+  else if (e.key === 'ArrowLeft') show(at - 1);
+  else if (e.key === 'ArrowRight') show(at + 1);
+});
+
+/* ---- mixtape player -------------------------------------------------------
+   Streams through SoundCloud's own embedded player rather than a custom
+   transport, which is how they permit their audio to be played off-site. It
+   needs a third-party iframe plus their API script, so under a strict CSP that
+   forbids either the tile stays an ordinary link and opens SoundCloud in a tab.
+   Where they are allowed, play keeps the visitor on the page.                 */
+const mixEl = document.querySelector('.mixtape');
+if (mixEl) {
+  const P = $('player');
+  let built = false, widget = null;
+  const canEmbed = () => !!(window.SC && window.SC.Widget);
+
+  function build(){
+    const f = document.createElement('iframe');
+    f.allow = 'autoplay';
+    f.title = 'SoundCloud player — ' + mixEl.getAttribute('aria-label')
+                .replace(/^Listen on SoundCloud: /, '');
+    f.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(mixEl.href)
+          + '&auto_play=true&visual=false&hide_related=true&show_comments=false'
+          + '&show_user=false&show_reposts=false&show_teaser=false&sharing=false'
+          + '&download=false&buying=false&color=%23de6d96';
+    $('scHost').appendChild(f);
+    widget = SC.Widget(f);
+    widget.bind(SC.Widget.Events.PLAY,  () => mixEl.classList.add('playing'));
+    widget.bind(SC.Widget.Events.PAUSE, () => mixEl.classList.remove('playing'));
+    widget.bind(SC.Widget.Events.FINISH,() => mixEl.classList.remove('playing'));
+  }
+
+  mixEl.addEventListener('click', e => {
+    if (!canEmbed()) return;                 // embed unavailable: let the link open
+    e.preventDefault();
+    if (!built) { build(); built = true; }
+    else if (widget) widget.play();
+    P.hidden = false;
+  });
+  $('plClose').addEventListener('click', () => {
+    if (widget) widget.pause();
+    mixEl.classList.remove('playing');
+    P.hidden = true;
+  });
+}
+</script>
+
+
+</body></html>
