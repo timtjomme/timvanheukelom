@@ -59,12 +59,6 @@ h1.logo svg{display:block;width:100%;height:auto}
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),inset 0 3px 9px rgba(0,0,0,.28);
   background:linear-gradient(107deg,rgba(255,255,255,.12),rgba(255,255,255,0) 34%,
     rgba(255,255,255,0) 72%,rgba(255,255,255,.06))}
-.pinned-note{display:grid;place-content:center;height:18.6cqw;text-align:center;
-  font-family:"Reenie Beanie",ui-rounded,cursive;color:#253163;filter:url(#ink);
-  font-size:clamp(17px,9.6cqw,32px);line-height:1.0;letter-spacing:.01em}
-.pinned-note b{display:block;font-weight:400;font-size:.86em;opacity:.9;
-  transform:rotate(.7deg)}
-.pinned-note i{font-style:normal;display:block;transform:rotate(-1.1deg)}
 
 /* The three places to hear it. Apple's and Beatport's own marks, and Deezer's
    heartwave carried as a mask so all three take the page's ink rather than
@@ -73,25 +67,42 @@ h1.logo svg{display:block;width:100%;height:auto}
    instead of stretching the header and shoving the whole thing onto its own
    line. */
 /* A real push pin, seen head-on with its needle in the paper, so it reads as
-   driven in rather than resting on top. It sits inside .pinned to keep the
-   Polaroid's tilt, and carries its own drop-shadow -- the wrapper's filter
-   would paint that shadow behind the opaque card, where none of it would show.
-   Light comes from the upper left, as everywhere else on the table. Width is
-   set so the cone reads a touch larger than the old pin's, not so the image
-   boxes match: this one is a wider crop around the same object. */
-.pin{position:absolute;left:60%;top:-10cqw;width:23cqw;height:auto;
-  pointer-events:none;transform:rotate(1.5deg);
+   driven in rather than resting on top. It is a sibling of the card rather
+   than a child of it, so the biro can be drawn over the photograph while the
+   pin still sits on top of the ink -- .pinned carries a filter, so nothing
+   inside it can paint above a later sibling. That costs the card's tilt, so
+   the numbers here are the old ones carried through .pinned's rotation by
+   hand: -3.4deg about 50% 90% moves the pin 6.2% left and 1.1cqw up, and
+   leaves it at -1.9deg. Light comes from the upper left, as everywhere else. */
+.pin{position:absolute;left:53.8%;top:-11.1cqw;width:23cqw;height:auto;z-index:6;
+  pointer-events:none;transform:rotate(-1.9deg);
   filter:drop-shadow(1.5px 2px 1.6px rgba(var(--shadow),.34))
          drop-shadow(6px 10px 9px rgba(var(--shadow),.3))}
+/* Biro, gone round the Polaroid three and a half times. The loops are baked
+   with their wobble in the geometry rather than displaced by a filter, so the
+   line keeps an even weight. The ellipse is narrower than the card's diagonal
+   on purpose: a hand-drawn ring always cuts the corners. */
+.loop{position:absolute;left:-14cqw;top:-14cqw;width:128cqw;height:172cqw;
+  color:#253163;pointer-events:none;overflow:visible;z-index:4;
+  transform:rotate(-2.4deg)}
+.scrawl{margin:15cqw 0 0;width:66cqw;font-family:"Reenie Beanie",ui-rounded,cursive;
+  color:#253163;filter:url(#ink);font-size:clamp(16px,10.5cqw,34px);line-height:.92;
+  letter-spacing:.02em;transform:rotate(-3.2deg);transform-origin:0 50%}
 
-.single{flex:0 0 auto;align-self:flex-end;width:clamp(198px,25vw,324px);max-width:100%}
-/* The row lies on the Polaroid's plane: same -3.4deg, centred under it. The
-   card turns about 50% 90%, so its bottom edge swings 0.72% of its width to
-   the right -- the nudge puts the row square under that edge rather than under
-   where the card would be if it were straight. */
-.plat{--ic:clamp(16px,1.5vw,21px);list-style:none;display:flex;flex-wrap:wrap;
-  justify-content:center;gap:.7em 1.15em;padding:0;margin:clamp(13px,1.5vw,20px) 0 0;
-  transform:translateX(.72%) rotate(-3.4deg)}
+.single{flex:0 0 auto;align-self:flex-end;position:relative;
+  container-type:inline-size;width:clamp(198px,25vw,324px);max-width:100%}
+/* The services print on the chin, where the announcement used to be written.
+   The chin keeps .print's geometry: 5.6cqw of card padding plus this 18.6cqw
+   makes the same 24.2cqw bottom border. Sized in cqw so all seven marks fit
+   the card's inner width at any card size -- they shrink with the card rather
+   than wrapping out of the chin -- and capped in px so they stop growing once
+   the card hits its 324px ceiling. Marks only: each link carries its service
+   in aria-label and title, and width follows the mark because TIDAL is wide
+   and Apple is tall. */
+.plat{--ic:clamp(11px,7.4cqw,24px);list-style:none;display:flex;flex-wrap:nowrap;
+  align-items:center;justify-content:center;gap:0 3.2cqw;
+  height:18.6cqw;padding:0;margin:0}
+.plat li{flex:0 0 auto}
 /* Marks only, no names. Each link still carries its service in aria-label and
    title, so a screen reader and a hover both say which is which. Height is
    fixed and width follows the mark: TIDAL is wide and Apple is tall, and one
@@ -460,28 +471,35 @@ h1.logo svg{display:block;width:100%;height:auto}
   <p class="lede">Twenty-eight prints, three sleeves, a flyer, a mixtape, the tour dates and a biography from the booth, the road and the back of the plane. Tipped out in no particular order &mdash; pick one up.</p>
   <div class="single">
    <div class="pinned">
-    <span class="pinned-card">
+    <div class="pinned-card">
      <span class="pinned-shot"><img src="p/make-it-rain.jpg" alt="Darmon &amp; Sander Kleinenberg &mdash; Make It Rain" width="900" height="900" decoding="async"></span>
-     <span class="pinned-note" aria-hidden="true"><i>Out now</i><b>new single</b></span>
-    </span>
-    <img class="pin" src="p/pin.png" alt="" aria-hidden="true" width="329" height="430" decoding="async">
-   </div>
    <ul class="plat">
-    <li><a href="https://open.spotify.com/track/5xrKQ7HwqAcsPaXkU4x336" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on Spotify" title="Spotify"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span></a></li>
-    <li><a href="https://music.apple.com/us/album/make-it-rain-single/6800771167" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on Apple Music" title="Apple Music"><span class="plat-i"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg></span></a></li>
-    <li><a href="https://listen.tidal.com/track/551763853" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on TIDAL" title="TIDAL"><span class="plat-i"><svg viewBox="0 0 239.5 159.7" aria-hidden="true"><path d="M159.67 39.938l-39.88 39.88-39.88-39.88 39.88-39.88zM159.669 119.756l-39.88 39.88-39.88-39.88 39.88-39.88zM79.809 39.912l-39.88 39.88-39.88-39.88 39.88-39.88zM239.505 39.93l-39.88 39.88-39.88-39.88 39.88-39.88z"/></svg></span></a></li>
-    <li><a href="https://www.deezer.com/album/1052542742" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on Deezer" title="Deezer"><span class="plat-i plat-dz" aria-hidden="true"></span></a></li>
-    <li><a href="https://www.pandora.com/TR:211306427" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on Pandora" title="Pandora"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 0h7.6a6.7 6.7 0 0 1 0 13.4H10V24H5V0z"/></svg></span></a></li>
-    <li><a href="https://www.beatport.com/release/make-it-rain-extended-mix/7345060" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on Beatport" title="Beatport"><span class="plat-i"><svg viewBox="0 0 22 28" aria-hidden="true"><path d="M22 19.8977C21.9962 21.2183 21.6783 22.5181 21.0738 23.6845C20.4691 24.8508 19.596 25.8488 18.5301 26.5919C17.4641 27.3348 16.2374 27.8006 14.9561 27.9487C13.6748 28.0968 12.3777 27.9229 11.1768 27.442C9.97588 26.961 8.90752 26.1876 8.06422 25.1886C7.2209 24.1896 6.6281 22.9952 6.33699 21.7086C6.04592 20.4222 6.06538 19.0824 6.39366 17.8053C6.72198 16.5282 7.34925 15.3523 8.22116 14.3795L2.82452 19.8977L0 17.0049L6.06685 10.8626C6.46673 10.4536 6.78283 9.96689 6.99656 9.43114C7.21034 8.89538 7.31739 8.32122 7.31156 7.74244V0H11.2894V7.71569C11.307 8.8329 11.1009 9.94202 10.684 10.9746C10.2672 12.0073 9.64813 12.9415 8.86527 13.7198L8.68683 13.9025C9.82565 12.8426 11.2401 12.1436 12.7587 11.8899C14.2774 11.6362 15.8353 11.8388 17.2439 12.4732C18.6525 13.1075 19.8515 14.1463 20.6956 15.464C21.5396 16.7817 21.9927 18.3217 22 19.8977ZM18.3964 19.8977C18.405 19.0142 18.1571 18.1481 17.6842 17.4093C17.2112 16.6704 16.5346 16.0921 15.7402 15.7479C14.9457 15.4037 14.0693 15.3091 13.2222 15.4761C12.3751 15.6429 11.5957 16.0639 10.9826 16.6855C10.3695 17.307 9.95069 18.1012 9.77925 18.967C9.60778 19.8328 9.69139 20.7313 10.0194 21.5485C10.3476 22.3655 10.9053 23.0643 11.6219 23.5561C12.3385 24.0478 13.1817 24.3105 14.0443 24.3105C14.6136 24.3158 15.1783 24.2056 15.7058 23.9862C16.2333 23.7669 16.7133 23.4428 17.1179 23.0326C17.5225 22.6223 17.8436 22.1341 18.0632 21.596C18.2826 21.0579 18.3959 20.4808 18.3964 19.8977Z"/></svg></span></a></li>
-    <li><a href="https://geo.music.apple.com/nl/album/_/6800771167?i=6800771168&amp;mt=1&amp;app=itunes&amp;ls=1&amp;at=1000lHKX&amp;ct=odesli_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener noreferrer"
-     aria-label="Listen on iTunes" title="iTunes"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M0 12a12 12 0 1 1 24 0 12 12 0 1 1-24 0zM1.9 12a10.1 10.1 0 1 0 20.2 0 10.1 10.1 0 1 0-20.2 0zM10.3 16.3V9.1l6.9-1.65v7.6h-1.1V9.4l-4.7 1.12v5.78zM9.3 14.4a2.05 2.05 0 1 1 0 4.1 2.05 2.05 0 1 1 0-4.1zM15 13.5a2.05 2.05 0 1 1 0 4.1 2.05 2.05 0 1 1 0-4.1z"/></svg></span></a></li>
-   </ul>
+       <li><a href="https://open.spotify.com/track/5xrKQ7HwqAcsPaXkU4x336" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on Spotify" title="Spotify"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span></a></li>
+       <li><a href="https://music.apple.com/us/album/make-it-rain-single/6800771167" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on Apple Music" title="Apple Music"><span class="plat-i"><svg viewBox="0 0 384 512" aria-hidden="true"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5q0 39.3 14.4 81.2c12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg></span></a></li>
+       <li><a href="https://listen.tidal.com/track/551763853" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on TIDAL" title="TIDAL"><span class="plat-i"><svg viewBox="0 0 239.5 159.7" aria-hidden="true"><path d="M159.67 39.938l-39.88 39.88-39.88-39.88 39.88-39.88zM159.669 119.756l-39.88 39.88-39.88-39.88 39.88-39.88zM79.809 39.912l-39.88 39.88-39.88-39.88 39.88-39.88zM239.505 39.93l-39.88 39.88-39.88-39.88 39.88-39.88z"/></svg></span></a></li>
+       <li><a href="https://www.deezer.com/album/1052542742" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on Deezer" title="Deezer"><span class="plat-i plat-dz" aria-hidden="true"></span></a></li>
+       <li><a href="https://www.pandora.com/TR:211306427" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on Pandora" title="Pandora"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M5 0h7.6a6.7 6.7 0 0 1 0 13.4H10V24H5V0z"/></svg></span></a></li>
+       <li><a href="https://www.beatport.com/release/make-it-rain-extended-mix/7345060" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on Beatport" title="Beatport"><span class="plat-i"><svg viewBox="0 0 22 28" aria-hidden="true"><path d="M22 19.8977C21.9962 21.2183 21.6783 22.5181 21.0738 23.6845C20.4691 24.8508 19.596 25.8488 18.5301 26.5919C17.4641 27.3348 16.2374 27.8006 14.9561 27.9487C13.6748 28.0968 12.3777 27.9229 11.1768 27.442C9.97588 26.961 8.90752 26.1876 8.06422 25.1886C7.2209 24.1896 6.6281 22.9952 6.33699 21.7086C6.04592 20.4222 6.06538 19.0824 6.39366 17.8053C6.72198 16.5282 7.34925 15.3523 8.22116 14.3795L2.82452 19.8977L0 17.0049L6.06685 10.8626C6.46673 10.4536 6.78283 9.96689 6.99656 9.43114C7.21034 8.89538 7.31739 8.32122 7.31156 7.74244V0H11.2894V7.71569C11.307 8.8329 11.1009 9.94202 10.684 10.9746C10.2672 12.0073 9.64813 12.9415 8.86527 13.7198L8.68683 13.9025C9.82565 12.8426 11.2401 12.1436 12.7587 11.8899C14.2774 11.6362 15.8353 11.8388 17.2439 12.4732C18.6525 13.1075 19.8515 14.1463 20.6956 15.464C21.5396 16.7817 21.9927 18.3217 22 19.8977ZM18.3964 19.8977C18.405 19.0142 18.1571 18.1481 17.6842 17.4093C17.2112 16.6704 16.5346 16.0921 15.7402 15.7479C14.9457 15.4037 14.0693 15.3091 13.2222 15.4761C12.3751 15.6429 11.5957 16.0639 10.9826 16.6855C10.3695 17.307 9.95069 18.1012 9.77925 18.967C9.60778 19.8328 9.69139 20.7313 10.0194 21.5485C10.3476 22.3655 10.9053 23.0643 11.6219 23.5561C12.3385 24.0478 13.1817 24.3105 14.0443 24.3105C14.6136 24.3158 15.1783 24.2056 15.7058 23.9862C16.2333 23.7669 16.7133 23.4428 17.1179 23.0326C17.5225 22.6223 17.8436 22.1341 18.0632 21.596C18.2826 21.0579 18.3959 20.4808 18.3964 19.8977Z"/></svg></span></a></li>
+       <li><a href="https://geo.music.apple.com/nl/album/_/6800771167?i=6800771168&amp;mt=1&amp;app=itunes&amp;ls=1&amp;at=1000lHKX&amp;ct=odesli_http&amp;itscg=30200&amp;itsct=odsl_m" target="_blank" rel="noopener noreferrer"
+        aria-label="Listen on iTunes" title="iTunes"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M0 12a12 12 0 1 1 24 0 12 12 0 1 1-24 0zM1.9 12a10.1 10.1 0 1 0 20.2 0 10.1 10.1 0 1 0-20.2 0zM10.3 16.3V9.1l6.9-1.65v7.6h-1.1V9.4l-4.7 1.12v5.78zM9.3 14.4a2.05 2.05 0 1 1 0 4.1 2.05 2.05 0 1 1 0-4.1zM15 13.5a2.05 2.05 0 1 1 0 4.1 2.05 2.05 0 1 1 0-4.1z"/></svg></span></a></li>
+      </ul>
+    </div>
+   </div>
+   <svg class="loop" viewBox="-14 -14 128 172" aria-hidden="true" fill="none"
+        stroke="currentColor" stroke-linecap="round" stroke-linejoin="round">
+   <path d="M19.6 116.4 15.9 112.5 12.5 108.3 9.2 104.1 6.0 99.9 3.2 95.6 0.6 91.2 -1.6 86.6 -3.6 81.6 -5.2 76.3 -6.6 70.9 -7.5 65.3 -8.0 59.7 -7.9 54.0 -7.2 48.4 -6.0 42.8 -4.3 37.3 -2.4 32.1 -0.4 27.0 1.9 22.3 4.5 17.8 7.6 13.5 11.1 9.5 15.1 5.9 19.5 2.8 24.1 0.3 28.8 -1.4 33.5 -2.4 38.1 -3.0 42.8 -3.3 47.4 -3.5 52.2 -3.8 57.0 -3.9 61.8 -3.7 66.5 -3.0 71.2 -1.6 75.8 0.6 80.2 3.5 84.4 6.9 88.3 10.7 91.9 14.8 95.0 19.3 97.7 24.0 100.0 29.0 102.1 34.3 104.0 39.7 105.6 45.3 106.9 51.0 107.6 56.8 107.6 62.5 107.0 68.3 105.7 74.0 104.0 79.5 102.0 84.8 100.0 89.8 98.0 94.6 95.8 99.3 93.4 104.1 90.6 108.8 87.4 113.4 83.8 117.8 79.8 121.7 75.5 124.9 70.9 127.3 66.2 128.9 61.3 130.0 56.4 130.5 51.4 130.7 46.4 130.5 41.5 129.9 36.7 128.8 31.9 127.1 27.3 125.0 22.7 122.4 18.3 119.5 14.2 116.2 10.5 112.6 7.2 108.6 4.4 104.2 1.9 99.5 -0.5 94.4 -2.8 89.2 -5.1 83.9 -7.2 78.6 -9.0 73.1 -10.3 67.4 -11.0 61.5 -11.0 55.5 -10.3 49.5 -9.1 43.7 -7.4 38.1 -5.4 32.9 -2.9 28.0 -0.1 23.3 3.1 18.9 6.6 14.7 10.3 10.7 14.2 7.1 18.2 3.9 22.3 1.2 26.6 -1.0 31.2 -2.9 35.9 -4.4 40.8 -5.5 45.6 -6.1 50.5 -6.1 55.2 -5.6 60.0 -4.5 64.8 -3.0 69.7 -1.2 74.5 0.8 79.2 3.1 83.6 5.9 87.6 9.3 91.1 13.3 94.1 18.0 96.6 23.3 98.8 28.8 100.6 34.5 102.2 40.2 103.3 45.9 104.1 51.5 104.5 57.2 104.5 63.0 104.3 68.8 103.8 74.6 103.0 80.3 101.8 85.9 100.2 91.3 98.0 96.6 95.2 101.7 92.1 106.5 88.6 111.0 85.0 115.1 81.3 118.8 77.4 122.1 73.3 125.1 68.9 127.9 64.1 130.3 59.1 132.1 54.0 133.3 48.9 133.5 43.8 132.8 38.9 131.3 34.2 129.2 29.5 126.9 24.9 124.4 20.5 122.0 16.3 119.4 12.2 116.6 8.3 113.3 4.6 109.5 1.2 105.3 -2.1 100.5 -4.9 95.5 -7.3 90.2 -9.2 84.7 -10.5 79.0 -11.2 73.2 -11.7 67.3 -11.8 61.3 -11.8 55.3 -11.5 49.4 -10.8 43.6 -9.5 37.8 -7.5 32.2 -4.7 26.9 -1.4 21.9 2.3 17.5 6.2 13.6 10.2 10.3 14.2 7.4 18.3 4.7 22.5 2.0 26.9 -0.7 31.5 -3.2 36.2 -5.4 41.2 -7.0" stroke-width=".85" opacity=".82"/>
+   <path d="M0.7 32.8 2.7 28.1 4.9 23.8 7.4 19.9 10.2 16.3 13.3 13.0 16.9 9.7 20.8 6.4 25.2 3.1 29.8 0.1 34.6 -2.4 39.3 -4.3 44.0 -5.3 48.7 -5.5 53.3 -5.1 58.0 -4.1 62.7 -2.9 67.2 -1.3 71.7 0.6 75.8 3.0 79.8 5.8 83.5 9.1 87.1 12.9 90.5 17.0 93.7 21.4 96.7 26.0 99.4 30.9 101.7 36.0 103.6 41.2 105.3 46.6 106.5 52.0 107.4 57.4 107.8 62.8 107.6 68.3 106.7 73.9 105.1 79.6 103.0 85.2 100.4 90.8 97.7 95.9 95.0 100.6 92.2 104.8 89.4 108.6 86.3 111.9 82.8 115.1 79.0 118.0 74.9 120.6 70.5 122.8 66.0 124.5 61.4 125.6 56.8 126.1 52.1 126.1 47.3 125.8 42.5 125.0 37.8 123.8 33.1 122.2 28.5 120.1 24.1 117.5 19.9 114.6 16.0 111.4 12.4 108.0 9.1 104.3 6.4 100.3 4.3 95.9 2.5 91.1 1.1 85.7 -0.2 80.0 -1.4 74.1 -2.6 68.1 -3.7 62.3 -4.4 56.5 -4.5 50.9 -4.0 45.2 -2.8 39.6 -1.1 34.1 1.1 28.8 3.5 23.8 6.1 19.0 9.0 14.6 12.2 10.5 15.7 6.6 19.6 2.9 23.8 -0.3 28.3 -3.1 32.9 -5.5 37.7 -7.4 42.6 -9.0" stroke-width=".6" opacity=".4"/>
+   <path d="M52 147 C73 148.5 90 141 96 127.5" stroke-width=".85" opacity=".82"/>
+   <path d="M96.0 127.5 L90.9 131.4 M96.0 127.5 L96.1 133.9" stroke-width=".85" opacity=".82"/>
+   </svg>
+   <img class="pin" src="p/pin.png" alt="" aria-hidden="true" width="329" height="430" decoding="async">
+   <p class="scrawl" aria-hidden="true">NEW SINGLE<br>OUT NOW</p>
   </div>
  </header>
  <div class="pile">
