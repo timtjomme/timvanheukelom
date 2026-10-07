@@ -83,8 +83,13 @@ h1.logo svg{display:block;width:100%;height:auto}
          drop-shadow(6px 10px 9px rgba(var(--shadow),.3))}
 
 .single{flex:0 0 auto;align-self:flex-end;width:clamp(198px,25vw,324px);max-width:100%}
+/* The row lies on the Polaroid's plane: same -3.4deg, centred under it. The
+   card turns about 50% 90%, so its bottom edge swings 0.72% of its width to
+   the right -- the nudge puts the row square under that edge rather than under
+   where the card would be if it were straight. */
 .plat{--ic:clamp(16px,1.5vw,21px);list-style:none;display:flex;flex-wrap:wrap;
-  gap:.7em 1.15em;padding:0;margin:clamp(13px,1.5vw,20px) 0 0}
+  justify-content:center;gap:.7em 1.15em;padding:0;margin:clamp(13px,1.5vw,20px) 0 0;
+  transform:translateX(.72%) rotate(-3.4deg)}
 /* Marks only, no names. Each link still carries its service in aria-label and
    title, so a screen reader and a hover both say which is which. Height is
    fixed and width follows the mark: TIDAL is wide and Apple is tall, and one
