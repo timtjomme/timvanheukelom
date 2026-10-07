@@ -62,8 +62,16 @@ h1.logo svg{display:block;width:100%;height:auto}
    squashed and clipped it. */
 .socials svg{display:block;height:var(--sh);width:auto}
 /* On its own line under the wordmark and the single, because the biro ring
-   round the Polaroid needs the room this used to stand in. */
+   round the Polaroid needs the room this used to stand in. The big top margin
+   is only for the narrow case, where the card wraps onto its own line and the
+   writing that hangs below it lands directly above this. */
 .lede{order:1;flex:1 1 100%;margin:calc(var(--cw)*.72) 0 .4em;max-width:38ch;color:var(--body);font-size:clamp(14px,1.5vw,16px);line-height:1.55}
+
+/* Wide enough that the card sits beside the wordmark: the writing under it is
+   then away to the right -- 260px clear of this at 1000px, and further at every
+   width above -- so the standfirst only has to clear the wordmark. Reclaims
+   about 195px of empty page between the two. */
+@media (min-width:760px){.lede{margin-top:clamp(18px,2.2vw,34px)}}
 
 /* ---- pinned: the new single, put up beside the standfirst ---------------
    A Polaroid of the cover with the announcement written on its chin, in the
