@@ -191,12 +191,13 @@ h1.logo svg{display:block;width:100%;height:auto}
          drop-shadow(calc(5px*var(--lift)) calc(8px*var(--lift)) calc(10px*var(--lift)) rgba(var(--shadow),.20))}
 /* the cards are clip-path'd, which would clip their own focus ring - so the
    ring goes on .tilt, which is unclipped and rotates with the card */
-/* Keyboard focus only. The old rule used focus-within, which fires however
+/* Keyboard focus only -- and we decide what that means rather than trusting
+   the browser. focus-within fired however
    focus arrived, so a mouse click left the ring behind - and shut() returns
    focus to the card you opened on purpose, so closing the lightbox lit one
    up every time. has(focus-visible) is the browser's own
    "did this come from the keyboard" test. */
-.slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);outline-offset:4px}
+html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);outline-offset:4px}
 .slot:hover,.slot:has(:focus-visible){z-index:900;transform:translate(-50%,-50%) translateY(-10px);
   filter:drop-shadow(calc(1.8px*var(--lift)) calc(2.6px*var(--lift)) calc(2.2px*var(--lift)) rgba(var(--shadow),.28))
          drop-shadow(calc(11px*var(--lift)) calc(18px*var(--lift)) calc(22px*var(--lift)) rgba(var(--shadow),.24))}
@@ -987,6 +988,17 @@ document.querySelectorAll(".pile .sleeve").forEach(el => {
   const i = +el.dataset.i, img = el.querySelector("img");
   if (SHOTS[i]) { SHOTS[i].src = img.getAttribute("src"); SHOTS[i].cap = img.alt; }
 });
+/* Whether a tap or a programmatic focus() counts as :focus-visible is a
+   browser judgement call, and they disagree -- Safari rings a card that Chrome
+   leaves alone, which is why the ring kept coming back. So the ring is gated
+   on a flag we set ourselves: Tab turns it on, any pointer turns it off. */
+addEventListener('keydown', e => {
+  if (e.key === 'Tab') document.documentElement.dataset.kb = '';
+}, true);
+addEventListener('pointerdown', () => {
+  delete document.documentElement.dataset.kb;
+}, true);
+
 const $ = id => document.getElementById(id);
 const box = $('box'); let at = 0, opener = null;
 
