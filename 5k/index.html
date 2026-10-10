@@ -26,6 +26,38 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
 :root[data-ground="olivia"]{--wall:#e49fb2;--surface:url("p/surface-pink.jpg")}
 :root[data-ground="bibi"]{--wall:#40e0d0;--surface:url("p/surface-bibi.jpg")}
 
+/* ADE dressing on the cards. The Polaroids go black and the tour sheet turns
+   black on yellow, scoped to the ADE ground so the other three are untouched.
+   Everything that sat in dark ink on white paper has to be re-pointed or it
+   simply vanishes: the chin marks, the agenda, its muted second tier, and the
+   row rules, which were rgba(24,24,23,.12) and would read as nothing. */
+:root[data-ground="ade"]{--ade-card:#0b0b0b;--ade-dim:rgba(255,255,0,.6)}
+:root[data-ground="ade"] .print,
+:root[data-ground="ade"] .print.aged,
+:root[data-ground="ade"] .pinned-card,
+:root[data-ground="ade"] .box-print:not(.is-sheet):not(.is-flyer){background:var(--ade-card)}
+:root[data-ground="ade"] .plat a{color:#ff0}
+:root[data-ground="ade"] .sheet:has(.agenda),
+:root[data-ground="ade"] .box-print.is-sheet:has(.agenda){background:var(--ade-card)}
+:root[data-ground="ade"] .sheet:has(.agenda) .sheet-body,
+:root[data-ground="ade"] .box-print.is-sheet:has(.agenda),
+:root[data-ground="ade"] .agenda,
+:root[data-ground="ade"] .agenda .ag-t,
+:root[data-ground="ade"] .agenda a.ag-x,
+:root[data-ground="ade"] .agenda .ag-f span,
+:root[data-ground="ade"] .sheet-read:has(.agenda){color:#ff0}
+:root[data-ground="ade"] .agenda .ag-k,
+:root[data-ground="ade"] .agenda .ag-d b,
+:root[data-ground="ade"] .agenda .ag-i strong em,
+:root[data-ground="ade"] .agenda .ag-i>span,
+:root[data-ground="ade"] .agenda .ag-m strong em,
+:root[data-ground="ade"] .agenda .ag-m>span,
+:root[data-ground="ade"] .agenda .ag-x{color:var(--ade-dim)}
+:root[data-ground="ade"] .agenda .ag-l li,
+:root[data-ground="ade"] .agenda .ag-m + .ag-m{border-top-color:rgba(255,255,0,.22)}
+/* the chip is redundant once the sheet itself is black */
+:root[data-ground="ade"] .ag-ade{background:none;padding:0;margin-left:.42em}
+
 /* ADE marks drifting down, on the ADE ground only. Transform and opacity
    alone, so it stays cheap; it sits outside .room because .room>* forces
    position:relative on its children, which would kill the fixed layer. That
