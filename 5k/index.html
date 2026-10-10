@@ -24,7 +24,22 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
    is #2c2422 throughout, which clears 4.5:1 on all three and still manages
    5.00:1 against the deepest crease of the pink, the worst case of the nine. */
 :root[data-ground="olivia"]{--wall:#e49fb2;--surface:url("p/surface-pink.jpg")}
-:root[data-ground="bibi"]{--wall:#edc430;--surface:url("p/surface-yellow.jpg")}
+:root[data-ground="bibi"]{--wall:#40e0d0;--surface:url("p/surface-bibi.jpg")}
+
+/* ADE marks drifting down, on the ADE ground only. Transform and opacity
+   alone, so it stays cheap; it sits outside .room because .room>* forces
+   position:relative on its children, which would kill the fixed layer. That
+   puts it above the paper and under the collage, where it reads as weather
+   rather than confetti. Gone entirely for anyone who asked for less motion. */
+.snow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none}
+:root[data-ground="ade"] .snow{display:block}
+.snow i{position:absolute;top:0;left:var(--x);width:calc(34px * var(--s));
+  aspect-ratio:896/600;background:url("p/ade26.svg") center/contain no-repeat;
+  opacity:.15;animation:adedrift var(--d) linear var(--t) infinite}
+@keyframes adedrift{
+  from{transform:translate3d(0,-18vh,0) rotate(0deg)}
+  to{transform:translate3d(var(--dx),116vh,0) rotate(var(--r))}}
+@media (prefers-reduced-motion:reduce){.snow{display:none!important}}
 /* ADE 2026, the 30th, runs 21 to 25 October. Pure #FFFF00 is the festival’s
    own yellow, taken off their key visual; the ink still reads 14.14:1 on it,
    and 10.04:1 in the creases, so nothing else has to change. */
@@ -343,6 +358,13 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   padding:clamp(5px,4.2cqw,28px);border:0;border-radius:1px;background:var(--paper);
   color:var(--ink);cursor:pointer;font:inherit;overflow:hidden;text-align:left;
   -webkit-appearance:none;appearance:none}
+/* The ADE nights carry the festival mark instead of spelling it out. Yellow
+   on black is ADE’s inverse lockup; the chip gives it that black whatever the
+   paper underneath is doing. Sized in em so it holds its place both on the
+   little card and blown up in the lightbox. */
+.ag-ade{display:inline-flex;align-items:center;vertical-align:-.24em;
+  background:#000;border-radius:.12em;padding:.2em .28em;margin-left:.5em}
+.ag-ade img{display:block;height:1.05em;width:auto}
 .sheet .sheet-body{font-size:clamp(2px,1.75cqw,11px);line-height:1.5;color:#2c2924}
 .sheet .sheet-body p{margin:0 0 .85em}
 .sheet .sheet-body em{font-style:italic}
@@ -521,6 +543,24 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   .slot:hover .tilt,.slot:has(:focus-visible) .tilt{transform:rotate(var(--rot))}}
 </style>
 
+<div class="snow" aria-hidden="true">
+ <i style="--x:2.1%;--s:0.54;--d:31.7s;--t:-32.4s;--dx:-39px;--r:28deg"></i>
+ <i style="--x:8.3%;--s:0.44;--d:45.1s;--t:-27.1s;--dx:12px;--r:45deg"></i>
+ <i style="--x:15.3%;--s:0.66;--d:49.6s;--t:-42.5s;--dx:42px;--r:-47deg"></i>
+ <i style="--x:21.2%;--s:0.55;--d:29.6s;--t:-32.3s;--dx:30px;--r:46deg"></i>
+ <i style="--x:24.8%;--s:0.9;--d:26.9s;--t:-52.3s;--dx:-18px;--r:4deg"></i>
+ <i style="--x:29.8%;--s:0.45;--d:26.2s;--t:-32.4s;--dx:5px;--r:32deg"></i>
+ <i style="--x:39.1%;--s:0.67;--d:49.7s;--t:-10.8s;--dx:34px;--r:-25deg"></i>
+ <i style="--x:45.6%;--s:0.64;--d:38.0s;--t:-28.0s;--dx:-39px;--r:-43deg"></i>
+ <i style="--x:50.0%;--s:0.83;--d:27.3s;--t:-22.0s;--dx:-11px;--r:28deg"></i>
+ <i style="--x:58.1%;--s:0.47;--d:41.2s;--t:-5.6s;--dx:25px;--r:44deg"></i>
+ <i style="--x:62.9%;--s:0.76;--d:27.1s;--t:-5.2s;--dx:-23px;--r:-42deg"></i>
+ <i style="--x:66.5%;--s:0.98;--d:35.7s;--t:-49.0s;--dx:23px;--r:28deg"></i>
+ <i style="--x:76.0%;--s:0.82;--d:35.7s;--t:-25.4s;--dx:-10px;--r:-47deg"></i>
+ <i style="--x:78.3%;--s:0.75;--d:40.6s;--t:-52.5s;--dx:11px;--r:32deg"></i>
+ <i style="--x:86.3%;--s:0.76;--d:48.8s;--t:-1.8s;--dx:-42px;--r:-7deg"></i>
+ <i style="--x:91.6%;--s:0.67;--d:27.8s;--t:-9.1s;--dx:-35px;--r:11deg"></i>
+</div>
 <div class="room">
   <ul class="socials">
   <li><a href="https://soundcloud.com/sanderkleinenberg/" target="_blank" rel="noopener noreferrer"
@@ -858,7 +898,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <div class="slot" style="--x:63.29%;--y:50.67%;--w:22.6%;--r:14.0deg;--z:7;--mx:27.05%;--my:62.08%;--mw:45.2%;--mr:7.0deg;--lift:0.712;--bri:1.004;--wx:40%;--wy:40%;--ar:0.60;">
     <div class="tilt">
      <button class="sheet" data-i="33" aria-label="Enlarge: Tour dates, October — November 2026">
-      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct &mdash; Dec 2026</p><ol class="ag-l"><li><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>MeWe &mdash; ADE</span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Event &mdash; ADE (venue TBA)</span></span></li><li><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event &mdash; ADE</span></span></li><li><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>TIDE @ MeWe &mdash; ADE, with Meloko + very special guest</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p></div></div>
+      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct &mdash; Dec 2026</p><ol class="ag-l"><li><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>MeWe<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Event (venue TBA)<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>TIDE @ MeWe, with Meloko + very special guest<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p></div></div>
      </button>
     </div>
    </div>
@@ -1317,7 +1357,9 @@ const mixEl = document.querySelector('.mixtape');
 /* ADE 2026, the 30th, runs 21 to 25 October. The stop is only offered inside
    that window and retires itself afterwards: it stops being listed, so a
    stored 'ade' no longer matches and the page falls back to Sander. */
-const ADE_FROM = new Date(2026, 9, 21), ADE_TO = new Date(2026, 9, 26);
+/* The festival itself is 21 to 25 October; the dressing goes up early, by
+   choice, and comes down once ADE is over. */
+const ADE_FROM = new Date(2026, 9, 1), ADE_TO = new Date(2026, 9, 26);
 const duringADE = () => { const n = new Date(); return n >= ADE_FROM && n < ADE_TO; };
 const GROUNDS = duringADE() ? ['sander','olivia','bibi','ade'] : ['sander','olivia','bibi'];
 /* ?ground=ade forces a stop on, so the ADE dressing can be looked at before
