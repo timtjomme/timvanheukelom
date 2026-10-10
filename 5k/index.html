@@ -1320,9 +1320,16 @@ const mixEl = document.querySelector('.mixtape');
 const ADE_FROM = new Date(2026, 9, 21), ADE_TO = new Date(2026, 9, 26);
 const duringADE = () => { const n = new Date(); return n >= ADE_FROM && n < ADE_TO; };
 const GROUNDS = duringADE() ? ['sander','olivia','bibi','ade'] : ['sander','olivia','bibi'];
+/* ?ground=ade forces a stop on, so the ADE dressing can be looked at before
+   the 21st. A preview only: it is never written to storage, so it lasts
+   exactly as long as the query string does. */
+const previewGround = (() => {
+  const q = new URLSearchParams(location.search).get('ground');
+  return ['sander','olivia','bibi','ade'].includes(q) ? q : null;
+})();
 const groundBar = document.querySelector('.ground');
 if (groundBar) {
-  if (duringADE()) {
+  if (duringADE() || previewGround === 'ade') {
     const b = groundBar.querySelector('[data-g="ade"]'); if (b) b.hidden = false;
     const mark = document.querySelector('.ade'); if (mark) mark.hidden = false;
   }
@@ -1340,7 +1347,8 @@ if (groundBar) {
   });
   let saved = null;
   try { saved = localStorage.getItem('sk-ground'); } catch (e) {}
-  setGround(GROUNDS.includes(saved) ? saved : (duringADE() ? 'ade' : 'sander'), false);
+  setGround(previewGround || (GROUNDS.includes(saved) ? saved
+            : (duringADE() ? 'ade' : 'sander')), false);
 }
 
 /* ---- the single's preview ------------------------------------------- */
