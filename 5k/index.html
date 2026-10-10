@@ -7,7 +7,7 @@
   color-scheme: light;
   /* sampled off the tour poster: paper #f0eeea, ink #1c1c1c, pink #dd6691 */
   /* measured off the tour poster: paper #f1f1ec, ink #181817, pink #de6d96 */
-  --wall:#f1f1ec;
+  --wall:#f1f1ec; --surface:url("p/surface.jpg");
   --paper:#fdfcfa; --paper-aged:#f5eddd; --ink:#181817;
   --body:#2c2422;
   --accent:#de6d96; --shadow:72,64,52;
@@ -15,9 +15,30 @@
   --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box}
-body{margin:0;background:var(--wall) url("p/surface.jpg") center/cover no-repeat;
+body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
   color:var(--body);font-family:var(--sans);
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+
+/* Three grounds, named for the three of them. Only the paper changes: the ink
+   is #2c2422 throughout, which clears 4.5:1 on all three and still manages
+   5.00:1 against the deepest crease of the pink, the worst case of the nine. */
+:root[data-ground="olivia"]{--wall:#e49fb2;--surface:url("p/surface-pink.jpg")}
+:root[data-ground="bibi"]{--wall:#edc430;--surface:url("p/surface-yellow.jpg")}
+.ground{position:relative;z-index:2;display:flex;justify-content:center;
+  gap:clamp(10px,1.4vw,20px);margin:clamp(44px,6vw,80px) 0 0;padding:0}
+.ground button{font-family:var(--mono);font-size:clamp(9px,1vw,11px);
+  letter-spacing:.2em;text-transform:uppercase;background:none;border:0;
+  padding:.55em .25em;cursor:pointer;color:var(--body);opacity:.4;
+  position:relative;transition:opacity .2s ease}
+.ground button::after{content:"";position:absolute;left:.25em;right:.25em;bottom:.1em;
+  height:1px;background:currentColor;transform:scaleX(0);transition:transform .2s ease}
+.ground button:hover{opacity:.75}
+.ground button[aria-pressed="true"]{opacity:1}
+.ground button[aria-pressed="true"]::after{transform:scaleX(1)}
+.ground button:focus-visible{outline:2px solid var(--accent);outline-offset:3px}
+@media (prefers-reduced-motion:reduce){
+  .ground button,.ground button::after{transition:none}}
 
 /* ---- the table: light from above, edges falling into shadow ---- */
 .room{position:relative;padding-block:clamp(28px,5vw,64px) clamp(56px,9vw,120px);
@@ -939,6 +960,12 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    });
  })();
  </script>
+
+ <div class="ground" role="group" aria-label="Background">
+  <button type="button" data-g="sander" aria-pressed="true">Sander</button>
+  <button type="button" data-g="olivia" aria-pressed="false">Olivia</button>
+  <button type="button" data-g="bibi" aria-pressed="false">Bibi</button>
+ </div>
 </div>
 
 <svg class="ink-defs" width="0" height="0" aria-hidden="true" focusable="false"><defs>
@@ -972,8 +999,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     <span class="bk-corner" aria-hidden="true"></span>
    </div>
   </div>
- </div>
-</div>
+ </div></div>
 
 <div class="player" id="player" hidden role="region" aria-label="Mixtape player">
  <button class="player-close" id="plClose" aria-label="Close player">&#10005;</button>
@@ -1269,6 +1295,27 @@ addEventListener('keydown', e => {
    forbids either the tile stays an ordinary link and opens SoundCloud in a tab.
    Where they are allowed, play keeps the visitor on the page.                 */
 const mixEl = document.querySelector('.mixtape');
+/* ---- the ground --------------------------------------------------- */
+const GROUNDS = ['sander','olivia','bibi'];
+const groundBar = document.querySelector('.ground');
+if (groundBar) {
+  const setGround = (g, remember) => {
+    if (g === 'sander') delete document.documentElement.dataset.ground;
+    else document.documentElement.dataset.ground = g;
+    groundBar.querySelectorAll('button').forEach(b =>
+      b.setAttribute('aria-pressed', String(b.dataset.g === g)));
+    // a per-viewer convenience, so wrap it: private windows throw on access
+    if (remember) { try { localStorage.setItem('sk-ground', g); } catch (e) {} }
+  };
+  groundBar.addEventListener('click', e => {
+    const b = e.target.closest('button');
+    if (b) setGround(b.dataset.g, true);
+  });
+  let saved = null;
+  try { saved = localStorage.getItem('sk-ground'); } catch (e) {}
+  setGround(GROUNDS.includes(saved) ? saved : 'sander', false);
+}
+
 /* ---- the single's preview ------------------------------------------- */
 const snip = document.querySelector('.snip'), playBtn = document.querySelector('.snip-play');
 if (snip && playBtn) {
