@@ -25,6 +25,20 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
    5.00:1 against the deepest crease of the pink, the worst case of the nine. */
 :root[data-ground="olivia"]{--wall:#e49fb2;--surface:url("p/surface-pink.jpg")}
 :root[data-ground="bibi"]{--wall:#edc430;--surface:url("p/surface-yellow.jpg")}
+/* ADE 2026, the 30th, runs 21 to 25 October. Pure #FFFF00 is the festival’s
+   own yellow, taken off their key visual; the ink still reads 14.14:1 on it,
+   and 10.04:1 in the creases, so nothing else has to change. */
+:root[data-ground="ade"]{--wall:#ffff00;--surface:url("p/surface-ade.jpg")}
+/* The mark sits on its own yellow plate. Its counters are knocked out, so on
+   the cream or pink ground the page would otherwise show through the logo and
+   it would stop being the black-on-yellow lockup ADE actually publishes. On
+   the ADE ground the plate is invisible, which is the point. */
+.ade{display:flex;justify-content:center;margin:clamp(34px,5vw,62px) 0 0}
+.ade span{display:block;background:#ffff00;padding:.85em 1em;border-radius:1px;
+  transform:rotate(-2.4deg);
+  filter:drop-shadow(1px 1.5px 1.4px rgba(var(--shadow),.26))
+         drop-shadow(4px 7px 10px rgba(var(--shadow),.2))}
+.ade img{display:block;width:clamp(96px,13vw,170px);height:auto}
 .ground{position:relative;z-index:2;display:flex;justify-content:center;
   gap:clamp(10px,1.4vw,20px);margin:clamp(44px,6vw,80px) 0 0;padding:0}
 .ground button{font-family:var(--mono);font-size:clamp(9px,1vw,11px);
@@ -961,10 +975,14 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  })();
  </script>
 
+ <div class="ade" hidden>
+ <span><img src="p/ade26.svg" alt="Amsterdam Dance Event 2026, thirty years" width="896" height="600"></span>
+</div>
  <div class="ground" role="group" aria-label="Background">
   <button type="button" data-g="sander" aria-pressed="true">Sander</button>
   <button type="button" data-g="olivia" aria-pressed="false">Olivia</button>
   <button type="button" data-g="bibi" aria-pressed="false">Bibi</button>
+ <button type="button" data-g="ade" aria-pressed="false" hidden>ADE</button>
  </div>
 </div>
 
@@ -1296,9 +1314,18 @@ addEventListener('keydown', e => {
    Where they are allowed, play keeps the visitor on the page.                 */
 const mixEl = document.querySelector('.mixtape');
 /* ---- the ground --------------------------------------------------- */
-const GROUNDS = ['sander','olivia','bibi'];
+/* ADE 2026, the 30th, runs 21 to 25 October. The stop is only offered inside
+   that window and retires itself afterwards: it stops being listed, so a
+   stored 'ade' no longer matches and the page falls back to Sander. */
+const ADE_FROM = new Date(2026, 9, 21), ADE_TO = new Date(2026, 9, 26);
+const duringADE = () => { const n = new Date(); return n >= ADE_FROM && n < ADE_TO; };
+const GROUNDS = duringADE() ? ['sander','olivia','bibi','ade'] : ['sander','olivia','bibi'];
 const groundBar = document.querySelector('.ground');
 if (groundBar) {
+  if (duringADE()) {
+    const b = groundBar.querySelector('[data-g="ade"]'); if (b) b.hidden = false;
+    const mark = document.querySelector('.ade'); if (mark) mark.hidden = false;
+  }
   const setGround = (g, remember) => {
     if (g === 'sander') delete document.documentElement.dataset.ground;
     else document.documentElement.dataset.ground = g;
@@ -1313,7 +1340,7 @@ if (groundBar) {
   });
   let saved = null;
   try { saved = localStorage.getItem('sk-ground'); } catch (e) {}
-  setGround(GROUNDS.includes(saved) ? saved : 'sander', false);
+  setGround(GROUNDS.includes(saved) ? saved : (duringADE() ? 'ade' : 'sander'), false);
 }
 
 /* ---- the single's preview ------------------------------------------- */
