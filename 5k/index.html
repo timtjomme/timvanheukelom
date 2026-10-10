@@ -76,22 +76,24 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
    own yellow, taken off their key visual; the ink still reads 14.14:1 on it,
    and 10.04:1 in the creases, so nothing else has to change. */
 :root[data-ground="ade"]{--wall:#ffff00;--surface:url("p/surface-ade.jpg")}
-/* The mark sits on its own yellow plate. Its counters are knocked out, so on
-   the cream or pink ground the page would otherwise show through the logo and
-   it would stop being the black-on-yellow lockup ADE actually publishes. On
-   the ADE ground the plate is invisible, which is the point. */
-.ade{display:flex;justify-content:center;margin:clamp(34px,5vw,62px) 0 0}
-.ade span{display:block;background:#ffff00;padding:.85em 1em;border-radius:1px;
-  transform:rotate(-2.4deg);
-  filter:drop-shadow(1px 1.5px 1.4px rgba(var(--shadow),.26))
-         drop-shadow(4px 7px 10px rgba(var(--shadow),.2))}
-.ade img{display:block;width:clamp(96px,13vw,170px);height:auto}
-.ground{position:relative;z-index:2;display:flex;justify-content:center;
-  gap:clamp(10px,1.4vw,20px);margin:clamp(44px,6vw,80px) 0 0;padding:0}
-.ground button{font-family:var(--mono);font-size:clamp(9px,1vw,11px);
+/* The stops read as one line of type, divided by bullets. The ADE stop is the
+   festival's own mark rather than the word: it takes the ink colour of the row
+   and its counters take whatever ground is up, so on the yellow one it becomes
+   the black-on-yellow lockup ADE actually publishes. */
+.ground{--gfs:clamp(9px,1vw,11px);
+  position:relative;z-index:2;display:flex;justify-content:center;align-items:center;
+  gap:clamp(7px,1vw,13px);margin:clamp(44px,6vw,80px) 0 0;padding:0}
+.ground button{font-family:var(--mono);font-size:var(--gfs);
   letter-spacing:.2em;text-transform:uppercase;background:none;border:0;
   padding:.55em .25em;cursor:pointer;color:var(--body);opacity:.4;
   position:relative;transition:opacity .2s ease}
+.ground .gsep{font-family:var(--mono);font-size:var(--gfs);color:var(--body);
+  opacity:.3;line-height:1;-webkit-user-select:none;user-select:none}
+/* A divider belongs to the stop after it, so it leaves when that stop does. */
+.ground .gsep:has(+ button[hidden]){display:none}
+/* line-height, not display, or the rule would outrank the UA's [hidden]. */
+.ground .g-ade{padding:.3em .25em;line-height:0}
+.ground .g-ade img{display:block;height:max(15px,calc(var(--gfs)*1.6));width:auto}
 .ground button::after{content:"";position:absolute;left:.25em;right:.25em;bottom:.1em;
   height:1px;background:currentColor;transform:scaleX(0);transition:transform .2s ease}
 .ground button:hover{opacity:.75}
@@ -1047,14 +1049,14 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  })();
  </script>
 
- <div class="ade" hidden>
- <span><img src="p/ade26.svg" alt="Amsterdam Dance Event 2026, thirty years" width="896" height="600"></span>
-</div>
  <div class="ground" role="group" aria-label="Background">
   <button type="button" data-g="sander" aria-pressed="true">Sander</button>
+  <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" data-g="olivia" aria-pressed="false">Olivia</button>
+  <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" data-g="bibi" aria-pressed="false">Bibi</button>
- <button type="button" data-g="ade" aria-pressed="false" hidden>ADE</button>
+  <span class="gsep" aria-hidden="true">&bull;</span>
+  <button type="button" class="g-ade" data-g="ade" aria-pressed="false" aria-label="ADE" hidden><img src="p/ade26.svg" alt="" width="896" height="600"></button>
  </div>
 </div>
 
@@ -1386,11 +1388,10 @@ addEventListener('keydown', e => {
    Where they are allowed, play keeps the visitor on the page.                 */
 const mixEl = document.querySelector('.mixtape');
 /* ---- the ground --------------------------------------------------- */
-/* ADE 2026, the 30th, runs 21 to 25 October. The stop is only offered inside
-   that window and retires itself afterwards: it stops being listed, so a
-   stored 'ade' no longer matches and the page falls back to Sander. */
-/* The festival itself is 21 to 25 October; the dressing goes up early, by
-   choice, and comes down once ADE is over. */
+/* ADE 2026, the 30th, runs 21 to 25 October. The stop is offered from the 1st,
+   early by choice, and retires itself once ADE is over: it stops being listed,
+   so a stored 'ade' no longer matches and the page falls back to Sander.
+   It is only ever offered, never imposed — cream is the ground you arrive on. */
 const ADE_FROM = new Date(2026, 9, 1), ADE_TO = new Date(2026, 9, 26);
 const duringADE = () => { const n = new Date(); return n >= ADE_FROM && n < ADE_TO; };
 const GROUNDS = duringADE() ? ['sander','olivia','bibi','ade'] : ['sander','olivia','bibi'];
@@ -1405,7 +1406,6 @@ const groundBar = document.querySelector('.ground');
 if (groundBar) {
   if (duringADE() || previewGround === 'ade') {
     const b = groundBar.querySelector('[data-g="ade"]'); if (b) b.hidden = false;
-    const mark = document.querySelector('.ade'); if (mark) mark.hidden = false;
   }
   const setGround = (g, remember) => {
     if (g === 'sander') delete document.documentElement.dataset.ground;
@@ -1421,8 +1421,7 @@ if (groundBar) {
   });
   let saved = null;
   try { saved = localStorage.getItem('sk-ground'); } catch (e) {}
-  setGround(previewGround || (GROUNDS.includes(saved) ? saved
-            : (duringADE() ? 'ade' : 'sander')), false);
+  setGround(previewGround || (GROUNDS.includes(saved) ? saved : 'sander'), false);
 }
 
 /* ---- the single's preview ------------------------------------------- */
