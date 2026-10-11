@@ -491,24 +491,6 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   font-size:clamp(17px,6.6cqw,38px);line-height:.96;letter-spacing:-.012em}
 .rl-a{margin:.32em 0 0;font-weight:600;font-stretch:84%;text-transform:uppercase;
   font-size:clamp(9px,2.9cqw,16px);letter-spacing:.11em;color:#6b6459}
-.rl-h{margin:clamp(12px,3.6cqw,24px) 0 .2em;font-family:var(--mono);
-  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.2em;text-transform:uppercase;color:#8d867c}
-.rl-l{list-style:none;margin:clamp(10px,3cqw,20px) 0 0;padding:0}
-.rl-l li{display:grid;grid-template-columns:clamp(14px,5cqw,30px) 1fr;
-  gap:0 clamp(6px,2.2cqw,14px);align-items:baseline;
-  padding:clamp(3px,1.3cqw,9px) 0;border-top:1px solid rgba(24,24,23,.12)}
-.rl-l li:first-child{border-top:0}
-.rl-l i{font-style:normal;font-family:var(--mono);color:#8d867c;
-  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.1em}
-.rl-l span{font-weight:600;font-stretch:84%;text-transform:uppercase;line-height:1.2;
-  font-size:clamp(8px,2.75cqw,15px);letter-spacing:.045em}
-.rl-l li.disc{display:block;border-top:0;font-family:var(--mono);color:#8d867c;
-  font-size:clamp(6px,2.1cqw,11px);letter-spacing:.2em;text-transform:uppercase;
-  padding:clamp(11px,3.2cqw,22px) 0 clamp(2px,.8cqw,6px)}
-.rl-l li.disc:first-child{padding-top:0}
-.rl-l li.disc + li{border-top:0}
-.rl-l li.mix span{color:var(--ink)}
-.rl-l li.mix i{color:var(--accent)}
 .bk-hand{filter:url(#ink);color:#253163}
 .bk-hand[hidden]{display:none!important}
 .bk-note{margin:0 0 .42em;font-family:"Reenie Beanie",ui-rounded,cursive;
@@ -1085,8 +1067,6 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      <p class="rl-k" id="rlK"></p>
      <p class="rl-t" id="rlT"></p>
      <p class="rl-a" id="rlA"></p>
-     <p class="rl-h" id="rlH" hidden></p>
-     <ol class="rl-l" id="rlL"></ol>
     </div>
     <span class="bk-corner" aria-hidden="true"></span>
    </div>
@@ -1182,35 +1162,6 @@ function show(i){
       $('rlK').textContent = kick;  $('rlK').hidden = !kick;
       $('rlA').textContent = artist || b.artist || '';
       $('rlA').hidden = !$('rlA').textContent;
-      const mixes = b.mixes || [], tracks = b.tracks || [];
-      const rows = mixes.length ? mixes : tracks;
-      $('rlH').textContent = mixes.length ? 'Sander Kleinenberg versions' : 'Tracklist';
-      $('rlH').hidden = !rows.length;
-      const l = $('rlL'); l.textContent = '';
-      // a double album is "1-01, 1-02 ... 2-01" on Discogs; on the sleeve it is
-      // two sides of a record, so break it into CD 1 / CD 2 and drop the prefix
-      const DISC = /^(\d+)[-.](\d+)$/;
-      let disc = null;
-      rows.forEach(t => {
-        if (t[0] === '#') {           // a side heading printed on the record
-          const h = document.createElement('li');
-          h.className = 'disc'; h.textContent = t[1];
-          l.append(h); return;
-        }
-        const dm = DISC.exec(t[0] || '');
-        if (dm && dm[1] !== disc) {
-          disc = dm[1];
-          const h = document.createElement('li');
-          h.className = 'disc'; h.textContent = 'CD ' + disc;
-          l.append(h);
-        }
-        const li = document.createElement('li');
-        if (mixes.length) li.className = 'mix';
-        const pos = document.createElement('i');
-        pos.textContent = dm ? dm[2].padStart(2, '0') : (t[0] || '');
-        const nm = document.createElement('span'); nm.textContent = t[1];
-        li.append(pos, nm); l.append(li);
-      });
     } else {
       $('bkNote').textContent = s.cap || '';
       const tl = $('bkTracks');
@@ -1242,8 +1193,10 @@ function show(i){
 const BACKS = {
   /* What is on the back. A photograph is written on by hand; a record is printed,
      so it gets the page's own typography. A plain string is one line of credit;
-     {label, tracks} prints a tracklist; {label, mixes} prints only the Sander
-     Kleinenberg versions carried on that release.
+     a record prints its label line, title and artist, and nothing else.
+     The tracks and mixes below are no longer printed on a record back -- they are
+     kept because they are the archive, and because the photograph backs still
+     read `tracks` for the list written on them by hand.
      The release rows came from Discogs and were checked by eye; six that resolved
      to the wrong record were thrown out. The two EPs at the end are Tim's own
      listings and deliberately replace what Discogs returned for them. */
