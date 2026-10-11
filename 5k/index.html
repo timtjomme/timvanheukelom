@@ -1134,7 +1134,14 @@ function show(i){
   } else {
     $('boxImg').src = s.src; $('boxImg').alt = s.cap;
   }
-  const turnable = !isSheet;
+  /* Turning a card over is off. A photograph is out for good: nothing was ever
+     stored for its back -- the biro line was its own caption read back at you --
+     so it is excluded here in its own right, not only by the flag. Records and
+     flyers are merely switched off; TURNS back to true returns those two exactly
+     as they were. turn() is gated on the .turnable class, so this one line also
+     stops the button, the click on the card and the keyboard. */
+  const TURNS = false;
+  const turnable = TURNS && !isSheet && s.kind !== 'polaroid';
   const flip = $('flip'), face = $('boxFlip');
   face.classList.toggle('turnable', turnable);
   turn(false);
