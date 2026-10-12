@@ -926,6 +926,25 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     further down. Each entry is [file, caption]. */
  (function(){
    var CRATE = [["01.jpg","2B Continued — Laydown (I Feel You)"],["02.jpg","3 Drives On A Vinyl — Greece 2000"],["03.jpg","5K"],["04.jpg","Birds of Love (Sander Kleinenberg Remix)"],["05.jpg","Bitch I'm Madonna"],["06.jpg","Blue Bittersweet (Sander Kleinenberg Remix)"],["07.jpg","Free Frogs — Bombay"],["08.jpg","Breeder — New York FM"],["09.jpg","Brother Brown — Star Catching Girl FFR"],["10.jpg","Mevrouw Spoelstra — Grand Bazaar"],["11.jpg","Conflicts"],["12.jpg","Europe — Europe Transporter"],["13.jpg","Eye'n'Ear — Movin' On"],["14.jpg","For Your Love"],["15.jpg","Janet — All Nite (Don't Stop)"],["16.jpg","Justin Timberlake — Rock Your Body"],["17.jpg","King Dale — Bonus"],["18.jpg","Kinky Bros — Hot"],["19.jpg","Kleinenberg — Crazy"],["20.jpg","Kleinenberg — Dancin' (All Night)"],["21.jpg","Lamya — Empires Promo"],["22.jpg","Lexicon Avenue — From Dusk Till Dawn"],["23.jpg","London Girl (feat. Baby Sol)"],["24.jpg","M.T.F. — It Moves"],["25.jpg","Melk"],["26.jpg","Miks (Cyber Records)"],["27.jpg","Sander Kleinenberg — My Lexicon (2009 Remixes)"],["28.jpg","Sander Kleinenberg x Helsloot — My Lexicon"],["29.jpg","Sander Kleinenberg — My Lexicon (T. Mo's Ibiza Sunset Mix)"],["30.jpg","Sander Kleinenberg — My Lexicon"],["31.jpg","N*E*R*D — Maybe"],["32.jpg","PMT — Deeper Water"],["33.jpg","Penso Positivo EP"],["34.jpg","Rainbox — Seed, Scattered"],["35.jpg","Royksopp — Poor Leno"],["36.jpg","MTF — Running"],["37.jpg","S'n'S — Y.D.W. (Strictly Rhythm)"],["38.jpg","Sakan — Time Fax"],["39.jpg","Sander 3"],["40.jpg","Sander 4"],["41.jpg","Sander Kleinenberg & Lee Burridge — This Is Everybody! On Tour — Lee's"],["42.jpg","Sander Kleinenberg — 4 Dubs EP"],["43.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 CF007"],["44.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 Essential"],["45.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed"],["46.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 WLP"],["47.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3 Essential Promo"],["48.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3"],["49.jpg","Sander Kleinenberg — 4 Seasons EP 2 Of 3 Signed"],["50.jpg","Sander Kleinenberg — 4.S.E.P.P.3.3 50% Digital"],["51.jpg","Sander Kleinenberg — Feelin' Good"],["52.jpg","Sander Kleinenberg — 4 Seasons EP 1 Of 3 CF Promo"],["53.jpg","Sander Kleinenberg — Sacred"],["54.jpg","Sander Kleinenberg — Sander 5"],["55.jpg","Sander Kleinenberg — The Rhythm"],["56.jpg","Sander Kleinenberg — This Is Miami France"],["57.jpg","Sander Kleinenberg — This Is Sander Kleinenberg 2"],["58.jpg","Sander Kleinenberg — This Is The Remixes"],["59.jpg","Spork — Freek Like Me"],["60.jpg","Sander Kleinenberg — The Fruit (Remixes)"],["61.jpg","This Is Everybody Too"],["62.jpg","Y.D.W."],["63.jpg","Global Underground Nubreed 004: Sander Kleinenberg"],["64.jpg","Sander Kleinenberg — Everybody"],["65.jpg","Renaissance: Sander Kleinenberg — This Is Everybody Too"],["66.jpg","Renaissance: Sander Kleinenberg — This Is Sander Kleinenberg"]];
+   /* The flyer on the table rotates too. Unlike a sleeve these are not all
+      the same shape, so the deal also carries the aspect and writes it to the
+      slot -- the card is sized by --w and --ar, and a square flyer in a
+      portrait slot simply sits shorter about the same centre. */
+   var FLYERS = [
+     ["flyer-renaissance-everybody.jpg", 0.7082,
+      "Renaissance presents Everybody \u2014 Paard van Troje, The Hague, 13.12.03"],
+     ["flyer-one-day-forever-tech-me-in.jpg", 1.0,
+      "One Day Forever \u00d7 Tech Me In \u2014 MeWe, Amsterdam, 21.10.26"]
+   ];
+   document.querySelectorAll(".pile .flyer").forEach(function(el){
+     var pick = FLYERS[(Math.random() * FLYERS.length) | 0];
+     var img = el.querySelector("img");
+     img.src = "p/" + pick[0];
+     img.alt = pick[2];
+     el.setAttribute("aria-label", "Enlarge: " + pick[2]);
+     el.closest(".slot").style.setProperty("--ar", pick[1]);
+   });
+
    var els = document.querySelectorAll(".pile .sleeve");
    if (!els.length || CRATE.length < els.length) return;
    var pool = CRATE.slice();
@@ -1081,10 +1100,16 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
 const SHOTS = [{"src": "p/08-c-est-chic.jpg", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.jpg", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.jpg", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.jpg", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.jpg", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.jpg", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.jpg", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.jpg", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.jpg", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.jpg", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.jpg", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.jpg", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.jpg", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.jpg", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.jpg", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.jpg", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.jpg", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.jpg", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.jpg", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.jpg", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.jpg", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.jpg", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.jpg", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.jpg", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.jpg", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.jpg", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.jpg", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.jpg", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/s/07.jpg", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/45.jpg", "cap": "Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/37.jpg", "cap": "S'n'S — Y.D.W. (Strictly Rhythm)", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.jpg", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}];
-/* the sleeves were re-dealt before paint, so take their captions from the DOM */
-document.querySelectorAll(".pile .sleeve").forEach(el => {
+/* the sleeves and the flyer were re-dealt before paint, so take what they
+   landed on from the DOM -- the flyer carries its shape across as well, since
+   the enlarged view sizes itself from it */
+document.querySelectorAll(".pile .sleeve, .pile .flyer").forEach(el => {
   const i = +el.dataset.i, img = el.querySelector("img");
-  if (SHOTS[i]) { SHOTS[i].src = img.getAttribute("src"); SHOTS[i].cap = img.alt; }
+  if (!SHOTS[i]) return;
+  SHOTS[i].src = img.getAttribute("src");
+  SHOTS[i].cap = img.alt;
+  const ar = parseFloat(getComputedStyle(el.closest(".slot")).getPropertyValue("--ar"));
+  if (ar > 0) SHOTS[i].ar = ar;
 });
 /* Whether a tap or a programmatic focus() counts as :focus-visible is a
    browser judgement call, and they disagree -- Safari rings a card that Chrome
