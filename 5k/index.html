@@ -342,6 +342,18 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.22),
     rgba(255,255,255,0) 32%,rgba(255,255,255,0) 74%,rgba(255,255,255,.10))}
 
+/* A loose disc. No card, no frame: the cut-out is the object, and .slot's
+   drop-shadow reads its alpha, so the shadow falls round without anything
+   extra. It takes none of the paper treatments -- no handling wear, no warp,
+   no rippled outline -- because a disc is pressed polycarbonate, not paper,
+   and the rippling is applied only to .print and .flyer anyway. */
+.disc{display:block;width:100%;margin:0;padding:0;position:relative;aspect-ratio:1;
+  border:0;background:none;cursor:pointer;font:inherit;
+  -webkit-appearance:none;appearance:none}
+.disc img{display:block;width:100%;height:100%}
+/* enlarged, it needs no paper behind it and no rectangular shadow around it */
+.box-print.is-disc{background:none;box-shadow:none;padding:0}
+
 /* the mixtape: opens the docked player where the embed can load, and stays a
    plain link out to SoundCloud where it cannot - never a dead player */
 .mixtape{display:block;width:100%;margin:0;padding:0;position:relative;aspect-ratio:var(--ar,1);
@@ -918,6 +930,13 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      </button>
     </div>
    </div>
+   <div class="slot" style="--x:50.11%;--y:52.40%;--w:17.50%;--r:9.4deg;--z:6;--mx:27.05%;--my:47.80%;--mw:36.00%;--mr:5.2deg;--lift:0.700;--bri:1.000;--wx:50%;--wy:50%;--ar:1.0;">
+    <div class="tilt">
+     <button class="disc" data-i="34" aria-label="Enlarge: Global Underground Nubreed 004: Sander Kleinenberg — CD1">
+      <img src="p/disc-nubreed-004.png" alt="Global Underground Nubreed 004: Sander Kleinenberg — CD1" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
  </div>
 <script>
  /* Three sleeves out of the crate, re-drawn on every visit like the pile itself.
@@ -963,7 +982,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     like someone tipped the box out again. Same relaxation as the build step:
     seed a few clusters, then push overlapping items apart until they settle. */
  (function(){
-   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.7082, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0]], H_D = 1.4000, H_M = 6.8000;
+   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.7082, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.175, 0.36, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
    var slots = document.querySelectorAll('.pile .slot');
    if (!slots.length || slots.length !== LAY.length) return;
    var R = Math.random;
@@ -1099,7 +1118,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const SHOTS = [{"src": "p/08-c-est-chic.jpg", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.jpg", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.jpg", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.jpg", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.jpg", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.jpg", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.jpg", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.jpg", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.jpg", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.jpg", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.jpg", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.jpg", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.jpg", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.jpg", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.jpg", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.jpg", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.jpg", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.jpg", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.jpg", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.jpg", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.jpg", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.jpg", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.jpg", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.jpg", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.jpg", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.jpg", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.jpg", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.jpg", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/s/07.jpg", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/45.jpg", "cap": "Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/37.jpg", "cap": "S'n'S — Y.D.W. (Strictly Rhythm)", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.jpg", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}];
+const SHOTS = [{"src": "p/08-c-est-chic.jpg", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.jpg", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.jpg", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.jpg", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.jpg", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.jpg", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.jpg", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.jpg", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.jpg", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.jpg", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.jpg", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.jpg", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.jpg", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.jpg", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.jpg", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.jpg", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.jpg", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.jpg", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.jpg", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.jpg", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.jpg", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.jpg", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.jpg", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.jpg", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.jpg", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.jpg", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.jpg", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.jpg", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/s/07.jpg", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/45.jpg", "cap": "Sander Kleinenberg — 4 Seasons EP 1 Of 3 Signed", "kind": "sleeve", "ar": 1.0}, {"src": "p/s/37.jpg", "cap": "S'n'S — Y.D.W. (Strictly Rhythm)", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.jpg", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "p/disc-nubreed-004.png", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}];
 /* the sleeves and the flyer were re-dealt before paint, so take what they
    landed on from the DOM -- the flyer carries its shape across as well, since
    the enlarged view sizes itself from it */
@@ -1125,7 +1144,7 @@ addEventListener('pointerdown', () => {
 const $ = id => document.getElementById(id);
 const box = $('box'); let at = 0, opener = null;
 
-document.querySelectorAll('.print, .sleeve, .flyer, .sheet').forEach((el, i) => {
+document.querySelectorAll('.print, .sleeve, .flyer, .disc, .sheet').forEach((el, i) => {
   el.style.animationDelay = Math.min(i * 22, 460) + 'ms';
   el.addEventListener('click', () => openAt(+el.dataset.i, el));
 });
@@ -1134,12 +1153,13 @@ function show(i){
   at = (i + SHOTS.length) % SHOTS.length;
   const s = SHOTS[at];
   const isSheet = s.kind === 'sheet';
-  const bare = s.kind === 'sleeve' || s.kind === 'flyer';
+  const bare = s.kind === 'sleeve' || s.kind === 'flyer' || s.kind === 'disc';
   // a Polaroid is taller than its image because of the chin, hence .8 not s.ar
   $('boxStage').style.setProperty('--boxar', isSheet ? 1 : (bare ? s.ar : .8));
   $('boxPrint').classList.toggle('is-bare', bare);
   $('boxPrint').classList.toggle('is-sleeve', s.kind === 'sleeve');
   $('boxPrint').classList.toggle('is-flyer', s.kind === 'flyer');
+  $('boxPrint').classList.toggle('is-disc', s.kind === 'disc');
   $('boxPrint').classList.toggle('is-sheet', isSheet);
   $('boxStage').classList.toggle('wide', isSheet);
   $('boxShot').hidden = isSheet;
