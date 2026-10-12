@@ -351,8 +351,15 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   border:0;background:none;cursor:pointer;font:inherit;
   -webkit-appearance:none;appearance:none}
 .disc img{display:block;width:100%;height:100%}
-/* enlarged, it needs no paper behind it and no rectangular shadow around it */
+/* Enlarged, a disc needs nothing behind it. .shot is built for a photograph
+   -- a dark plate to sit on, handling wear over it, an inset sheen around it --
+   and all three are rectangular, so they box a round object in. The image
+   carries its own transparency; everything else goes. */
 .box-print.is-disc{background:none;box-shadow:none;padding:0}
+.box-print.is-disc .shot{background:none;overflow:visible}
+.box-print.is-disc .shot::before,
+.box-print.is-disc .shot::after{content:none}
+.box-print.is-disc .shot img{object-fit:contain}
 
 /* the mixtape: opens the docked player where the embed can load, and stays a
    plain link out to SoundCloud where it cannot - never a dead player */
