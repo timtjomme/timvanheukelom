@@ -962,6 +962,22 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      ["flyer-one-day-forever-tech-me-in.jpg", 1.0,
       "One Day Forever \u00d7 Tech Me In \u2014 MeWe, Amsterdam, 21.10.26"]
    ];
+   /* The disc on the table changes as well. Discs are all the same shape, so
+      unlike the flyer this one has nothing to carry but the picture. */
+   var DISCS = [
+     ["disc-nubreed-004.png",
+      "Global Underground Nubreed 004: Sander Kleinenberg \u2014 CD1"],
+     ["disc-essential-mix.png",
+      "Sander Kleinenberg \u2014 Essential Mix"]
+   ];
+   document.querySelectorAll(".pile .disc").forEach(function(el){
+     var pick = DISCS[(Math.random() * DISCS.length) | 0];
+     var img = el.querySelector("img");
+     img.src = "p/" + pick[0];
+     img.alt = pick[1];
+     el.setAttribute("aria-label", "Enlarge: " + pick[1]);
+   });
+
    document.querySelectorAll(".pile .flyer").forEach(function(el){
      var pick = FLYERS[(Math.random() * FLYERS.length) | 0];
      var img = el.querySelector("img");
@@ -1129,7 +1145,7 @@ const SHOTS = [{"src": "p/08-c-est-chic.jpg", "cap": "C'est chic", "kind": "pola
 /* the sleeves and the flyer were re-dealt before paint, so take what they
    landed on from the DOM -- the flyer carries its shape across as well, since
    the enlarged view sizes itself from it */
-document.querySelectorAll(".pile .sleeve, .pile .flyer").forEach(el => {
+document.querySelectorAll(".pile .sleeve, .pile .flyer, .pile .disc").forEach(el => {
   const i = +el.dataset.i, img = el.querySelector("img");
   if (!SHOTS[i]) return;
   SHOTS[i].src = img.getAttribute("src");
