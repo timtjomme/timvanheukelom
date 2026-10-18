@@ -15,6 +15,7 @@
   --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
 }
 *{box-sizing:border-box}
+img{-webkit-touch-callout:none}
 body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
   color:var(--body);font-family:var(--sans);
   -webkit-font-smoothing:antialiased;overflow-x:hidden}
@@ -1312,6 +1313,21 @@ addEventListener('keydown', e => {
 }, true);
 addEventListener('pointerdown', () => {
   delete document.documentElement.dataset.kb;
+}, true);
+
+/* Right-click off, and with it the two other one-step ways to lift a picture:
+   dragging it out of the page, and the long-press menu on a phone, which is
+   what a right-click is there.
+
+   This is a speed bump, not protection. Every file here is still listed in the
+   network panel, still in view-source, still a screenshot away, and still
+   served on a plain URL anyone can open directly. It costs a visitor the
+   browser's own menu -- open in a new tab, copy a link, look up a word -- and
+   a keyboard user the context-menu key, which fires the same event. Worth
+   knowing before relying on it. */
+addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('dragstart', e => {
+  if (e.target instanceof HTMLImageElement) e.preventDefault();
 }, true);
 
 const $ = id => document.getElementById(id);
