@@ -11,8 +11,9 @@ This is a redesign of it, not a copy of its code.
 `timvanheukelom-local` project, one level up) and is served at https://timvanheukelom.nl/tr/ .
 It moved there from teddyrileyproductions.com on 2026-09-25. Every link and asset is
 relative, so the folder works at any depth; only the absolute URLs (canonical, Open
-Graph, JSON-LD, sitemap) and the footer credit name the new address. Crawl rules live
-in the repo-root `../robots.txt`, not in this folder.
+Graph, JSON-LD) and the footer credit name the new address. Crawl rules live
+in the repo-root `../robots.txt`, not in this folder. **The whole folder is kept out of
+search engines**, see "SEO" below.
 
 ## Layout
 
@@ -37,8 +38,8 @@ tools/extract.py                 one-off, already run: pages -> releases.json
 tools/title-cards/               renders the four hero title cards (headless Chrome + node + ffmpeg): edit LINES in hero-card.html, run make.sh
 imgs/                            covers (one per release), heroes, tr-title-1..4 (hero title cards + posters), decade panels, story/ and 404/ art
 fonts/                           Open Sans variable, self-hosted
-robots.txt                       (not in this folder: the crawl rules and sitemap pointer live in ../robots.txt)
-sitemap.xml                      hand-maintained list of the 10 indexable pages (sampled.html is noindex'd and nav-hidden while its list is still thin)
+robots.txt                       (not in this folder: the crawl rules live in ../robots.txt)
+.htaccess                        sends X-Robots-Tag: noindex, nofollow on every response from this folder
 ```
 
 ## Adding or changing a release
@@ -143,13 +144,22 @@ against `.wrap`'s padding on a phone.
 Copy `1990s.html`, swap the hero image and `--hero-pos`, add a `"2000s"` key to
 `releases.json`, add the page to `PAGES` in `extract.py` and to the nav on every
 page, un-grey its panel in `index.html`, add `"2000s"` to `DECADE_PAGES` in
-`build.py`, and give the new page an SEO block (see below) plus an entry in
-`sitemap.xml`.
+`build.py`, and give the new page an SEO block (see below), robots tag included.
 
 ## SEO
 
+**This folder is not meant to be found through a search engine.** Two layers say so, and
+they agree: `.htaccess` here sends `X-Robots-Tag: noindex, nofollow` on every response
+(pages, JSON, images, the PHP dashboard), and every page has
+`<meta name="robots" content="noindex, nofollow">`. There is no sitemap, and nothing on
+the blog links here except the hidden "tr" button (`rel="nofollow"`). Do NOT add
+`Disallow: /tr/` to `../robots.txt`: a crawler that may not fetch a page can never see its
+noindex, and the bare URL can still be listed. To get a URL that Google already knows out
+of the results quickly, use the Removals tool in Search Console (the noindex then keeps it
+out). A new page needs the meta tag below; the header covers it either way.
+
 Every page carries a hand-written block right after the `apple-touch-icon`
-link: a meta description, `<meta name="robots" content="index, follow">`,
+link: a meta description, `<meta name="robots" content="noindex, nofollow">`,
 a self-referential `<link rel="canonical">`, Open Graph + Twitter Card tags,
 and one `<script type="application/ld+json">` holding a `WebSite` object plus
 a page-specific `BreadcrumbList` (the homepage also gets a `Person` object for
@@ -161,9 +171,9 @@ Canonical/OG/Twitter URLs are absolute against `https://timvanheukelom.nl/tr/` â
 the real deploy target (see Deploying), not a placeholder. Before the move they named
 `https://teddyrileyproductions.com`.
 
-`404.html` is the one page marked `noindex, follow` â€” everything else is
-`index, follow`. A new page needs adding to `sitemap.xml` by hand; there's no
-build step that keeps it in sync with the pages on disk.
+Every page, `404.html` and the old-address redirect stub included, is `noindex, nofollow`.
+(Until 2026-10-17 the decade, timeline and contact pages said `index, follow` and there was a
+`sitemap.xml` listing them, which contradicted the header; both are gone.)
 
 ## Annual: bump the copyright year
 

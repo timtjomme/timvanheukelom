@@ -8,6 +8,9 @@
 # tagging every response noindex is what actually keeps it out. See
 # https://developers.google.com/search/docs/crawling-indexing/block-indexing
 #
+# Every page also carries <meta name="robots" content="noindex, nofollow">, so the
+# header and the tag say the same thing, and there is deliberately no sitemap.
+#
 # Confirmed mod_headers works on this host: the blog root's .htaccess already
 # sets security headers this way and they show up on the live site.
 <IfModule mod_headers.c>
