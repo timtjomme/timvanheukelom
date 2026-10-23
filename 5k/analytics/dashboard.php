@@ -228,6 +228,33 @@ function device(?int $vw): string {
     if (!$vw) return 'unknown';
     return $vw < 768 ? 'phone' : ($vw < 1024 ? 'tablet' : 'desktop');
 }
+/* The miniature of a card. `file` arrives in a beacon, so it is let near the
+   filesystem only after it has proved it is a plain name -- no dots, no climb
+   out of p/ -- and only if the picture is really there. A sheet has none. */
+function thumb(?string $file): ?string {
+    $file = (string) $file;
+    if ($file === '' || !preg_match('~^[a-z0-9][a-z0-9/_-]{0,58}$~i', $file)
+        || str_contains($file, '..')) {
+        return null;
+    }
+    return is_file(__DIR__ . '/../p/' . $file . '.webp') ? '../p/' . $file . '.webp' : null;
+}
+
+/** Browser and system, read off the user agent as coarsely as it deserves. */
+function readsOn(?string $ua): array {
+    $ua = (string) $ua;
+    $browser = $os = 'other';
+    foreach ([['Edg', 'Edge'], ['OPR', 'Opera'], ['Firefox', 'Firefox'],
+              ['CriOS', 'Chrome'], ['Chrome', 'Chrome'], ['Safari', 'Safari']] as [$n, $name]) {
+        if (str_contains($ua, $n)) { $browser = $name; break; }
+    }
+    foreach ([['iPhone', 'iPhone'], ['iPad', 'iPad'], ['Android', 'Android'],
+              ['Mac OS X', 'Mac'], ['Windows', 'Windows'], ['Linux', 'Linux']] as [$n, $name]) {
+        if (str_contains($ua, $n)) { $os = $name; break; }
+    }
+    return [$browser, $os];
+}
+
 function mmss(float $s): string {
     $s = (int) round($s);
     return $s < 60 ? $s . 's' : intdiv($s, 60) . 'm ' . str_pad((string) ($s % 60), 2, '0', STR_PAD_LEFT) . 's';
@@ -299,10 +326,86 @@ $onPhone = fn($p) => device($p['vw'] ?? ($ctx[$p['sid'] ?? '']['vw'] ?? null)) =
 $heatDesk  = heat($presses, $onDesk, 18, 12);
 $heatPhone = heat($presses, $onPhone, 8, 16);
 
+/* ---- when they come -------------------------------------------------------
+   On the visitor's own clock, not ours: the question is what time of day it
+   was where they were sitting. Their zone rides along on the arrival beacon;
+   where it is missing or nonsense, this house's clock stands in.            */
+$zones = [];
+function theirHour(DateTimeImmutable $when, ?string $tz): array {
+    global $zones;
+    $tz = (string) $tz;
+    if ($tz !== '' && !isset($zones[$tz])) {
+        try { $zones[$tz] = new DateTimeZone($tz); } catch (Exception $e) { $zones[$tz] = false; }
+    }
+    $there = ($tz !== '' && $zones[$tz]) ? $when->setTimezone($zones[$tz]) : $when;
+    // Monday first, the way a week is read here
+    return [(int) $there->format('G'), (int) $there->format('N') - 1];
+}
+
+$byHour = array_fill(0, 24, 0);
+$byDow  = array_fill(0, 7, 0);
+$clock  = array_fill(0, 7 * 24, 0);
+foreach ($visits as $v) {
+    [$hour, $dow] = theirHour($v['_when'], $v['tz'] ?? null);
+    $byHour[$hour]++;
+    $byDow[$dow]++;
+    $clock[$dow * 24 + $hour]++;
+}
+$maxHour  = max(1, ...$byHour);
+$maxClock = max(1, ...$clock);
+$peakHour = $visits ? array_search(max($byHour), $byHour, true) : null;
+$DAYS = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+
+/* ---- the cards those presses landed on ----------------------------------- */
+$pressed = [];
+foreach ($presses as $p) {
+    $f = $p['file'] ?? null;
+    if ($f === null || $f === '') continue;
+    $pressed[$f]['n']    = ($pressed[$f]['n'] ?? 0) + 1;
+    $pressed[$f]['item'] ??= $p['item'] ?? $f;
+    $pressed[$f]['kind'] ??= $p['kind'] ?? '';
+}
+uasort($pressed, fn($a, $b) => $b['n'] <=> $a['n']);
+$pressed = array_slice($pressed, 0, 14, true);
+
+/* The picture that stands for a whole kind of card: whichever one of that
+   kind was picked up most, so the row is not just the word "sleeve". */
+$face = [];
+foreach ($cards as $c) {
+    $k = $c['kind'] ?? ''; $f = $c['file'] ?? '';
+    if ($k === '' || $f === '') continue;
+    $face[$k][$f] = ($face[$k][$f] ?? 0) + 1;
+}
+foreach ($face as $k => $fs) { arsort($fs); $face[$k] = array_key_first($fs); }
+
+/** Where a card's picture is, found from the name it was last seen under. */
+$seenAs = [];
+foreach ([$cards, $presses] as $set) {
+    foreach ($set as $r) {
+        $i = $r['item'] ?? ''; $f = $r['file'] ?? '';
+        if ($i !== '' && $f !== '') $seenAs[$i] ??= $f;
+    }
+}
+
 /* ---- where they are ------------------------------------------------------ */
-$devices = [];
-foreach ($visits as $v) { $d = device($v['vw'] ?? null); $devices[$d] = ($devices[$d] ?? 0) + 1; }
-arsort($devices);
+$devices = $browsers = $systems = [];
+foreach ($visits as $v) {
+    $d = device($v['vw'] ?? null); $devices[$d] = ($devices[$d] ?? 0) + 1;
+    [$b, $o] = readsOn($v['ua'] ?? null);
+    $browsers[$b] = ($browsers[$b] ?? 0) + 1;
+    $systems[$o]  = ($systems[$o]  ?? 0) + 1;
+}
+arsort($devices); arsort($browsers); arsort($systems);
+
+$region = [];
+foreach ($visits as $v) {
+    if (!empty($v['city'])) $region[$v['city']] ??= $v['region'] ?? null;
+}
+
+$perVisit  = $visits ? $opened / count($visits) : 0;
+// a visit where the table was looked at but nothing was lifted off it
+$lifted    = count(array_unique(array_column($cards, 'sid')));
+$justLooked = max(0, count(array_unique(array_column($visits, 'sid'))) - $lifted);
 
 $grounds = [];
 foreach ($visits as $v) if (!empty($v['ground'])) $grounds[$v['ground']] = ($grounds[$v['ground']] ?? 0) + 1;
@@ -358,6 +461,9 @@ $seen = array_slice($seen, 0, 40, true);
   a{color:var(--ink)}
   .top{display:flex;justify-content:space-between;align-items:flex-end;gap:16px;
        border-bottom:1px solid var(--line);padding-bottom:16px;margin-bottom:22px}
+  /* on a narrow screen the title has the line to itself rather than being
+     squeezed into a column beside the sign-out */
+  @media (max-width:560px){.top{flex-direction:column;align-items:flex-start;gap:6px}}
   .out{font:500 12px/1 "DM Mono",monospace;color:var(--dim);text-decoration:none;white-space:nowrap}
   .out:hover{color:var(--accent)}
   .sub{color:var(--dim);font-size:13.5px;margin:6px 0 0}
@@ -395,6 +501,25 @@ $seen = array_slice($seen, 0, 40, true);
   .row .track{height:8px;background:var(--accent-dim);border-radius:99px;overflow:hidden}
   .row .fill{height:100%;background:var(--accent);border-radius:99px}
   .row .val{font:500 11.5px/1 "DM Mono",monospace;color:var(--dim);text-align:right}
+  /* A card's own picture, small. Cover, because a flyer, a sleeve and a
+     Polaroid are three different shapes and the row has to stay a row. */
+  .mini{width:42px;height:42px;flex:none;border-radius:5px;object-fit:cover;background:var(--paper);
+        border:1px solid var(--line);display:block}
+  .mini.none{display:grid;place-items:center;font:600 9px/1 "DM Mono",monospace;color:var(--dim)}
+  td.t{width:42px;padding-right:0}
+  .named{display:flex;align-items:center;gap:11px}
+  .strip{display:flex;flex-wrap:wrap;gap:11px;background:var(--card);border:1px solid var(--line);
+         border-radius:14px;padding:15px}
+  .strip figure{margin:0;width:62px;text-align:center}
+  .strip .mini{width:62px;height:62px;border-radius:7px}
+  .strip figcaption{font:500 10px/1.3 "DM Mono",monospace;color:var(--dim);margin-top:6px}
+  .clockwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px 17px}
+  .clock{display:grid;grid-template-columns:30px repeat(24,1fr);gap:2px;align-items:center}
+  .clock i{aspect-ratio:1;border-radius:3px;background:var(--accent);
+           box-shadow:inset 0 0 0 1px rgba(20,20,19,.045)}
+  .clock b{font:500 9.5px/1 "DM Mono",monospace;color:var(--dim);font-weight:500}
+  .clock .hr{grid-column:2/-1;display:grid;grid-template-columns:repeat(24,1fr);gap:2px;margin-top:5px}
+  .clock .hr span{font:500 9px/1 "DM Mono",monospace;color:var(--dim);text-align:center}
   .hmwrap{background:var(--card);border:1px solid var(--line);border-radius:14px;padding:15px}
   /* One cell is the same size on both maps, so a square of pink means the
      same amount of pressing whichever screen it came from. That leaves the
@@ -488,6 +613,8 @@ $seen = array_slice($seen, 0, 40, true);
     <div class="tile"><div class="n"><?= $turned ?></div><div class="l">Backs read</div></div>
     <div class="tile"><div class="n"><?= $films ?></div><div class="l">Films played</div></div>
     <div class="tile"><div class="n"><?= $avgDeep ? round($avgDeep) . '%' : '—' ?></div><div class="l">Down the table</div></div>
+    <div class="tile"><div class="n"><?= $perVisit ? number_format($perVisit, 1) : '—' ?></div><div class="l">Cards a visit</div></div>
+    <div class="tile"><div class="n"><?= $peakHour === null ? '—' : sprintf('%02d:00', $peakHour) ?></div><div class="l">Busiest hour</div></div>
   </div>
 
   <section>
@@ -500,6 +627,32 @@ $seen = array_slice($seen, 0, 40, true);
         </div>
       <?php endforeach; ?>
     </div>
+  </section>
+
+  <section>
+    <h2>What time they come — on their own clock</h2>
+    <div class="clockwrap">
+      <div class="clock">
+        <?php foreach ($DAYS as $d => $name): ?>
+          <b><?= h($name) ?></b>
+          <?php for ($hr = 0; $hr < 24; $hr++):
+                  $n = $clock[$d * 24 + $hr];
+                  $a = $n ? 0.1 + 0.9 * sqrt($n / $maxClock) : 0; ?>
+            <i style="opacity:<?= round($a, 3) ?>"
+               title="<?= h($name) ?> <?= sprintf('%02d:00', $hr) ?> — <?= $n ?> visit<?= $n === 1 ? '' : 's' ?>"></i>
+          <?php endfor; ?>
+        <?php endforeach; ?>
+        <div class="hr">
+          <?php for ($hr = 0; $hr < 24; $hr++): ?>
+            <span><?= $hr % 6 === 0 ? sprintf('%02d', $hr) : '' ?></span>
+          <?php endfor; ?>
+        </div>
+      </div>
+    </div>
+    <p class="trail" style="margin:10px 2px 0">
+      Each square is an hour of one weekday, counted where the visitor was sitting rather than
+      here — so a late night in Ibiza lands at night, not at our breakfast.
+    </p>
   </section>
 
   <section>
@@ -533,9 +686,24 @@ $seen = array_slice($seen, 0, 40, true);
     </div>
     <p class="note" style="margin-top:14px;border:0;padding:0">
       Top left is the top left of the table, the bottom row is the far end of it. The pile is
-      dealt out again on every visit, so this is where a hand reaches, not which card it found —
-      that is the next two tables.
+      dealt out again on every visit, so the squares say where a hand reaches; what it found
+      when it got there is underneath.
     </p>
+    <h2 style="margin-top:22px">And what was under them</h2>
+    <?php if (!$pressed): ?><div class="empty">No presses on a card yet</div><?php else: ?>
+    <div class="strip">
+      <?php foreach ($pressed as $f => $p): $src = thumb($f); ?>
+        <figure title="<?= h($p['item']) ?> — <?= $p['n'] ?> press<?= $p['n'] === 1 ? '' : 'es' ?>">
+          <?php if ($src): ?>
+            <img class="mini" src="<?= h($src) ?>" alt="<?= h($p['item']) ?>" loading="lazy" decoding="async">
+          <?php else: ?>
+            <span class="mini none"><?= h(strtoupper(substr($p['kind'] ?: '?', 0, 5))) ?></span>
+          <?php endif; ?>
+          <figcaption><?= $p['n'] ?></figcaption>
+        </figure>
+      <?php endforeach; ?>
+    </div>
+    <?php endif; ?>
   </section>
 
   <section>
@@ -543,12 +711,19 @@ $seen = array_slice($seen, 0, 40, true);
     <div class="two">
       <div>
         <?php $t = tally($cards, 'item', 18); if (!$t): ?><div class="empty">Nothing picked up yet</div><?php else: ?>
-        <table><tr><th>Card</th><th class="n">Times</th></tr>
+        <table><tr><th colspan="2">Card</th><th class="n">Times</th></tr>
         <?php foreach ($t as $k => $n):
                 $kind = '';
-                foreach ($cards as $c) if (($c['item'] ?? '') === $k) { $kind = $c['kind'] ?? ''; break; } ?>
-          <tr><td><?php if ($kind): ?><span class="k"><?= h($kind) ?></span><?php endif; ?><?= h($k) ?></td>
-              <td class="n"><?= $n ?></td></tr>
+                foreach ($cards as $c) if (($c['item'] ?? '') === $k) { $kind = $c['kind'] ?? ''; break; }
+                $src = thumb($seenAs[$k] ?? null); ?>
+          <tr>
+            <td class="t"><?php if ($src): ?>
+                <img class="mini" src="<?= h($src) ?>" alt="" loading="lazy" decoding="async">
+              <?php else: ?><span class="mini none"><?= h(strtoupper(substr($kind ?: '?', 0, 5))) ?></span>
+              <?php endif; ?></td>
+            <td><?php if ($kind): ?><span class="k"><?= h($kind) ?></span><?php endif; ?><?= h($k) ?></td>
+            <td class="n"><?= $n ?></td>
+          </tr>
         <?php endforeach; ?>
         </table><?php endif; ?>
       </div>
@@ -556,10 +731,16 @@ $seen = array_slice($seen, 0, 40, true);
         <?php if (!$lingered): ?>
           <div class="empty">Not enough repeat looks yet to rank by how long a card is held.</div>
         <?php else: ?>
-        <table><tr><th>Held the longest</th><th class="n">Average</th></tr>
-        <?php foreach ($lingered as $k => $d): ?>
-          <tr><td><?php if ($d['kind']): ?><span class="k"><?= h($d['kind']) ?></span><?php endif; ?><?= h($k) ?></td>
-              <td class="n"><?= mmss($d['avg']) ?></td></tr>
+        <table><tr><th colspan="2">Held the longest</th><th class="n">Average</th></tr>
+        <?php foreach ($lingered as $k => $d): $src = thumb($seenAs[$k] ?? null); ?>
+          <tr>
+            <td class="t"><?php if ($src): ?>
+                <img class="mini" src="<?= h($src) ?>" alt="" loading="lazy" decoding="async">
+              <?php else: ?><span class="mini none"><?= h(strtoupper(substr($d['kind'] ?: '?', 0, 5))) ?></span>
+              <?php endif; ?></td>
+            <td><?php if ($d['kind']): ?><span class="k"><?= h($d['kind']) ?></span><?php endif; ?><?= h($k) ?></td>
+            <td class="n"><?= mmss($d['avg']) ?></td>
+          </tr>
         <?php endforeach; ?>
         </table>
         <p class="trail" style="margin:9px 2px 0">Cards picked up twice or more, so one long stare
@@ -574,9 +755,19 @@ $seen = array_slice($seen, 0, 40, true);
     <div class="three">
       <div>
         <?php $t = tally($cards, 'kind', 10); if (!$t): ?><div class="empty">No data yet</div><?php else: ?>
-        <table><tr><th>Kind of card</th><th class="n">Opened</th></tr>
-        <?php foreach ($t as $k => $n): ?><tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
-        </table><?php endif; ?>
+        <table><tr><th colspan="2">Kind of card</th><th class="n">Opened</th></tr>
+        <?php foreach ($t as $k => $n): $src = thumb($face[$k] ?? null); ?>
+          <tr>
+            <td class="t"><?php if ($src): ?>
+                <img class="mini" src="<?= h($src) ?>" alt="" loading="lazy" decoding="async">
+              <?php else: ?><span class="mini none"><?= h(strtoupper(substr($k, 0, 5))) ?></span>
+              <?php endif; ?></td>
+            <td><?= h($k) ?></td><td class="n"><?= $n ?></td>
+          </tr>
+        <?php endforeach; ?>
+        </table>
+        <p class="trail" style="margin:9px 2px 0">The picture is whichever card of that kind
+           was picked up most.</p><?php endif; ?>
       </div>
       <div>
         <?php $t = tally($events, 'name', 10); if (!$t): ?><div class="empty">No data yet</div><?php else: ?>
@@ -619,7 +810,11 @@ $seen = array_slice($seen, 0, 40, true);
       <div>
         <?php $t = tally($visits, 'city', 14); if (!$t): ?><div class="empty">No cities yet</div><?php else: ?>
         <table><tr><th>City</th><th class="n">Visits</th></tr>
-        <?php foreach ($t as $k => $n): ?><tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
+        <?php foreach ($t as $k => $n): ?>
+          <tr><td><?= h($k) ?><?php if (!empty($region[$k])): ?><br>
+                  <span class="trail"><?= h($region[$k]) ?></span><?php endif; ?></td>
+              <td class="n"><?= $n ?></td></tr>
+        <?php endforeach; ?>
         </table><?php endif; ?>
       </div>
       <div>
@@ -653,6 +848,24 @@ $seen = array_slice($seen, 0, 40, true);
         <table><tr><th>Ground</th><th class="n">Chosen</th></tr>
         <?php foreach (array_slice($grounds, 0, 10, true) as $k => $n): ?>
           <tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
+        </table><?php endif; ?>
+      </div>
+      <div>
+        <?php if (!$browsers): ?><div class="empty">No data yet</div><?php else: ?>
+        <table><tr><th>Browser</th><th class="n">Visits</th></tr>
+        <?php foreach ($browsers as $k => $n): ?><tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
+        </table><?php endif; ?>
+      </div>
+      <div>
+        <?php if (!$systems): ?><div class="empty">No data yet</div><?php else: ?>
+        <table><tr><th>System</th><th class="n">Visits</th></tr>
+        <?php foreach ($systems as $k => $n): ?><tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
+        </table><?php endif; ?>
+      </div>
+      <div>
+        <?php $t = tally($visits, 'lang', 10); if (!$t): ?><div class="empty">No data yet</div><?php else: ?>
+        <table><tr><th>Their language</th><th class="n">Visits</th></tr>
+        <?php foreach ($t as $k => $n): ?><tr><td><?= h($k) ?></td><td class="n"><?= $n ?></td></tr><?php endforeach; ?>
         </table><?php endif; ?>
       </div>
     </div>
