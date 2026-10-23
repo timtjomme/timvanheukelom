@@ -2511,6 +2511,18 @@ const RECORD = (function () {
           + '&download=false&buying=false';
     host.append(f);
     widget = SC.Widget(f);
+    wire();
+    document.addEventListener('sk:snippet', () => { if (widget) widget.pause(); });
+  }
+  /* Pointing the widget at another record drops everything bound to it, so the
+     deck went deaf the moment a second sleeve was played: the sound carried on
+     but nothing reached the button, the line or the clock, which is what made
+     it look stuck. The bindings are put back every time it is re-pointed. */
+  function wire() {
+    widget.unbind(SC.Widget.Events.PLAY);
+    widget.unbind(SC.Widget.Events.PAUSE);
+    widget.unbind(SC.Widget.Events.FINISH);
+    widget.unbind(SC.Widget.Events.PLAY_PROGRESS);
     widget.bind(SC.Widget.Events.READY, () => { ready = true; label(); });
     widget.bind(SC.Widget.Events.PLAY, () => {
       say(true); label();
@@ -2519,27 +2531,46 @@ const RECORD = (function () {
     widget.bind(SC.Widget.Events.PAUSE,  () => say(false));
     widget.bind(SC.Widget.Events.FINISH, () => { say(false); line(dur); });
     widget.bind(SC.Widget.Events.PLAY_PROGRESS, e => line(e.currentPosition));
-    document.addEventListener('sk:snippet', () => { if (widget) widget.pause(); });
   }
 
   $('plPlay').addEventListener('click', () => {
     if (!widget) return;
     widget.isPaused(p => p ? widget.play() : widget.pause());
   });
-  /* Dragging the line is seeking; a keyboard gets the same in ten steps. */
+  /* A skip on the line, and the same from the keyboard in tenths. The length
+     is read back at the moment of the skip rather than trusted from when the
+     track began -- on a record with several tracks the needle may already have
+     moved on, and a skip measured against the wrong length lands past the end
+     and stalls there. It stops just short of the end for the same reason, and
+     the needle is put back down afterwards, because seeking a paused-looking
+     widget leaves it paused. */
+  const skipTo = frac => {
+    if (!widget) return;
+    widget.getCurrentSound(sd => {
+      const len = (sd && sd.duration) || dur;
+      if (!len) return;
+      widget.isPaused(was => {
+        widget.seekTo(Math.max(0, Math.min(len - 400, frac * len)));
+        if (!was) widget.play();
+      });
+    });
+  };
   const seekAt = e => {
-    if (!widget || !dur) return;
     const b = $('plBar').getBoundingClientRect();
+    if (!b.width) return;
     const x = (e.touches ? e.touches[0].clientX : e.clientX) - b.left;
-    widget.seekTo(Math.max(0, Math.min(1, x / b.width)) * dur);
+    skipTo(Math.max(0, Math.min(1, x / b.width)));
   };
   $('plBar').addEventListener('click', seekAt);
   $('plBar').addEventListener('keydown', e => {
-    if (!widget || !dur) return;
     const step = e.key === 'ArrowRight' ? .1 : e.key === 'ArrowLeft' ? -.1 : 0;
-    if (!step) return;
+    if (!step || !widget) return;
     e.preventDefault();
-    widget.getPosition(p => widget.seekTo(Math.max(0, Math.min(dur, p + step * dur))));
+    widget.getCurrentSound(sd => {
+      const len = (sd && sd.duration) || dur;
+      if (!len) return;
+      widget.getPosition(p => skipTo(Math.max(0, Math.min(1, (p + step * len) / len))));
+    });
   });
 
   return {
@@ -2560,7 +2591,7 @@ const RECORD = (function () {
       else { ready = false; widget.load(url, {auto_play: true, show_user: false,
              hide_related: true, show_comments: false, show_teaser: false,
              sharing: false, download: false, buying: false,
-             callback: () => { ready = true; label(); }}); }
+             callback: () => { ready = true; wire(); label(); widget.play(); }}); }
       now = url;
       P.hidden = false;
       return true;
