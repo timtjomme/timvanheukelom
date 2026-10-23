@@ -29,8 +29,8 @@ travelblog.html                the same page under its own published URL
 waar-zijn-we-geweest.html      the route: the travelmap.net map and the
                                Polarsteps one, on the same page
 timtjomme.html                 link out to Instagram
-amex.html                      the Amex Platinum offer page (card icon in the bar); same referral
-                               link and end date as the deal strip, so change them together
+amex.html                      the Amex Platinum offer page (card icon in the bar); its referral link
+                               and end date are in the text and on the button
 landen/<slug>.html             21 travel stories: 14 from the world trip and 7 holidays after it
                                (colombia-2018 ... vietnam-2025)
 voorbereidingen/<slug>.html    2 pre-trip posts
@@ -77,13 +77,6 @@ the trade for having no build step, and it is 20 lines of markup.
 <section class="comments">…</section>
 <footer class="footer">…</footer>
 ```
-
-Above the bar, on every page, sits the tip strip (`<aside class="deal-banner">`,
-a dated Amex referral tip, written as a note from Tim: "via mijn referral-link"
-is deliberate). `site.js` hides it from 1 November 2026. To take it
-down for good, delete that block from the pages (`grep -l deal-banner *.html
-landen/*.html voorbereidingen/*.html` lists them), then the `.deal-banner` rules in `site.css` and the
-few lines at the top of `site.js`.
 
 The site is two things: the world trip (2016-2017, the original blog) and the
 holidays after it. Keep them apart. Adding a story means copying an existing
