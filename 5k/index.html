@@ -555,8 +555,37 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 /* ---- in-page player ----------------------------------------------------
    SoundCloud's own embed, which is the sanctioned way to stream their audio -
    no custom transport reimplementing their controls. Docked small, bottom left. */
-#scHost{display:block}
-#scHost iframe{display:block;width:100%;height:120px;border:0}
+/* Their player is what plays the audio, so it stays on the page -- but it is
+   their furniture, with their logo and their links off this site, so it is
+   never seen. It is covered, not hidden: a frame shrunk to a pixel or faded
+   out counts as invisible, and a browser will not start sound in one. So it
+   is laid out at full size underneath and the deck is painted over it. */
+#scHost{position:absolute;inset:0;z-index:0;overflow:hidden;pointer-events:none}
+#scHost iframe{display:block;width:100%;height:100%;border:0}
+.deck{position:relative;z-index:1;background:#17161a}
+/* ---- the deck, in the page's own hand ---------------------------------- */
+.deck{display:flex;align-items:center;gap:12px;padding:11px 13px}
+.deck-play{position:static;width:38px;height:38px;min-width:38px;min-height:38px;flex:none;
+  background:rgba(255,255,255,.12);box-shadow:inset 0 0 0 1px rgba(255,255,255,.34)}
+.deck-play:hover,.deck-play:focus-visible{background:var(--accent);transform:scale(1.06)}
+.deck-body{flex:1;min-width:0}
+.deck-t{margin:0;color:#f4f1ea;font-weight:700;font-stretch:84%;font-size:12.5px;
+  line-height:1.2;letter-spacing:.02em;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.deck-s{margin:1px 0 0;font-family:var(--mono);font-size:9.5px;letter-spacing:.14em;
+  text-transform:uppercase;color:rgba(244,241,234,.5);white-space:nowrap;
+  overflow:hidden;text-overflow:ellipsis}
+.deck-s:empty{display:none}
+.deck-bar{position:relative;height:3px;margin:8px 0 5px;border-radius:99px;cursor:pointer;
+  background:rgba(244,241,234,.2)}
+.deck-bar i{position:absolute;left:0;top:0;bottom:0;width:0;border-radius:99px;
+  background:var(--accent);display:block}
+.deck-bar:focus-visible{outline:2px solid var(--accent);outline-offset:4px}
+.deck-n{display:flex;justify-content:space-between;align-items:center;margin:0;
+  font-family:var(--mono);font-size:9.5px;letter-spacing:.1em;color:rgba(244,241,234,.5)}
+.deck-out{color:rgba(244,241,234,.5);text-decoration:none;border-bottom:1px solid
+  rgba(244,241,234,.25)}
+.deck-out:hover{color:var(--accent);border-bottom-color:var(--accent)}
+.deck-out::after{content:" \2197"}
 .player{position:fixed;left:clamp(12px,3vw,30px);bottom:clamp(12px,3vw,26px);z-index:80;
   width:min(92vw,342px);border-radius:2px;overflow:hidden;background:#17161a;
   box-shadow:0 12px 34px -10px rgba(0,0,0,.5),0 2px 6px rgba(0,0,0,.26)}
@@ -723,6 +752,32 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .rl-play span{text-decoration:underline;text-underline-offset:.28em;
   text-decoration-thickness:1px}
 .rl-play:hover span{color:var(--accent)}
+/* Two ways to hear a record, and they are not allowed to look alike. The film
+   is a circled triangle and it plays on the card itself. The music is a row of
+   bars -- no circle, no triangle -- and it plays from the deck at the foot of
+   the page, so it carries on once the sleeve is back on the table. */
+/* It is a link so that it still works without the embed, but it does not
+   leave the page when the embed is there -- so it does not wear the arrow
+   that the ticket links do. */
+.rl-f a.rl-audio::after{content:none}
+.rl-audio i{display:flex;align-items:center;justify-content:center;
+  gap:clamp(1.3px,.46cqw,2.6px);background:none;border-radius:0;box-shadow:none}
+.rl-audio i::after{content:none}
+.rl-audio i b{display:block;width:clamp(1.8px,.58cqw,3.2px);border-radius:1px;
+  background:var(--ink);transition:background .25s ease,height .25s ease}
+.rl-audio i b:nth-child(1){height:40%}
+.rl-audio i b:nth-child(2){height:86%}
+.rl-audio i b:nth-child(3){height:60%}
+.rl-audio i b:nth-child(4){height:28%}
+.rl-audio:hover i,.rl-audio:focus-visible i{background:none;transform:none}
+.rl-audio:hover i b,.rl-audio:focus-visible i b{background:var(--accent)}
+.rl-audio:hover i b:nth-child(1){height:62%}
+.rl-audio:hover i b:nth-child(3){height:84%}
+.rl-audio:hover i b:nth-child(4){height:46%}
+@media (prefers-reduced-motion:reduce){
+  .rl-audio i b{transition:none}
+  .rl-audio:hover i b:nth-child(1),.rl-audio:hover i b:nth-child(3),
+  .rl-audio:hover i b:nth-child(4){height:auto}}
 .rl-t{margin:0;font-weight:800;font-stretch:76%;
   font-size:clamp(17px,6.6cqw,38px);line-height:.96;letter-spacing:-.012em}
 .rl-a{margin:.32em 0 0;font-weight:600;font-stretch:84%;
@@ -792,6 +847,20 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .box-clip{position:relative;width:100%;aspect-ratio:16/9;background:#000;overflow:hidden}
 .box-clip[hidden]{display:none!important}
 .box-clip iframe{position:absolute;inset:0;width:100%;height:100%;border:0;display:block}
+/* The only control on the film, because YouTube's bar is turned off and its
+   poster is never shown. Same button the single carries, so the two read as
+   one hand. It sits over the frame, which is why it needs the z-index the
+   iframe does not. */
+.clip-play{left:3.4cqw;bottom:3.4cqw;z-index:4}
+.clip-full{left:auto;right:3.4cqw;bottom:3.4cqw;z-index:4}
+.clip-full .ico-close,.clip-full[aria-pressed="true"] .ico-open{display:none}
+.clip-full[aria-pressed="true"] .ico-close{display:block}
+/* blown up, the frame fills the screen and the two controls sit on the glass */
+.box-clip:fullscreen{aspect-ratio:auto;width:100%;height:100%;background:#000}
+.box-clip:fullscreen .clip-play{left:26px;bottom:26px;width:56px;height:56px}
+.box-clip:fullscreen .clip-full{right:26px;bottom:26px;width:56px;height:56px}
+@media (max-width:760px){.clip-play{left:4.5cqw;bottom:4.5cqw}
+  .clip-full{right:4.5cqw;bottom:4.5cqw}}
 .box-print.is-bare{padding:0}
 .box-print.is-bare .shot{aspect-ratio:var(--boxar,1)}
 .box-print.is-sleeve{background:#15130f}
@@ -1622,9 +1691,24 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   </div>
  </div></div>
 
-<div class="player" id="player" hidden role="region" aria-label="Mixtape player">
+<div class="player" id="player" hidden role="region" aria-label="Now playing">
  <button class="player-close" id="plClose" aria-label="Close player">&#10005;</button>
- <div id="scHost"></div>
+ <div class="deck">
+  <button class="snip-play deck-play" id="plPlay" type="button" aria-pressed="false"
+          aria-label="Play"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ico-play" d="M9 5.3 19.4 12 9 18.7Z"/><g class="ico-pause"><rect x="7.4" y="5.6" width="3.5" height="12.8" rx="1.1"/><rect x="13.1" y="5.6" width="3.5" height="12.8" rx="1.1"/></g></svg></button>
+  <div class="deck-body">
+   <p class="deck-t" id="plTitle">&nbsp;</p>
+   <p class="deck-s" id="plSub"></p>
+   <div class="deck-bar" id="plBar" role="slider" tabindex="0" aria-label="Seek"
+        aria-valuemin="0" aria-valuemax="100" aria-valuenow="0"><i id="plFill"></i></div>
+   <p class="deck-n"><span id="plTime">0:00</span><a class="deck-out" id="plOut"
+      href="https://soundcloud.com/sanderkleinenberg" target="_blank"
+      rel="noopener noreferrer">SoundCloud</a></p>
+  </div>
+ </div>
+ <!-- Theirs, kept on the page because it is what actually plays the audio, but
+      never seen: the transport above drives it through their Widget API. -->
+ <div id="scHost" aria-hidden="true"></div>
 </div>
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
@@ -1676,23 +1760,109 @@ const box = $('box'); let at = 0, opener = null;
    nocookie is YouTube's own host that sets nothing until you press play, so
    nothing at all is asked of them until a visitor has turned a record over
    and said yes. Then the card turns back and the front is the film. */
+/* YouTube's own furniture cannot be asked to go away: rel=0 only narrows the
+   suggestions to his own channel, modestbranding was retired, and nothing
+   removes the title, the channel, the share icon or Watch on YouTube from the
+   poster -- which is the state the embed sits in before it starts. So none of
+   it is ever shown. controls=0 takes the bar away, the film is built already
+   playing so the poster is never seen, and the only control is ours: the same
+   round button the single wears. The suggestion grid at the end is dealt with
+   by not being there for it -- the frame is torn out the moment the film ends
+   and the record comes back, which is what a record should do anyway. */
+function filmTalk(f, msg){
+  try { f.contentWindow.postMessage(JSON.stringify(
+    {event: 'command', func: msg, args: []}), 'https://www.youtube-nocookie.com'); } catch (e) {}
+}
 function playClip(id, title){
   const clip = $('boxClip');
   clip.textContent = '';
   const f = document.createElement('iframe');
-  f.src = 'https://www.youtube-nocookie.com/embed/' + id +
-          '?rel=0&modestbranding=1&playsinline=1&autoplay=1';
+  f.src = 'https://www.youtube-nocookie.com/embed/' + id
+        + '?autoplay=1&playsinline=1&controls=0&rel=0&iv_load_policy=3'
+        + '&disablekb=1&enablejsapi=1&origin=' + encodeURIComponent(location.origin);
   f.title = title || 'Video';
-  f.allow = 'accelerometer; autoplay; clipboard-write; encrypted-media; ' +
-            'gyroscope; picture-in-picture; web-share';
+  f.allow = 'accelerometer; autoplay; encrypted-media; gyroscope; picture-in-picture';
   f.referrerPolicy = 'strict-origin-when-cross-origin';
-  f.allowFullscreen = true;
   clip.append(f);
+
+  const btn = document.createElement('button');
+  btn.type = 'button'; btn.className = 'snip-play clip-play';
+  btn.setAttribute('aria-pressed', 'true');
+  btn.setAttribute('aria-label', 'Pause ' + (title || 'the video'));
+  btn.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">'
+    + '<path class="ico-play" d="M9 5.3 19.4 12 9 18.7Z"/><g class="ico-pause">'
+    + '<rect x="7.4" y="5.6" width="3.5" height="12.8" rx="1.1"/>'
+    + '<rect x="13.1" y="5.6" width="3.5" height="12.8" rx="1.1"/></g></svg>';
+  btn.addEventListener('click', e => {
+    e.stopPropagation();
+    const on = btn.getAttribute('aria-pressed') === 'true';
+    filmTalk(f, on ? 'pauseVideo' : 'playVideo');
+  });
+  clip.append(btn);
+
+  /* Full screen is ours too. YouTube's own button lives in the bar that is
+     turned off, so this asks the browser to blow up the frame's box -- our
+     controls ride along inside it, and nothing of theirs comes with it. */
+  const big = document.createElement('button');
+  big.type = 'button'; big.className = 'snip-play clip-full';
+  big.setAttribute('aria-label', 'Full screen');
+  big.innerHTML = '<svg viewBox="0 0 24 24" aria-hidden="true">'
+    + '<path class="ico-open" d="M4 9V4h5v2H6v3H4zm11-5h5v5h-2V6h-3V4zM4 15h2v3h3v2H4v-5z'
+    + 'm14 0h2v5h-5v-2h3v-3z"/>'
+    + '<path class="ico-close" d="M9 4h2v5H6V7h3V4zm4 0h2v3h3v2h-5V4zM6 15h5v5H9v-3H6v-2z'
+    + 'm7 0h5v2h-3v3h-2v-5z"/></svg>';
+  big.addEventListener('click', e => {
+    e.stopPropagation();
+    if (document.fullscreenElement) (document.exitFullscreen || (()=>{})).call(document);
+    else if (clip.requestFullscreen) clip.requestFullscreen().catch(() => {});
+  });
+  clip.append(big);
+  const sizing = () => {
+    const on = document.fullscreenElement === clip;
+    big.setAttribute('aria-pressed', on ? 'true' : 'false');
+    big.setAttribute('aria-label', on ? 'Leave full screen' : 'Full screen');
+  };
+  document.addEventListener('fullscreenchange', sizing);
+  clip._eye = sizing;
+
+  /* The frame reports what it is doing over postMessage once it has been asked
+     to -- no API script of theirs is loaded to hear it. */
+  const say = on => {
+    btn.setAttribute('aria-pressed', on ? 'true' : 'false');
+    btn.setAttribute('aria-label', (on ? 'Pause ' : 'Play ') + (title || 'the video'));
+  };
+  const ear = e => {
+    if (e.source !== f.contentWindow) return;
+    let m; try { m = JSON.parse(e.data); } catch (x) { return; }
+    const st = m && m.info && m.info.playerState;
+    if (st === undefined) return;
+    if (st === 1) say(true);
+    else if (st === 2) say(false);
+    else if (st === 0) shutClip();          // ended: out it comes, before the grid
+  };
+  addEventListener('message', ear);
+  clip._ear = ear;
+  f.addEventListener('load', () => {
+    try { f.contentWindow.postMessage(JSON.stringify(
+      {event: 'listening', id: 1, channel: 'widget'}), '*'); } catch (x) {}
+  });
+
   clip.hidden = false;
   $('boxShot').hidden = true;
   $('boxPrint').classList.add('is-clip');
   turn(false);
   document.dispatchEvent(new CustomEvent('sk:film', {detail:{id: id, title: title}}));
+}
+/** Take the film out and give the card back its front. */
+function shutClip(){
+  const clip = $('boxClip');
+  if (clip._ear) { removeEventListener('message', clip._ear); clip._ear = null; }
+  if (clip._eye) { document.removeEventListener('fullscreenchange', clip._eye); clip._eye = null; }
+  if (document.fullscreenElement === clip && document.exitFullscreen) document.exitFullscreen();
+  clip.textContent = '';
+  clip.hidden = true;
+  $('boxPrint').classList.remove('is-clip');
+  if (SHOTS[at] && SHOTS[at].kind !== 'sheet') $('boxShot').hidden = false;
 }
 
 document.querySelectorAll('.print, .sleeve, .cd, .flyer, .disc, .sheet, .clip').forEach((el, i) => {
@@ -1721,8 +1891,7 @@ function show(i){
   $('boxShot').hidden = isSheet;
   $('boxSheet').hidden = !isSheet;
   // a film left running is torn out whenever the lightbox is re-pointed
-  $('boxPrint').classList.remove('is-clip');
-  $('boxClip').hidden = true;  $('boxClip').textContent = '';
+  shutClip();
   if (isSheet) {
     const src = document.querySelector('.sheet[data-i="' + at + '"] .sheet-body');
     $('boxSheet').innerHTML = src ? src.innerHTML : '';
@@ -1837,6 +2006,27 @@ function show(i){
         btn.addEventListener('click', e => { e.stopPropagation(); playClip(vid, s.cap); });
         f.append(btn);
       }
+      /* And the music, if it is up. A different mark and a different place: the
+         bars send it to the deck at the foot of the page instead of onto the
+         card, so the record keeps playing after it goes back on the table. */
+      const rec = SLEEVE_AUDIO[key];
+      if (rec) {
+        const url = 'https://soundcloud.com/' + rec;
+        /* A link, not a button, so it still works where the embed cannot load
+           -- which is the same bargain the mixtape tile strikes. */
+        const a = document.createElement('a');
+        a.className = 'rl-play rl-audio';
+        a.href = url; a.target = '_blank'; a.rel = 'noopener noreferrer';
+        const bars = document.createElement('i'); bars.setAttribute('aria-hidden', 'true');
+        for (let b = 0; b < 4; b++) bars.append(document.createElement('b'));
+        const lbl = document.createElement('span'); lbl.textContent = 'Listen to the record';
+        a.append(bars, lbl);
+        a.addEventListener('click', e => {
+          e.stopPropagation();
+          if (RECORD.play(url, s.cap)) e.preventDefault();
+        });
+        f.append(a);
+      }
       if (FLY && s.when) {
         const n = new Date(), p = v => (v < 10 ? '0' : '') + v;
         const soon = s.when >= n.getFullYear() + '-' + p(n.getMonth() + 1) + '-' + p(n.getDate());
@@ -1900,6 +2090,53 @@ SLEEVE_BACKS['v/15.webp'] = SLEEVE_BACKS['v/14.webp'];
    but the same record turns up in the crate on its own as well, and a sleeve
    that has a video should offer it whichever way it lands on the table. My
    Lexicon is on four of them, because four pressings of it were filmed once. */
+/* The records whose music is on his SoundCloud, checked against the account
+   on 2026-10-23. An album is linked where one answers to that release; a
+   single is linked to its own track. An EP whose songs are only up loose, or
+   scattered across another record, is left without -- a button that plays
+   something else is worse than no button. */
+const SLEEVE_AUDIO = {
+  "c/02.webp": "sanderkleinenberg/sets/s-kleinenberg-presents-melk",
+  "c/05.webp": "sanderkleinenberg/sets/the-fruit-including-remixes",
+  "c/09.webp": "sanderkleinenberg/sets/5k-5",
+  "c/10.webp": "sanderkleinenberg/sets/m-a-n-i-a-c-2",
+  "c/11.webp": "sanderkleinenberg/sets/r-y-a-n-l-rock-you-all-night",
+  "c/12.webp": "sanderkleinenberg/sets/r-y-a-n-l-rock-you-all-night",
+  "c/13.webp": "sanderkleinenberg/sets/remember-when-999474978",
+  "c/14.webp": "sanderkleinenberg/sets/remember-when-999474978",
+  "c/15.webp": "sanderkleinenberg/sets/the-healer-including-remixes",
+  "c/16.webp": "sanderkleinenberg/sets/the-journey-353136912",
+  "c/17.webp": "sanderkleinenberg/sets/wish-i-said",
+  "c/19.webp": "sanderkleinenberg/sets/chemically-including-remixes",
+  "c/21.webp": "sanderkleinenberg/sander-kleinenberg-we-r-superstars-radio",
+  "c/22.webp": "sanderkleinenberg/sander-kleinenberg-marseille-clarity",
+  "c/24.webp": "sanderkleinenberg/sets/comedown-377483580",
+  "c/29.webp": "sanderkleinenberg/we-rock-it-feat-dev-extended",
+  "c/32.webp": "sanderkleinenberg/sander-kleinenberg-feat-s-t-r",
+  "c/33.webp": "sanderkleinenberg/trouble",
+  "c/35.webp": "sanderkleinenberg/sander-kleinenberg-feat-george",
+  "c/36.webp": "sanderkleinenberg/sets/cuts-deep-5",
+  "c/38.webp": "sanderkleinenberg/sets/5k-4",
+  "c/41.webp": "sanderkleinenberg/london-girl-feat-baby-sol",
+  "c/42.webp": "sanderkleinenberg/sets/4-seasons-55985524",
+  "c/43.webp": "sanderkleinenberg/sets/this-is-our-night-including",
+  "c/44.webp": "sanderkleinenberg/sets/my-lexicon-2009-remixes",
+  "c/45.webp": "sanderkleinenberg/sets/this-is-our-night-including",
+  "c/49.webp": "sanderkleinenberg/sets/closer-254455627",
+  "v/27.webp": "sanderkleinenberg/sets/the-rhythm-763470489",
+  "v/33.webp": "sanderkleinenberg/for-your-love-original-mix",
+  "v/38.webp": "sanderkleinenberg/sets/sacred-53314186",
+  "v/45.webp": "sanderkleinenberg/sets/rumble-23412045",
+  "v/46.webp": "sanderkleinenberg/sets/4-seasons-55985524",
+  "v/47.webp": "sanderkleinenberg/sets/4-seasons-55985524",
+  "v/68.webp": "sanderkleinenberg/sets/this-is-miami-including",
+  // the uploads are all just called My Lexicon; the sleeve each one answers
+  // to is on its artwork, which is where these three were read off
+  "v/74.webp": "sanderkleinenberg/sets/my-lexicon-3",
+  "v/75.webp": "sanderkleinenberg/sets/my-lexicon-4",
+  "v/77.webp": "sanderkleinenberg/sets/my-lexicon-1"
+};
+
 const SLEEVE_CLIPS = {
   "c/05.webp": "Has8ZGPqQJc",            // The Fruit
   "c/14.webp": "GzDI0CNq1dg",            // Remember When
@@ -2044,7 +2281,7 @@ function shut(){
   if (box.hidden) return;
   document.dispatchEvent(new CustomEvent('sk:shut'));
   // tearing the frame out is what stops the sound; hiding it would not
-  const done = () => { box.hidden = true; $('boxClip').textContent = '';
+  const done = () => { box.hidden = true; shutClip();
                        if (opener) opener.focus(); };
   const a = flight(opener, true);
   if (a) a.addEventListener('finish', done, {once:true}); else done();
@@ -2216,44 +2453,131 @@ if (snip && playBtn) {
   ['pause','ended'].forEach(e => snip.addEventListener(e, () => sync(false)));
 }
 
-if (mixEl) {
-  const P = $('player');
-  let built = false, widget = null;
+/* The deck at the foot of the page. It used to belong to the mixtape alone;
+   now a record with its music on SoundCloud reaches it too, so it takes any
+   URL and re-points itself rather than being built once around one link.
+   Everything still goes through SoundCloud's own embed, which is how they
+   allow their audio off-site -- and where the embed cannot load, each caller
+   is a plain link out and opens there instead. */
+/* The deck at the foot of the page. SoundCloud's own player is what plays the
+   audio -- that is how they allow it off-site -- but it arrives wearing their
+   logo, their waveform and links back to them, so it is kept on the page and
+   never shown. What you see is ours, driven through their Widget API: one
+   button, a line, a time and an attribution. Nothing on it leaves the page
+   except the attribution, which is theirs by right and deliberately quiet.
+   Four of his releases are served as 30-second snippets rather than in full
+   -- the label's doing, not ours -- and those say so rather than appearing
+   to stop for no reason. */
+const SNIPPETS = ['sets/s-kleinenberg-presents-melk', 'sets/5k-5', 'sets/5k-4',
+                  'for-your-love-original-mix'];
+const RECORD = (function () {
+  const P = $('player'), host = $('scHost');
+  let widget = null, now = null, dur = 0, snip = false, ready = false;
   const canEmbed = () => !!(window.SC && window.SC.Widget);
+  const clock = ms => {
+    const t = Math.max(0, Math.round((ms || 0) / 1000));
+    return Math.floor(t / 60) + ':' + String(t % 60).padStart(2, '0');
+  };
+  const say = on => {
+    $('plPlay').setAttribute('aria-pressed', on ? 'true' : 'false');
+    $('plPlay').setAttribute('aria-label', on ? 'Pause' : 'Play');
+    if (mixEl) mixEl.classList.toggle('playing', !!on && now === mixEl.href);
+  };
+  const line = ms => {
+    const pc = dur ? Math.max(0, Math.min(100, ms / dur * 100)) : 0;
+    $('plFill').style.width = pc + '%';
+    $('plBar').setAttribute('aria-valuenow', Math.round(pc));
+    $('plTime').textContent = clock(ms) + (dur ? ' / ' + clock(dur) : '');
+  };
+  /* Whatever is under the needle now -- a playlist moves on by itself, so the
+     title is read back from them rather than assumed from what we asked for. */
+  const label = () => widget.getCurrentSound(sd => {
+    if (!sd) return;
+    dur = sd.duration || 0;
+    $('plTitle').textContent = sd.title || '';
+    $('plSub').textContent = snip ? '30-second preview'
+      : ((sd.user && sd.user.username) || '');
+    if (sd.permalink_url) $('plOut').href = sd.permalink_url;
+    line(0);
+  });
 
-  function build(){
+  function build(url) {
     const f = document.createElement('iframe');
     f.allow = 'autoplay';
-    f.title = 'SoundCloud player — ' + mixEl.getAttribute('aria-label')
-                .replace(/^Listen on SoundCloud: /, '');
-    f.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(mixEl.href)
+    f.title = 'Audio player';
+    f.src = 'https://w.soundcloud.com/player/?url=' + encodeURIComponent(url)
           + '&auto_play=true&visual=false&hide_related=true&show_comments=false'
           + '&show_user=false&show_reposts=false&show_teaser=false&sharing=false'
-          + '&download=false&buying=false&color=%23de6d96';
-    $('scHost').appendChild(f);
+          + '&download=false&buying=false';
+    host.append(f);
     widget = SC.Widget(f);
-    widget.bind(SC.Widget.Events.PLAY,  () => {
-      mixEl.classList.add('playing');
-      const s = document.querySelector('.snip'); if (s) s.pause();
+    widget.bind(SC.Widget.Events.READY, () => { ready = true; label(); });
+    widget.bind(SC.Widget.Events.PLAY, () => {
+      say(true); label();
+      const sn = document.querySelector('.snip'); if (sn) sn.pause();
     });
+    widget.bind(SC.Widget.Events.PAUSE,  () => say(false));
+    widget.bind(SC.Widget.Events.FINISH, () => { say(false); line(dur); });
+    widget.bind(SC.Widget.Events.PLAY_PROGRESS, e => line(e.currentPosition));
     document.addEventListener('sk:snippet', () => { if (widget) widget.pause(); });
-    widget.bind(SC.Widget.Events.PAUSE, () => mixEl.classList.remove('playing'));
-    widget.bind(SC.Widget.Events.FINISH,() => mixEl.classList.remove('playing'));
   }
 
-  mixEl.addEventListener('click', e => {
-    if (!canEmbed()) return;                 // embed unavailable: let the link open
-    e.preventDefault();
-    if (!built) { build(); built = true; }
-    else if (widget) widget.play();
-    P.hidden = false;
+  $('plPlay').addEventListener('click', () => {
+    if (!widget) return;
+    widget.isPaused(p => p ? widget.play() : widget.pause());
   });
-  $('plClose').addEventListener('click', () => {
-    if (widget) widget.pause();
-    mixEl.classList.remove('playing');
-    P.hidden = true;
+  /* Dragging the line is seeking; a keyboard gets the same in ten steps. */
+  const seekAt = e => {
+    if (!widget || !dur) return;
+    const b = $('plBar').getBoundingClientRect();
+    const x = (e.touches ? e.touches[0].clientX : e.clientX) - b.left;
+    widget.seekTo(Math.max(0, Math.min(1, x / b.width)) * dur);
+  };
+  $('plBar').addEventListener('click', seekAt);
+  $('plBar').addEventListener('keydown', e => {
+    if (!widget || !dur) return;
+    const step = e.key === 'ArrowRight' ? .1 : e.key === 'ArrowLeft' ? -.1 : 0;
+    if (!step) return;
+    e.preventDefault();
+    widget.getPosition(p => widget.seekTo(Math.max(0, Math.min(dur, p + step * dur))));
+  });
+
+  return {
+    can: canEmbed,
+    play(url, title) {
+      if (!canEmbed()) return false;
+      snip = SNIPPETS.some(k => url.indexOf(k) > -1);
+      $('plTitle').textContent = title || '';
+      $('plSub').textContent = snip ? '30-second preview' : '';
+      dur = 0; line(0);
+      /* The deck is shown before the frame is made, not after: a frame built
+         inside a display:none box starts life unrendered, and a browser will
+         not hand playback to it -- the press that asked for it is spent by
+         the time it is on screen. */
+      P.hidden = false;
+      if (!widget) build(url);
+      else if (now === url) widget.play();
+      else { ready = false; widget.load(url, {auto_play: true, show_user: false,
+             hide_related: true, show_comments: false, show_teaser: false,
+             sharing: false, download: false, buying: false,
+             callback: () => { ready = true; label(); }}); }
+      now = url;
+      P.hidden = false;
+      return true;
+    },
+    stop() { if (widget) widget.pause(); say(false); P.hidden = true; }
+  };
+})();
+
+if (mixEl) {
+  mixEl.addEventListener('click', e => {
+    if (!RECORD.can()) return;               // embed unavailable: let the link open
+    e.preventDefault();
+    RECORD.play(mixEl.href, (mixEl.getAttribute('aria-label') || '')
+      .replace(/^Listen on SoundCloud: /, ''));
   });
 }
+$('plClose').addEventListener('click', () => RECORD.stop());
 </script>
 
 <script>
@@ -2324,7 +2648,7 @@ if (mixEl) {
     var W = Math.max(1, document.documentElement.scrollWidth);
     var H = Math.max(1, document.documentElement.scrollHeight);
     var hit = !what && e.target.closest
-      ? e.target.closest('.ground button, .mixtape, .snip-play, .flip, .close, .rl-play, a[href]')
+      ? e.target.closest('.ground button, .mixtape, .snip-play, .flip, .close, .rl-audio, .rl-play, a[href]')
       : null;
     // a press with a card up that is not on the card itself puts it back down
     var missed = hit ? (hit.id || (typeof hit.className === 'string'
