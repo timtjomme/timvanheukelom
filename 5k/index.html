@@ -16,7 +16,7 @@
 
          tipped out in no particular order.
 
---><html><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg</title><meta name=description content="Twenty-eight prints, three sleeves, two flyers &mdash; one night still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><link rel=icon href="p/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="p/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="p/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Twenty-eight prints, three sleeves, two flyers &mdash; one night still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="https://timvanheukelom.nl/5k/"><meta property="og:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Twenty-eight prints, three sleeves, two flyers &mdash; one night still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"></head><body>
+--><html data-ground="tide"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg</title><meta name=description content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><link rel=icon href="p/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="p/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="p/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="https://timvanheukelom.nl/5k/"><meta property="og:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&family=Reenie+Beanie&display=swap">
@@ -498,6 +498,10 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .sheet .sheet-body{font-size:clamp(2px,1.75cqw,11px);line-height:1.5;color:#2c2924}
 .sheet .sheet-body p{margin:0 0 .85em}
 .sheet .sheet-body em{font-style:italic}
+/* The name at the head of the biography, the way it would be printed on the
+   paper itself. The same path as the one on the wall, shown again rather than
+   written out twice, so it carries the same worn ink and costs nothing. */
+.sheet-mark{display:block;width:58%;height:auto;margin:0 0 1.9em;color:var(--ink)}
 .sheet .sheet-body .sheet-kicker{font-family:var(--mono);letter-spacing:.2em;
   text-transform:uppercase;color:#8d867c;font-size:.92em;margin:0 0 1.5em}
 .agenda{font-family:var(--sans);color:var(--ink);text-align:left}
@@ -803,10 +807,10 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  <feColorMatrix in="x0" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -7.0 0 0 0 6.8246" result="xm"/>
  <feComposite in="s1" in2="xm" operator="in"/>
  </filter></defs>
- <path fill="currentColor" filter="url(#s)" d="M77.3830 349.5839 87.5233 346.8137C117.5944 338.5989 127.6967 324.1762 127.2019 303.5771L126.1084 266.2951C125.5381 251.1595 117.9903 245.1869 97.7127 234.9165L79.6246 225.8623C74.0078 222.9906 72.3288 220.8575 72.2437 216.2156L71.3613 184.0595C71.3046 180.9648 72.0385 179.4684 75.1855 178.6088C78.6822 177.6535 80.1092 178.8188 80.1029 181.6714L81.1901 221.8061L122.1008 210.6301L120.9569 167.4008C120.5125 152.7491 106.2014 145.2548 76.4800 153.3741L66.6894 156.0487C36.6183 164.2635 27.0262 177.7693 27.5273 195.5157L28.4727 227.9138C28.9517 241.2602 36.0175 249.6970 53.6300 258.3629L71.3055 267.2707C78.1602 270.5816 80.5386 272.5237 80.7151 278.9549L81.6826 315.7530C81.5787 319.6690 81.3204 321.5538 77.4741 322.6045C73.9774 323.5598 72.2007 322.4901 72.0810 319.1535L70.7889 271.0403L28.8292 282.5028L30.1213 330.6160C30.6507 349.9097 47.3119 357.7987 77.3830 349.5839ZM179.8181 256.8063 169.3282 259.6719 171.8412 185.8974ZM186.3868 317.9919 227.6471 306.7204 199.3034 121.6354 144.7558 136.5367 129.3916 333.5619 166.8056 323.3411 168.1535 288.2431 182.8394 284.2312ZM227.3028 113.9866 232.5687 305.3760 268.5841 295.5373 265.0579 179.8708 288.5150 290.0926 328.0270 279.2987 322.4114 88.0048 287.0954 97.6524 290.2970 202.0038 270.6611 102.1420ZM337.4679 276.7196 403.5544 258.6661C423.4853 253.2214 433.0427 241.0209 432.4219 219.9379L428.8356 88.2188C428.2432 68.6832 412.6247 63.3603 390.9456 69.2826L332.2020 85.3302ZM375.6929 99.8854 379.5392 98.8347C384.0849 97.5929 385.0646 99.9170 385.1843 103.2536L388.6571 228.7835C388.8336 235.2147 387.1483 235.9343 383.3020 236.9850L379.4557 238.0358ZM440.9408 55.6181 446.2068 247.0075 520.6852 226.6615 520.0202 196.7785 488.2008 205.4710 486.5432 150.2007 512.4183 143.1321 511.6273 112.7652 485.7522 119.8338 484.4885 73.2679 515.2589 64.8621 514.3703 35.5586ZM564.7001 46.1721 567.8471 45.3125C571.6934 44.2617 572.8337 45.7644 572.8905 48.8591L574.0912 95.1830C574.4976 98.1821 573.4770 100.0160 569.9803 100.9712L566.1340 102.0219ZM569.2885 213.3840 566.8683 129.2941 570.0153 128.4344C573.8616 127.3837 575.2886 128.5489 575.2823 131.4016L577.2866 202.3870C577.3087 206.7870 579.1137 209.4040 580.8274 210.2318L622.7871 198.7692L622.9477 197.9478C621.3947 196.2986 620.6040 194.7004 620.5189 190.0585L618.4579 115.9784C618.1333 104.6633 608.9916 101.1995 602.1306 100.7412C610.6548 96.0800 616.9613 88.6553 616.7974 76.5187L615.5620 31.5001C615.1523 15.5430 601.0869 11.8693 584.6527 16.3588L521.0139 33.7437L526.2798 225.1331ZM124.8938 542.1263 122.3287 466.1105 137.8313 538.5920 182.9380 526.2698 158.2746 430.1139 175.9237 335.3580 133.2647 347.0116 121.0020 419.3027 119.2782 350.8324 76.6192 362.4860 81.8851 553.8755ZM179.4204 334.4027 184.6863 525.7922 254.9688 506.5924 254.1778 476.2255 226.5543 483.7717 222.0794 322.7491ZM249.6983 315.2022 254.9642 506.5916 329.4426 486.2455 328.7776 456.3626 296.9582 465.0551 295.3007 409.7847 321.1758 402.7162 320.3848 372.3493 294.5096 379.4179 293.2459 332.8520 324.0164 324.4461 323.1277 295.1427ZM372.7800 281.5786 329.7713 293.3278 335.0373 484.7172 378.0459 472.9681ZM381.6248 279.1653 386.8907 470.5547 422.9061 460.7160 419.3799 345.0495 442.8370 455.2713 482.3490 444.4774 476.7334 253.1835 441.4173 262.8311 444.6190 367.1825 424.9831 267.3206ZM486.5240 250.5089 491.7899 441.8983 566.2684 421.5522 565.6034 391.6693 533.7839 400.3618 532.1264 345.0914 558.0015 338.0229 557.2105 307.6560 531.3354 314.7246 530.0717 268.1587 560.8421 259.7528 559.9534 230.4494ZM565.8531 228.8389 571.1190 420.2283 607.1344 410.3896 603.6082 294.7231 627.0653 404.9449 666.5773 394.1510 660.9617 202.8571 625.6456 212.5047 628.8473 316.8561 609.2114 216.9942ZM676.0182 391.5719 743.5034 373.1363C765.8819 367.0229 772.6419 355.5866 772.1125 336.2929L770.6093 283.0539C770.2280 268.6441 757.5896 266.1356 750.0923 266.1103C756.4209 263.0855 766.7627 255.3360 766.2207 241.7477L765.3288 199.4862C764.7301 182.8032 751.1750 178.2126 732.6428 183.2752L670.7523 200.1825ZM717.2358 211.8468C721.4318 210.7005 722.7328 211.3818 723.0416 215.4443L724.2139 260.2209C724.3336 263.5575 722.5507 265.3404 719.4037 266.2001L715.5574 267.2509L714.0888 212.7064ZM719.9552 289.8938C724.1512 288.7475 725.8649 289.5753 726.2366 293.8797L727.5162 347.6983C727.6359 351.0349 726.9019 352.5312 722.7060 353.6775L718.1603 354.9193L716.4586 290.8490ZM778.6944 170.6906 783.9603 362.0801 858.4388 341.7340 857.7738 311.8511 825.9543 320.5435 824.2968 265.2732 850.1719 258.2046 849.3809 227.8378 823.5058 234.9064 822.2421 188.3405 853.0125 179.9346 852.1239 150.6312ZM902.4537 161.2447 905.6007 160.3850C909.4470 159.3343 910.5873 160.8370 910.6441 163.9316L911.8448 210.2555C912.2512 213.2546 911.2305 215.0885 907.7339 216.0437L903.8876 217.0945ZM907.0421 328.4565 904.6219 244.3667 907.7688 243.5070C911.6151 242.4563 913.0422 243.6215 913.0359 246.4742L915.0401 317.4596C915.0622 321.8596 916.8673 324.4766 918.5810 325.3043L960.5407 313.8418L960.7013 313.0204C959.1483 311.3712 958.3576 309.7730 958.2725 305.1310L956.2115 231.0509C955.8869 219.7358 946.7452 216.2721 939.8842 215.8138C948.4084 211.1525 954.7149 203.7278 954.5509 191.5913L953.3156 146.5727C952.9059 130.6156 938.8405 126.9419 922.4063 131.4314L858.7675 148.8162L864.0334 340.2057ZM1002.8950 304.0883C1017.2312 300.1719 1025.4813 290.1428 1029.5638 282.8073C1031.1798 284.6984 1033.5803 291.0405 1034.2733 293.7021L1063.2955 285.7738L1060.1756 173.1064L1010.5233 186.6704L1010.9772 211.4275L1020.0685 208.9439L1021.5938 266.5830C1021.4898 270.4990 1019.8329 272.7659 1015.6369 273.9122C1011.4410 275.0584 1009.4753 273.2628 1009.2295 269.4423L1005.6716 139.2705C1005.5519 135.9339 1006.1598 133.9536 1010.0061 132.9028C1013.1531 132.0431 1015.2165 132.7754 1015.3992 136.3539L1016.5148 178.0359L1058.1248 166.6689L1057.0722 125.2288C1056.4105 108.3039 1042.9026 96.7025 1008.2859 106.1592L1002.3416 107.7830C968.0745 117.1441 961.1129 133.5598 961.7053 153.0955L965.1435 279.9307C965.7359 299.4663 978.4185 310.7748 1001.4963 304.4704Z"/>
+ <path id="skmark" fill="currentColor" filter="url(#s)" d="M77.3830 349.5839 87.5233 346.8137C117.5944 338.5989 127.6967 324.1762 127.2019 303.5771L126.1084 266.2951C125.5381 251.1595 117.9903 245.1869 97.7127 234.9165L79.6246 225.8623C74.0078 222.9906 72.3288 220.8575 72.2437 216.2156L71.3613 184.0595C71.3046 180.9648 72.0385 179.4684 75.1855 178.6088C78.6822 177.6535 80.1092 178.8188 80.1029 181.6714L81.1901 221.8061L122.1008 210.6301L120.9569 167.4008C120.5125 152.7491 106.2014 145.2548 76.4800 153.3741L66.6894 156.0487C36.6183 164.2635 27.0262 177.7693 27.5273 195.5157L28.4727 227.9138C28.9517 241.2602 36.0175 249.6970 53.6300 258.3629L71.3055 267.2707C78.1602 270.5816 80.5386 272.5237 80.7151 278.9549L81.6826 315.7530C81.5787 319.6690 81.3204 321.5538 77.4741 322.6045C73.9774 323.5598 72.2007 322.4901 72.0810 319.1535L70.7889 271.0403L28.8292 282.5028L30.1213 330.6160C30.6507 349.9097 47.3119 357.7987 77.3830 349.5839ZM179.8181 256.8063 169.3282 259.6719 171.8412 185.8974ZM186.3868 317.9919 227.6471 306.7204 199.3034 121.6354 144.7558 136.5367 129.3916 333.5619 166.8056 323.3411 168.1535 288.2431 182.8394 284.2312ZM227.3028 113.9866 232.5687 305.3760 268.5841 295.5373 265.0579 179.8708 288.5150 290.0926 328.0270 279.2987 322.4114 88.0048 287.0954 97.6524 290.2970 202.0038 270.6611 102.1420ZM337.4679 276.7196 403.5544 258.6661C423.4853 253.2214 433.0427 241.0209 432.4219 219.9379L428.8356 88.2188C428.2432 68.6832 412.6247 63.3603 390.9456 69.2826L332.2020 85.3302ZM375.6929 99.8854 379.5392 98.8347C384.0849 97.5929 385.0646 99.9170 385.1843 103.2536L388.6571 228.7835C388.8336 235.2147 387.1483 235.9343 383.3020 236.9850L379.4557 238.0358ZM440.9408 55.6181 446.2068 247.0075 520.6852 226.6615 520.0202 196.7785 488.2008 205.4710 486.5432 150.2007 512.4183 143.1321 511.6273 112.7652 485.7522 119.8338 484.4885 73.2679 515.2589 64.8621 514.3703 35.5586ZM564.7001 46.1721 567.8471 45.3125C571.6934 44.2617 572.8337 45.7644 572.8905 48.8591L574.0912 95.1830C574.4976 98.1821 573.4770 100.0160 569.9803 100.9712L566.1340 102.0219ZM569.2885 213.3840 566.8683 129.2941 570.0153 128.4344C573.8616 127.3837 575.2886 128.5489 575.2823 131.4016L577.2866 202.3870C577.3087 206.7870 579.1137 209.4040 580.8274 210.2318L622.7871 198.7692L622.9477 197.9478C621.3947 196.2986 620.6040 194.7004 620.5189 190.0585L618.4579 115.9784C618.1333 104.6633 608.9916 101.1995 602.1306 100.7412C610.6548 96.0800 616.9613 88.6553 616.7974 76.5187L615.5620 31.5001C615.1523 15.5430 601.0869 11.8693 584.6527 16.3588L521.0139 33.7437L526.2798 225.1331ZM124.8938 542.1263 122.3287 466.1105 137.8313 538.5920 182.9380 526.2698 158.2746 430.1139 175.9237 335.3580 133.2647 347.0116 121.0020 419.3027 119.2782 350.8324 76.6192 362.4860 81.8851 553.8755ZM179.4204 334.4027 184.6863 525.7922 254.9688 506.5924 254.1778 476.2255 226.5543 483.7717 222.0794 322.7491ZM249.6983 315.2022 254.9642 506.5916 329.4426 486.2455 328.7776 456.3626 296.9582 465.0551 295.3007 409.7847 321.1758 402.7162 320.3848 372.3493 294.5096 379.4179 293.2459 332.8520 324.0164 324.4461 323.1277 295.1427ZM372.7800 281.5786 329.7713 293.3278 335.0373 484.7172 378.0459 472.9681ZM381.6248 279.1653 386.8907 470.5547 422.9061 460.7160 419.3799 345.0495 442.8370 455.2713 482.3490 444.4774 476.7334 253.1835 441.4173 262.8311 444.6190 367.1825 424.9831 267.3206ZM486.5240 250.5089 491.7899 441.8983 566.2684 421.5522 565.6034 391.6693 533.7839 400.3618 532.1264 345.0914 558.0015 338.0229 557.2105 307.6560 531.3354 314.7246 530.0717 268.1587 560.8421 259.7528 559.9534 230.4494ZM565.8531 228.8389 571.1190 420.2283 607.1344 410.3896 603.6082 294.7231 627.0653 404.9449 666.5773 394.1510 660.9617 202.8571 625.6456 212.5047 628.8473 316.8561 609.2114 216.9942ZM676.0182 391.5719 743.5034 373.1363C765.8819 367.0229 772.6419 355.5866 772.1125 336.2929L770.6093 283.0539C770.2280 268.6441 757.5896 266.1356 750.0923 266.1103C756.4209 263.0855 766.7627 255.3360 766.2207 241.7477L765.3288 199.4862C764.7301 182.8032 751.1750 178.2126 732.6428 183.2752L670.7523 200.1825ZM717.2358 211.8468C721.4318 210.7005 722.7328 211.3818 723.0416 215.4443L724.2139 260.2209C724.3336 263.5575 722.5507 265.3404 719.4037 266.2001L715.5574 267.2509L714.0888 212.7064ZM719.9552 289.8938C724.1512 288.7475 725.8649 289.5753 726.2366 293.8797L727.5162 347.6983C727.6359 351.0349 726.9019 352.5312 722.7060 353.6775L718.1603 354.9193L716.4586 290.8490ZM778.6944 170.6906 783.9603 362.0801 858.4388 341.7340 857.7738 311.8511 825.9543 320.5435 824.2968 265.2732 850.1719 258.2046 849.3809 227.8378 823.5058 234.9064 822.2421 188.3405 853.0125 179.9346 852.1239 150.6312ZM902.4537 161.2447 905.6007 160.3850C909.4470 159.3343 910.5873 160.8370 910.6441 163.9316L911.8448 210.2555C912.2512 213.2546 911.2305 215.0885 907.7339 216.0437L903.8876 217.0945ZM907.0421 328.4565 904.6219 244.3667 907.7688 243.5070C911.6151 242.4563 913.0422 243.6215 913.0359 246.4742L915.0401 317.4596C915.0622 321.8596 916.8673 324.4766 918.5810 325.3043L960.5407 313.8418L960.7013 313.0204C959.1483 311.3712 958.3576 309.7730 958.2725 305.1310L956.2115 231.0509C955.8869 219.7358 946.7452 216.2721 939.8842 215.8138C948.4084 211.1525 954.7149 203.7278 954.5509 191.5913L953.3156 146.5727C952.9059 130.6156 938.8405 126.9419 922.4063 131.4314L858.7675 148.8162L864.0334 340.2057ZM1002.8950 304.0883C1017.2312 300.1719 1025.4813 290.1428 1029.5638 282.8073C1031.1798 284.6984 1033.5803 291.0405 1034.2733 293.7021L1063.2955 285.7738L1060.1756 173.1064L1010.5233 186.6704L1010.9772 211.4275L1020.0685 208.9439L1021.5938 266.5830C1021.4898 270.4990 1019.8329 272.7659 1015.6369 273.9122C1011.4410 275.0584 1009.4753 273.2628 1009.2295 269.4423L1005.6716 139.2705C1005.5519 135.9339 1006.1598 133.9536 1010.0061 132.9028C1013.1531 132.0431 1015.2165 132.7754 1015.3992 136.3539L1016.5148 178.0359L1058.1248 166.6689L1057.0722 125.2288C1056.4105 108.3039 1042.9026 96.7025 1008.2859 106.1592L1002.3416 107.7830C968.0745 117.1441 961.1129 133.5598 961.7053 153.0955L965.1435 279.9307C965.7359 299.4663 978.4185 310.7748 1001.4963 304.4704Z"/>
  </svg></h1>
   </div>
-  <p class="lede">Twenty-eight prints, three sleeves, two flyers &mdash; one night still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane. Tipped out in no particular order &mdash; pick one up.</p>
+  <p class="lede">Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane. Tipped out in no particular order &mdash; pick one up.</p>
   <div class="single">
    <div class="pinned">
     <div class="pinned-card">
@@ -1039,6 +1043,20 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      </button>
     </div>
    </div>
+   <div class="slot" style="--x:63.80%;--y:58.40%;--w:17.20%;--r:-11.4deg;--z:28;--mx:35.20%;--my:61.70%;--mw:40.90%;--mr:8.2deg;--lift:1.142;--bri:0.991;--wx:24%;--wy:71%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="40" aria-label="Enlarge: Small wheels">
+      <span class="shot"><img src="p/29-small-wheels.webp" alt="Small wheels" width="1000" height="1000" decoding="async" loading="lazy"></span>
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:38.90%;--y:16.30%;--w:15.90%;--r:18.1deg;--z:24;--mx:68.40%;--my:28.90%;--mw:37.80%;--mr:-14.3deg;--lift:1.017;--bri:1.008;--wx:83%;--wy:44%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print" data-i="41" aria-label="Enlarge: Come as you are">
+      <span class="shot"><img src="p/30-come-as-you-are.webp" alt="Come as you are" width="500" height="500" decoding="async" loading="lazy"></span>
+     </button>
+    </div>
+   </div>
    <div class="slot" style="--x:81.67%;--y:63.44%;--w:30.27%;--r:8.1deg;--z:1;--mx:61.50%;--my:69.25%;--mw:61.90%;--mr:-13.5deg;--lift:0.574;--bri:0.992;--wx:75%;--wy:6%;--ar:1.0;">
     <div class="tilt">
      <button class="sleeve" data-i="28" aria-label="Enlarge: Free Frogs — Bombay">
@@ -1067,6 +1085,27 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      </button>
     </div>
    </div>
+   <div class="slot" style="--x:33.10%;--y:46.20%;--w:20.40%;--r:5.9deg;--z:8;--mx:60.30%;--my:17.40%;--mw:41.50%;--mr:-9.8deg;--lift:0.781;--bri:0.985;--wx:35%;--wy:62%;--ar:1.0;">
+    <div class="tilt">
+     <button class="flyer soon" data-i="42" aria-label="Enlarge: flyer">
+      <img src="p/flyer-tide-sub-sub-ibiza.webp" alt="" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:78.60%;--y:66.90%;--w:19.80%;--r:-14.6deg;--z:13;--mx:18.70%;--my:79.30%;--mw:40.20%;--mr:12.4deg;--lift:0.930;--bri:0.995;--wx:71%;--wy:33%;--ar:1.0;">
+    <div class="tilt">
+     <button class="flyer soon" data-i="43" aria-label="Enlarge: flyer">
+      <img src="p/flyer-do-not-sit-miami.webp" alt="" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:50.20%;--y:84.10%;--w:20.90%;--r:9.3deg;--z:16;--mx:47.60%;--my:40.80%;--mw:42.40%;--mr:-4.7deg;--lift:1.064;--bri:0.979;--wx:12%;--wy:88%;--ar:1.9097;">
+    <div class="tilt">
+     <button class="flyer soon" data-i="44" aria-label="Enlarge: flyer">
+      <img src="p/flyer-winter-of-love.webp" alt="" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
    <div class="slot" style="--x:63.40%;--y:19.80%;--w:21.15%;--r:11.2deg;--z:6;--mx:66.10%;--my:63.40%;--mw:42.97%;--mr:-8.3deg;--lift:0.712;--bri:0.984;--wx:58%;--wy:12%;--ar:0.7082;">
     <div class="tilt">
      <button class="flyer gone" data-i="38" aria-label="Enlarge: Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03">
@@ -1091,7 +1130,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <div class="slot" style="--x:55.49%;--y:14.86%;--w:25.11%;--r:-9.6deg;--z:6;--mx:68.50%;--my:29.64%;--mw:50.05%;--mr:9.1deg;--lift:0.691;--bri:1.015;--wx:46%;--wy:8%;--ar:0.7071;">
     <div class="tilt">
      <button class="sheet" data-i="32" aria-label="Enlarge: Biography">
-      <div class="sheet-body"><p class="sheet-kicker">Biography</p><p>Sander Kleinenberg has never been particularly good at standing still.</p><p>For more than three decades, the Dutch DJ and producer has followed one fairly simple instinct: play the records that excite him. Preferably before someone decides what genre they belong to.</p><p>That instinct has taken him from small, dark rooms to some very large ones, through progressive house, techno, disco, psychedelia, electronic pop and a fair amount of music that was probably a bad idea on paper. The common thread was never a genre. It was curiosity.</p><p>Emerging from the Netherlands in the 1990s, Sander became part of a generation of DJs who somehow found themselves taking underground electronic music around the world. Records like <em>My Lexicon</em>, <em>The Fruit</em>, <em>This Is Miami</em> and <em>Can You Feel It</em> became markers along the way, while his DJ sets built a reputation for joining dots between records that didn’t always appear to have much business being in the same room.</p><p>It took him around the planet more times than he can reasonably remember, from sweaty basements to Coachella, Glastonbury and Ultra, and through a long list of clubs, afterparties, airports and questionable hotel breakfasts.</p><p>The studio has been equally difficult to keep in one lane. Over the years Sander has produced, remixed and collaborated with Madonna, Daft Punk, Janet Jackson, Justin Timberlake, Halsey, LANY, Eurythmics, Jamie Cullum, Audio Bullys, Gwen McCrae and James Vincent McMorrow — which probably says more about his musical attention span than any genre description ever could.</p><p>And, inconveniently, he’s still curious.</p><p>A new generation of artists and a more adventurous corner of electronic music have pulled him back towards the reason he started doing this in the first place: finding strange, beautiful records and figuring out what happens when you play them very loud in the right order.</p><p>The sets are getting deeper again. The edges are getting stranger. New music is being made, new collaborations are taking shape, old friends are resurfacing and younger artists are introducing him to records he wishes he’d found first.</p><p>This isn’t about recreating a particular period of Sander Kleinenberg. That would be far too easy. It’s about continuing what was there from the beginning.</p></div>
+      <div class="sheet-body"><svg class="sheet-mark" viewBox="25.03 9.87 1040.27 546.01" aria-hidden="true"><use href="#skmark"/></svg><p class="sheet-kicker">Biography</p><p>Sander Kleinenberg has never been particularly good at standing still.</p><p>For more than three decades, the Dutch DJ and producer has followed one fairly simple instinct: play the records that excite him. Preferably before someone decides what genre they belong to.</p><p>That instinct has taken him from small, dark rooms to some very large ones, through progressive house, techno, disco, psychedelia, electronic pop and a fair amount of music that was probably a bad idea on paper. The common thread was never a genre. It was curiosity.</p><p>Emerging from the Netherlands in the 1990s, Sander became part of a generation of DJs who somehow found themselves taking underground electronic music around the world. Records like <em>My Lexicon</em>, <em>The Fruit</em>, <em>This Is Miami</em> and <em>Can You Feel It</em> became markers along the way, while his DJ sets built a reputation for joining dots between records that didn’t always appear to have much business being in the same room.</p><p>It took him around the planet more times than he can reasonably remember, from sweaty basements to Coachella, Glastonbury and Ultra, and through a long list of clubs, afterparties, airports and questionable hotel breakfasts.</p><p>The studio has been equally difficult to keep in one lane. Over the years Sander has produced, remixed and collaborated with Madonna, Daft Punk, Janet Jackson, Justin Timberlake, Halsey, LANY, Eurythmics, Jamie Cullum, Audio Bullys, Gwen McCrae and James Vincent McMorrow — which probably says more about his musical attention span than any genre description ever could.</p><p>And, inconveniently, he’s still curious.</p><p>A new generation of artists and a more adventurous corner of electronic music have pulled him back towards the reason he started doing this in the first place: finding strange, beautiful records and figuring out what happens when you play them very loud in the right order.</p><p>The sets are getting deeper again. The edges are getting stranger. New music is being made, new collaborations are taking shape, old friends are resurfacing and younger artists are introducing him to records he wishes he’d found first.</p><p>This isn’t about recreating a particular period of Sander Kleinenberg. That would be far too easy. It’s about continuing what was there from the beginning.</p></div>
      </button>
     </div>
    </div>
@@ -1141,22 +1180,25 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     so a pool of mixed shapes costs nothing -- a squarer one simply sits
     shorter about the same centre. */
  (function(){
+   /* Laying one card down. `exact` names the file when something other than
+      the crate is choosing -- a release with two pressings otherwise hands
+      back whichever of them it grabbed. */
+   function place(el, pick, dir, exact){
+     var img = el.querySelector("img");
+     var file = exact || pick[0];
+     if (file.pop) file = file[(Math.random()*file.length)|0];
+     img.src = dir + file;
+     img.alt = pick[1];
+     el.setAttribute("aria-label", "Enlarge: " + pick[1]);
+     if (pick.length > 2) el.closest(".slot").style.setProperty("--ar", pick[2]);
+     if (pick.length > 3) el.dataset.when = pick[3];
+   }
    function deal(sel, dir, pool){
      var els = document.querySelectorAll(sel);
      if (!els.length || pool.length < els.length) return;
      var bag = pool.slice();                      // drawn without replacement,
      els.forEach(function(el){                    // so no two cards repeat
-       var pick = bag.splice((Math.random()*bag.length)|0, 1)[0];
-       var img = el.querySelector("img");
-       /* One release, two pressings: the crate shows whichever sleeve it
-          grabs, and the back reads the same record either way. */
-       var file = pick[0];
-       if (file.pop) file = file[(Math.random()*file.length)|0];
-       img.src = dir + file;
-       img.alt = pick[1];
-       el.setAttribute("aria-label", "Enlarge: " + pick[1]);
-       if (pick.length > 2) el.closest(".slot").style.setProperty("--ar", pick[2]);
-       if (pick.length > 3) el.dataset.when = pick[3];
+       place(el, bag.splice((Math.random()*bag.length)|0, 1)[0], dir);
      });
    }
    var VINYL = [["01.webp", "Free Frogs — Bombay"], ["02.webp", "Amazone — Sangel"], ["03.webp", "Europe — Europe Transporter"], ["04.webp", "Amazone — Demons (United Nations Mix)"], ["05.webp", "Art of Silence — West 4 (Sander's Vision Mix)"], ["06.webp", "Sakan — Time Fax"], ["07.webp", "Sander Kleinenberg — Sander 5"], ["08.webp", "2b Continued — Laydown (S'n's Remix)"], ["09.webp", "Kleinenberg — Crazy"], ["10.webp", "Kleinenberg — Dancin' (All Night)"], ["11.webp", "M.T.F. — It Moves"], ["12.webp", "Rails Inc. — Clear Cut"], ["13.webp", "S'n'S — Conflicts"], [["14.webp", "15.webp"], "S'n'S — Y.D.W."], ["16.webp", "Sander — Save The"], ["17.webp", "Sander Kleinenberg — Sander 3"], ["18.webp", "Sander Kleinenberg — Sander 4"], ["19.webp", "Vincent De Moor — Wipe Out"], ["20.webp", "Eye 'n Ear — Movin' On (Sander's Vision Mix)"], ["21.webp", "Flamman & Abraxas feat. MC Lynx — Rubb It In (S'n'S Remix)"], ["22.webp", "Kinky Bros. — Hot (S 'N' S The Hague Kick Mix)"], ["23.webp", "M.T.F. — Running"], ["24.webp", "Mr. S Oliver — Funkin' Down The Track (S'n'S Remix)"], ["25.webp", "Rainbox — Seed, Scattered (S'n's Remix)"], ["26.webp", "Sander Kleinenberg — Claps"], ["27.webp", "Sander Kleinenberg — The Rhythm"], ["28.webp", "Three Drives On A Vinyl — Greece 2000 (S'N'S Deal Remix by Dj Stef & Sander Kleinenberg)"], ["29.webp", "Fetzan — Miks"], ["30.webp", "King Dale — Bonus (S'N'S Tunermix By Dj Stef And Sander Kleinenberg)"], ["31.webp", "Mevrouw Spoelstra pres Grand Bazaar — Bullits"], ["32.webp", "Sander Kleinenberg — Feelin' Good"], ["33.webp", "Sander Kleinenberg — For Your Love"], ["34.webp", "Vincent De Moor — Orion City (S'N'S Extended Remix)"], ["35.webp", "Armin van Buuren — Virgo (Sander Kleinenberg Mix)"], ["36.webp", "Holloway & Co. — Make You Mine (Sander Kleinenberg Remix)"], ["37.webp", "Junkie XL — Check Your Basic Groove (Sander Kleinenberg Mix)"], ["38.webp", "Sander Kleinenberg — Sacred"], ["39.webp", "Vincent De Moor — Between 2 Fires (S Flight Hard Dub)"], ["40.webp", "Ashtrax — Helsinki (Sander Kleinenberg Remix)"], ["41.webp", "Frankie Goes To Hollywood — Welcome To The Pleasuredome (Sander's Coming Home Mix)"], ["42.webp", "Oliver Lieb — Subraumstimulation (Sander Kleinenberg Remix)"], ["43.webp", "Sander Kleinenberg — My Lexicon"], ["44.webp", "Sander Kleinenberg — Penso Positivo EP"], ["45.webp", "Sander Kleinenberg — Rumble"], ["46.webp", "Sander Kleinenberg — The 4 Seasons EP #1"], ["47.webp", "Sander Kleinenberg — The 4 Seasons EP #2"], ["48.webp", "Ben Shaw Feat. Adele Holness — So Strong (Sander Kleinenberg Mix)"], ["49.webp", "Breeder — New York FM (Sander Kleinenberg Remix)"], ["50.webp", "Brother Brown — Star Catching Girl (feat. Frank'ee) (Sander Kleinenberg Remix No Way Out Mix)"], ["51.webp", "PMT — Deeper Water (Sander Kleinenberg Remix)"], ["52.webp", "Royksopp — Poor Leno (Sander Kleinenberg Dub)"], ["53.webp", "S.K. — 4 Dubs"], ["54.webp", "Sasha Emerson — Scorchio (Sander Kleinenberg's Scorched Mix)"], ["55.webp", "System f — Exhale (Sander Kleinenberg Remix)"], ["56.webp", "Lamya — Empires (Sander Kleinenberg Audio Paranoid Club)"], ["57.webp", "Lexicon Avenue — From Dusk Till Dawn (Sander Kleinenberg Audio Paranoid Dubapella)"], ["58.webp", "Sander Kleinenberg — 4.S.E.P.3.3. (50%) [CF 052]"], ["59.webp", "Annie Lennox — Wonderful (Sander Kleinenberg's Vocal Club)"], ["60.webp", "BT — Somnambulist (Sander Kleinenberg's Convertible Mix)"], ["61.webp", "Junkie XL Feat. Peter Tosh & Friends — Don't Wake Up Policeman (Sander Kleinenberg's Cold Turkey Remix)"], ["62.webp", "Justin Timberlake — Rock Your Body [Sander Kleinenberg's Just In The Club]"], ["63.webp", "Spork — Freek Like Me (Sander Kleinenberg Remix)"], ["64.webp", "Janet Jackson — All Nite (Don't Stop) (Sander Kleinenberg's Everybody Club Mix)"], ["65.webp", "N*E*R*D — Maybe (Sander Kleinenberg Maybe Remix)"], ["66.webp", "Usher — Caught Up (Sander Kleinenberg's Caught In The Club Mix)"], ["67.webp", "Mylo — Muscle Car (Sander Kleinenberg Pacecar Mix)"], ["68.webp", "Sander Kleinenberg — This Is Miami (Including Remixes)"], ["69.webp", "Kraak & Smaak — Dynamite (Sander Kleinenberg Remix)"], ["70.webp", "Lifelike — Love Emulator (Sander Kleinenberg Remix)"], ["71.webp", "Daft Punk — TRON Legacy (End Titles) (Remixed by Sander Kleinenberg)"], ["72.webp", "Innerpartysystem — Not Getting Any Better (Sander Kleinenberg Radio Mix)"], ["73.webp", "5K feat. Zino & Noa — Memories (Whitelabel, 2012)"], ["74.webp", "My Lexicon — Single"], ["75.webp", "My Lexicon 2025"], ["76.webp", "N*E*R*D — Maybe"], ["77.webp", "Sander Kleinenberg — My Lexicon Remix"], ["78.webp", "Sander Kleinenberg — This Is The Remixes"]];
@@ -1294,9 +1336,43 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      el.setAttribute("aria-label", "Watch: " + c[1]);
      el.dataset.clip = c[0];
    })();
-   deal(".pile .flyer.soon", "p/", SOON.length ? SOON : GONE);
+   /* What is still to come is laid out in the order it happens, as many
+      nights as there are cards for; a card with no night left to show falls
+      back to a memory rather than leaving a hole in the pile. */
+   SOON.sort(function(a, b){ return a[3] < b[3] ? -1 : a[3] > b[3] ? 1 : 0; });
+   document.querySelectorAll(".pile .flyer.soon").forEach(function(el, i){
+     place(el, SOON[i] || GONE[(Math.random()*GONE.length)|0], "p/");
+   });
    deal(".pile .flyer.gone", "p/", GONE);
    deal(".pile .disc",   "p/",   DISCS);
+
+   /* ?card=v/43 puts one particular card on the table, so a back can be read
+      without reloading until the crate happens to deal it -- with 77 sleeves
+      and three slots that is one visit in twenty-six. A preview only, like
+      ?ground: nothing is stored and it lasts as long as the query string. */
+   (function(){
+     var want = (new URLSearchParams(location.search).get("card") || "").trim();
+     if (!want) return;
+     var m = /^([vc])\/(\d+)$/.exec(want.replace(/\.webp$/, "")), sel, dir, pool, name;
+     if (m) {
+       name = ("0" + m[2]).slice(-2) + ".webp";
+       sel  = m[1] === "v" ? ".pile .sleeve" : ".pile .cd";
+       dir  = m[1] === "v" ? "p/v/" : "p/c/";
+       pool = m[1] === "v" ? VINYL : CDS;
+     } else if (/^(flyer|disc)-/.test(want)) {
+       name = want.replace(/\.webp$/, "") + ".webp";
+       sel  = want.charAt(0) === "f" ? ".pile .flyer" : ".pile .disc";
+       dir  = "p/";
+       pool = want.charAt(0) === "f" ? FLYERS : DISCS;
+     } else return;
+     var pick = null;
+     pool.forEach(function(e){
+       var f = e[0];
+       if (f.pop ? f.indexOf(name) > -1 : f === name) pick = e;
+     });
+     var el = document.querySelector(sel);
+     if (pick && el) place(el, pick, dir, name);
+   })();
  })();
 </script>
  <script>
@@ -1305,7 +1381,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     like someone tipped the box out again. Same relaxation as the build step:
     seed a few clusters, then push overlapping items apart until they settle. */
  (function(){
-   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.53990, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
+   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.17204, 0.40891, 0.822, 1, 0], [0.15897, 0.37784, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.20404, 0.41512, 0.5709, 0, 0], [0.19803, 0.40215, 0.5709, 0, 0], [0.20905, 0.42404, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.53990, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
    var slots = document.querySelectorAll('.pile .slot');
    if (!slots.length || slots.length !== LAY.length) return;
    var R = Math.random;
@@ -1393,13 +1469,13 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  </script>
 
  <div class="ground" role="group" aria-label="Background">
-  <button type="button" data-g="sander" aria-pressed="true">Sander</button>
+  <button type="button" data-g="sander" aria-pressed="false">Sander</button>
   <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" data-g="olivia" aria-pressed="false">Olivia</button>
   <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" data-g="bibi" aria-pressed="false">Bibi</button>
   <span class="gsep" aria-hidden="true">&bull;</span>
-  <button type="button" class="g-tide" data-g="tide" aria-pressed="false" aria-label="TIDE"><img src="p/tide.webp" alt="" width="280" height="120"></button>
+  <button type="button" class="g-tide" data-g="tide" aria-pressed="true" aria-label="TIDE"><img src="p/tide.webp" alt="" width="280" height="120"></button>
   <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" class="g-ade" data-g="ade" aria-pressed="false" aria-label="ADE" hidden><img src="p/ade26.svg" alt="" width="896" height="600"></button>
  </div>
@@ -1445,7 +1521,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const SHOTS = [{"src": "p/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "p/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "p/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "p/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "p/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "p/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}];
+const SHOTS = [{"src": "p/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "p/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "p/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "p/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "p/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "p/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}, {"src": "p/29-small-wheels.webp", "cap": "Small wheels", "kind": "polaroid", "ar": 0.822}, {"src": "p/30-come-as-you-are.webp", "cap": "Come as you are", "kind": "polaroid", "ar": 0.822}, {"src": "p/flyer-tide-sub-sub-ibiza.webp", "cap": "", "kind": "flyer", "ar": 0.8}, {"src": "p/flyer-do-not-sit-miami.webp", "cap": "", "kind": "flyer", "ar": 1.0}, {"src": "p/flyer-winter-of-love.webp", "cap": "", "kind": "flyer", "ar": 1.9097}];
 /* the sleeves and the flyer were re-dealt before paint, so take what they
    landed on from the DOM -- the flyer carries its shape across as well, since
    the enlarged view sizes itself from it */
@@ -1508,6 +1584,7 @@ function playClip(id, title){
   $('boxShot').hidden = true;
   $('boxPrint').classList.add('is-clip');
   turn(false);
+  document.dispatchEvent(new CustomEvent('sk:film', {detail:{id: id, title: title}}));
 }
 
 document.querySelectorAll('.print, .sleeve, .cd, .flyer, .disc, .sheet, .clip').forEach((el, i) => {
@@ -1689,6 +1766,10 @@ function show(i){
   if (!box.hidden && !matchMedia('(prefers-reduced-motion: reduce)').matches)
     $('boxPrint').animate([{opacity:.35, transform:'scale(.986)'}, {opacity:1, transform:'none'}],
                           {duration:220, easing:'ease-out'});
+  /* Said out loud for the counting at the foot of the page, the same way the
+     snippet announces itself to the mixtape. With nothing listening -- a
+     visitor who asked not to be -- it goes nowhere. */
+  document.dispatchEvent(new CustomEvent('sk:card', {detail:{i: at}}));
 }
 /* The print lifts off the table. It starts exactly where its card lies - same
    size, same angle - and rises to the middle, so opening reads as a zoom out of
@@ -1848,10 +1929,12 @@ function turn(to){
   flip.textContent = on ? 'Turn back' : 'Turn over';
   $('boxBack').setAttribute('aria-hidden', on ? 'false' : 'true');
   $('boxPrint').setAttribute('aria-hidden', on ? 'true' : 'false');
+  document.dispatchEvent(new CustomEvent('sk:turn', {detail:{i: at, on: on}}));
 }
 function openAt(i, el){ opener = el; show(i); box.hidden = false; flight(el, false); $('close').focus(); }
 function shut(){
   if (box.hidden) return;
+  document.dispatchEvent(new CustomEvent('sk:shut'));
   // tearing the frame out is what stops the sound; hiding it would not
   const done = () => { box.hidden = true; $('boxClip').textContent = '';
                        if (opener) opener.focus(); };
@@ -1927,8 +2010,10 @@ const mixEl = document.querySelector('.mixtape');
 /* ---- the ground --------------------------------------------------- */
 /* ADE 2026, the 30th, runs 21 to 25 October. The stop is offered from the 1st,
    early by choice, and retires itself once ADE is over: it stops being listed,
-   so a stored 'ade' no longer matches and the page falls back to Sander.
-   It is only ever offered, never imposed — cream is the ground you arrive on. */
+   so a stored 'ade' no longer matches and the page falls back to the water.
+   It is only ever offered, never imposed — TIDE is the ground you arrive on,
+   and it is carried on the <html> element so the page opens blue rather than
+   turning blue a moment after it has painted. */
 const ADE_FROM = new Date(2026, 9, 1), ADE_TO = new Date(2026, 9, 26);
 const duringADE = () => { const n = new Date(); return n >= ADE_FROM && n < ADE_TO; };
 const GROUNDS = duringADE() ? ['sander','olivia','bibi','tide','ade']
@@ -1959,7 +2044,7 @@ if (groundBar) {
   });
   let saved = null;
   try { saved = localStorage.getItem('sk-ground'); } catch (e) {}
-  setGround(previewGround || (GROUNDS.includes(saved) ? saved : 'sander'), false);
+  setGround(previewGround || (GROUNDS.includes(saved) ? saved : 'tide'), false);
 }
 
 /* ---- the single's preview ------------------------------------------- */
@@ -2019,6 +2104,169 @@ if (mixEl) {
     P.hidden = true;
   });
 }
+</script>
+
+<script>
+/* ---- who picked up what ---------------------------------------------------
+   Counted by us, on our own server: every beacon goes to analytics/track.php
+   next door and nothing at all is handed to an analytics company. No cookies
+   -- the visit id is a random string in sessionStorage, so it dies with the
+   tab and nobody is followed from one day to the next. The browser's own
+   opt-out is honoured first, before a single thing is measured.
+   analytics/dashboard.php reads it back, behind its own password.            */
+(function () {
+  if (navigator.doNotTrack === '1' || window.doNotTrack === '1' ||
+      navigator.globalPrivacyControl === true) return;
+
+  var ENDPOINT = 'analytics/track.php';
+  var presses = 0, opened = 0, deepest = 0, held = null, gone = false;
+  var started = Date.now(), sid;
+  try {
+    sid = sessionStorage.getItem('sk5k');
+    if (!sid) {
+      sid = Math.random().toString(36).slice(2) + Date.now().toString(36);
+      sessionStorage.setItem('sk5k', sid);
+    }
+  } catch (e) { sid = Math.random().toString(36).slice(2); }
+
+  function send(o) {
+    o.sid = sid;
+    var body = JSON.stringify(o);
+    try {
+      if (navigator.sendBeacon &&
+          navigator.sendBeacon(ENDPOINT, new Blob([body], {type: 'application/json'}))) return;
+    } catch (e) {}
+    fetch(ENDPOINT, {method: 'POST', body: body, keepalive: true}).catch(function () {});
+  }
+
+  /* What a card is, in words that still mean something a year from now: the
+     kind, what it says on the front, and where it came from -- c/44, v/14. */
+  function card(i) {
+    var s = SHOTS[i];
+    if (!s) return null;
+    return {kind: s.kind,
+            item: (s.cap || s.kind).slice(0, 140),
+            file: (s.src || '').replace(/^p\//, '').replace(/\.\w+$/, '') || s.kind};
+  }
+
+  send({type: 'visit',
+        ref: document.referrer || null,
+        vw: innerWidth, vh: innerHeight,
+        ground: document.documentElement.dataset.ground || 'sander',
+        card: new URLSearchParams(location.search).get('card') || null,
+        tz: (function () {
+          try { return Intl.DateTimeFormat().resolvedOptions().timeZone || null; }
+          catch (e) { return null; }
+        })(),
+        lang: (navigator.language || '').slice(0, 16) || null});
+
+  /* Where a hand reaches. Per mille of the whole table rather than of the
+     screen, because the pile is longer than one screen and the question is
+     which part of the table gets touched at all. A press with the lightbox
+     open is on the enlarged card, not on the table, so it is counted without
+     a place; so is a card reached by keyboard, which has no place to give. */
+  addEventListener('click', function (e) {
+    if (presses >= 150) return;            // one visitor cannot flood the log
+    presses++;
+    var slot  = e.target.closest && e.target.closest('[data-i]');
+    var what  = slot ? card(+slot.dataset.i) : null;
+    var onTable = $('box').hidden && e.detail > 0;
+    var W = Math.max(1, document.documentElement.scrollWidth);
+    var H = Math.max(1, document.documentElement.scrollHeight);
+    var hit = !what && e.target.closest
+      ? e.target.closest('.ground button, .mixtape, .snip-play, .flip, .close, .rl-play, a[href]')
+      : null;
+    // a press with a card up that is not on the card itself puts it back down
+    var missed = hit ? (hit.id || (typeof hit.className === 'string'
+                          ? hit.className.split(' ')[0] : '') || hit.tagName.toLowerCase())
+                     : ($('box').hidden ? 'the table itself' : 'putting it back');
+    send({type: 'press',
+          x: onTable ? Math.round(e.pageX / W * 1000) : null,
+          y: onTable ? Math.round(e.pageY / H * 1000) : null,
+          vw: innerWidth,
+          kind: what && what.kind, item: what && what.item, file: what && what.file,
+          ui: what ? null : missed.slice(0, 40)});
+
+    /* Anything that really leads off the page: a ticket link on the back of a
+       flyer or beside a tour date, or one of the platforms. A card and the
+       mixtape are links too, so that they still work with the script off, but
+       here they are caught and kept -- nobody left, so nothing is counted. */
+    var a = !what && e.target.closest && e.target.closest('a[href^="http"]');
+    if (a && !a.closest('.mixtape') && a.hostname && a.hostname !== location.hostname) {
+      send({type: 'event',
+            name: (a.closest('#rlF') || a.classList.contains('ag-x')) ? 'tickets' : 'away',
+            item: (a.textContent || '').trim().slice(0, 60) || a.hostname,
+            file: a.hostname.replace(/^www\./, '').slice(0, 60),
+            kind: held && held.kind});
+    }
+  }, true);
+
+  /* A card picked up, and for how long it was held. show() says so every time
+     the lightbox is pointed somewhere new -- opening it, and the arrows. */
+  function drop() {
+    if (!held) return;
+    send({type: 'card', kind: held.kind, item: held.item, file: held.file,
+          dur: Math.round((Date.now() - held.at) / 1000), back: held.back});
+    held = null;
+  }
+  document.addEventListener('sk:card', function (e) {
+    drop();
+    var c = card(e.detail.i);
+    if (!c) return;
+    opened++;
+    held = {kind: c.kind, item: c.item, file: c.file, at: Date.now(), back: false};
+  });
+  document.addEventListener('sk:shut', drop);
+  document.addEventListener('sk:turn', function (e) {
+    if (!e.detail.on) return;              // turning back is not a second read
+    if (held) held.back = true;
+    send({type: 'event', name: 'turn', kind: held && held.kind,
+          item: held && held.item, file: held && held.file});
+  });
+  document.addEventListener('sk:film', function (e) {
+    send({type: 'event', name: 'film', kind: held && held.kind,
+          item: (e.detail.title || '').slice(0, 140), file: e.detail.id});
+  });
+  document.addEventListener('sk:snippet', function () {
+    send({type: 'event', name: 'snippet', item: 'Make It Rain'});
+  });
+
+  var mix = document.querySelector('.mixtape');
+  if (mix) mix.addEventListener('click', function () {
+    send({type: 'event', name: 'mixtape', kind: 'mixtape',
+          item: (mix.getAttribute('aria-label') || 'Mixtape')
+                  .replace(/^Listen on SoundCloud: /, '').slice(0, 140)});
+  });
+  var gb = document.querySelector('.ground');
+  if (gb) gb.addEventListener('click', function (e) {
+    var b = e.target.closest('button');
+    if (b) send({type: 'event', name: 'ground', item: b.dataset.g});
+  });
+
+  /* How far down the table they got. */
+  function mark() {
+    var h = document.documentElement.scrollHeight - innerHeight;
+    var pc = h > 0 ? Math.round(scrollY / h * 100) : 100;
+    if (pc > deepest) deepest = Math.max(0, Math.min(100, pc));
+  }
+  addEventListener('scroll', mark, {passive: true});
+  mark();
+
+  /* Time on the site, sent once on the way out. visibilitychange fires where
+     pagehide does not and the other way round, so both are listened for and
+     whichever comes first wins. */
+  function leaving() {
+    if (gone) return;
+    gone = true;
+    drop();
+    send({type: 'time', dur: Math.round((Date.now() - started) / 1000),
+          n: opened, deep: deepest});
+  }
+  document.addEventListener('visibilitychange', function () {
+    if (document.visibilityState === 'hidden') leaving();
+  });
+  addEventListener('pagehide', leaving);
+})();
 </script>
 
 

@@ -2,6 +2,11 @@
 analytics/visits.log
 analytics/geo-cache.json
 analytics/config.php
+5k/analytics/visits.log.php
+5k/analytics/visits-*.log.php
+5k/analytics/geo-cache.php
+5k/analytics/config.php
+5k/analytics/.attempts.json
 comments/data/
 comments/config.php
 comments/.salt

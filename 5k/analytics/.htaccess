@@ -1,0 +1,36 @@
+# Nothing in here is fetchable directly. The log and the geo cache are read
+# only by dashboard.php, and config.php (the username and the password hash)
+# is never meant to be requested at all.
+#
+# Those three are PHP files that print nothing of their own as well, so even a
+# host that never reads this file hands over an empty page rather than the
+# data. This is the belt; that is the braces.
+<FilesMatch "\.(log|json)$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
+
+<Files "config.php">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</Files>
+
+<Files ".attempts.json">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</Files>
