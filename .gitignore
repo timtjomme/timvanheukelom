@@ -10,3 +10,8 @@ analytics/config.php
 comments/data/
 comments/config.php
 comments/.salt
+# the download gate: the signing secret, and the audio being given away
+5k/go/config.php
+5k/go/files/*
+!5k/go/files/.gitkeep
+!5k/go/files/.htaccess

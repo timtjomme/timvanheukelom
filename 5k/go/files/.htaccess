@@ -1,0 +1,8 @@
+# Never reachable on its own: get.php reads from here and streams the bytes.
+<IfModule mod_authz_core.c>
+  Require all denied
+</IfModule>
+<IfModule !mod_authz_core.c>
+  Order allow,deny
+  Deny from all
+</IfModule>

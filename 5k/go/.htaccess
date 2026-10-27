@@ -1,0 +1,12 @@
+# The file being given away is reached through get.php and a signed token, so
+# nothing in files/ may be fetched directly, and config.php -- which holds the
+# signing secret -- must never be served at all.
+<FilesMatch "^(config|config\.example)\.php$">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
+</FilesMatch>
