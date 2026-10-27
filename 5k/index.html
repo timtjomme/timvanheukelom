@@ -947,6 +947,11 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .box-print.is-flyer{background:var(--paper)}
 /* a shrunk A4 is unreadable, so enlarging the bio shows the text, not a bigger page */
 .box-stage.wide{width:min(92vw,660px)}
+/* A sleeve is looked at; a film is watched. The stage is capped at 560px,
+   which is right for holding a record up to the light and far too small once
+   something is moving on it -- so with a film in it the card is let out to 80%
+   of the screen, whichever way the screen runs out first, keeping 16:9. */
+.box-stage.film{width:min(80vw,calc(80vh * 16 / 9))}
 .box-print.is-sheet{padding:clamp(26px,5cqw,46px);background:var(--paper);
   max-height:calc(100vh - 150px);overflow-y:auto}
 .sheet-read{color:#2c2924;font-size:clamp(14px,1.55cqw,16px);line-height:1.62;text-align:left}
@@ -1941,6 +1946,11 @@ function playClip(id, title){
   clip.hidden = false;
   $('boxShot').hidden = true;
   $('boxPrint').classList.add('is-clip');
+  $('boxStage').classList.add('film');
+  /* Escape is ours only while the focus is: a cross-origin embed that takes
+     the keyboard swallows it, so the close button is given the focus as the
+     film starts. */
+  $('close').focus();
   turn(false);
   document.dispatchEvent(new CustomEvent('sk:film', {detail:{id: id, title: title}}));
 }
@@ -1953,6 +1963,7 @@ function shutClip(){
   clip.textContent = '';
   clip.hidden = true;
   $('boxPrint').classList.remove('is-clip');
+  $('boxStage').classList.remove('film');
   /* a sheet has no photograph, and neither does the download's label */
   const k = SHOTS[at] && SHOTS[at].kind;
   if (k && k !== 'sheet' && k !== 'gate') $('boxShot').hidden = false;
@@ -2494,7 +2505,12 @@ box.addEventListener('click', e => {
 });
 addEventListener('keydown', e => {
   if (box.hidden) return;
-  if (e.key === 'Escape') shut();
+  if (e.key === 'Escape') {
+    /* With something playing, Escape should hand the card back rather than
+       clear the whole table; a second press then closes it. */
+    if (!$('boxClip').hidden) { shutClip(); $('close').focus(); }
+    else shut();
+  }
   else if (e.key === 'ArrowLeft') show(at - 1);
   else if (e.key === 'ArrowRight') show(at + 1);
 });
