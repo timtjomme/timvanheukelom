@@ -17,3 +17,7 @@ comments/.salt
 !5k/go/files/.htaccess
 # the archive gate: the password hash for /5k
 5k/auth.php
+
+# working files for /5k -- notes, drafts and the rider; the repository is public
+5k/_*.html
+5k/_*.md
