@@ -12,6 +12,12 @@
 
 	var slow = matchMedia("(prefers-reduced-motion: reduce)").matches;
 
+	/* -- the deal strip: gone once the deal's last day is over ----------- */
+	/* "t/m 24 november 2026" includes the 24th, so it hides from 25 November,
+	   Dutch time. The markup stays in the pages until someone deletes it. */
+	var deal = document.querySelector(".deal-banner");
+	if (deal && Date.now() >= Date.parse("2026-11-25T00:00:00+01:00")) deal.hidden = true;
+
 	/* -- the counters: ring draws itself while the number counts up ------ */
 	var numbers = document.querySelectorAll("[data-count]");
 	if (numbers.length && !slow) {
