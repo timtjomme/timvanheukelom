@@ -65,8 +65,8 @@ $h = fn($s) => htmlspecialchars((string) $s, ENT_QUOTES, 'UTF-8');
 <title><?= $h($title) ?> — Sander Kleinenberg</title>
 <meta name="description" content="<?= $h($title) ?> — a free download from Sander Kleinenberg.">
 <meta name="robots" content="index,follow">
-<link rel="icon" href="../p/sk-32.png" sizes="32x32" type="image/png">
-<link rel="apple-touch-icon" href="../p/sk-180.png">
+<link rel="icon" href="../pics/sk-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="../pics/sk-180.png">
 <meta property="og:type" content="music.song">
 <meta property="og:title" content="<?= $h($title) ?> — free download">
 <meta property="og:description" content="Follow, like, and the track is yours.">

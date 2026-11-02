@@ -230,14 +230,14 @@ function device(?int $vw): string {
 }
 /* The miniature of a card. `file` arrives in a beacon, so it is let near the
    filesystem only after it has proved it is a plain name -- no dots, no climb
-   out of p/ -- and only if the picture is really there. A sheet has none. */
+   out of pics/ -- and only if the picture is really there. A sheet has none. */
 function thumb(?string $file): ?string {
     $file = (string) $file;
     if ($file === '' || !preg_match('~^[a-z0-9][a-z0-9/_-]{0,58}$~i', $file)
         || str_contains($file, '..')) {
         return null;
     }
-    return is_file(__DIR__ . '/../p/' . $file . '.webp') ? '../p/' . $file . '.webp' : null;
+    return is_file(__DIR__ . '/../pics/' . $file . '.webp') ? '../pics/' . $file . '.webp' : null;
 }
 
 /** Browser and system, read off the user agent as coarsely as it deserves. */
@@ -442,7 +442,7 @@ $seen = array_slice($seen, 0, 40, true);
 <meta name="viewport" content="width=device-width,initial-scale=1">
 <meta name="robots" content="noindex,nofollow">
 <title>Who picked up what — Sander Kleinenberg</title>
-<link rel="icon" href="../p/sk-32.png" sizes="32x32" type="image/png">
+<link rel="icon" href="../pics/sk-32.png" sizes="32x32" type="image/png">
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&display=swap">

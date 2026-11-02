@@ -15,3 +15,5 @@ comments/.salt
 5k/go/files/*
 !5k/go/files/.gitkeep
 !5k/go/files/.htaccess
+# the archive gate: the password hash for /5k
+5k/auth.php

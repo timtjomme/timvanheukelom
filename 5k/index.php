@@ -1,3 +1,59 @@
+<?php
+/* ---- private while it is being built --------------------------------------
+ *
+ * The archive is not public yet, so nothing here is served without the
+ * password. It is checked in PHP rather than in .htaccess because AuthUserFile
+ * wants an absolute server path, and the wrong one answers 500 for the whole
+ * folder -- see the note in .htaccess.
+ *
+ * The hash sits in auth.php, which is not in the repository: the repository is
+ * public. No key file, no entry -- the gate shuts rather than opens. Any
+ * username will do; the password is the lock.
+ */
+$sk_key  = __DIR__ . '/auth.php';
+$sk_hash = is_file($sk_key) ? require $sk_key : null;
+if (!is_string($sk_hash) || $sk_hash === '') {
+    http_response_code(503);
+    header('Content-Type: text/plain; charset=utf-8');
+    exit("Locked, and the key file is not installed.\n");
+}
+/* PHP-FPM does not always fill PHP_AUTH_PW, so read the header itself too --
+   .htaccess hands it over for the setups that drop it on the way in. */
+$sk_said = $_SERVER['PHP_AUTH_PW'] ?? null;
+if ($sk_said === null) {
+    $sk_sent = $_SERVER['HTTP_AUTHORIZATION']
+            ?? $_SERVER['REDIRECT_HTTP_AUTHORIZATION'] ?? '';
+    if (stripos($sk_sent, 'basic ') === 0) {
+        $sk_pair = base64_decode(substr($sk_sent, 6), true);
+        if (is_string($sk_pair) && str_contains($sk_pair, ':')) {
+            $sk_said = explode(':', $sk_pair, 2)[1];
+        }
+    }
+}
+if (!is_string($sk_said) || !password_verify($sk_said, $sk_hash)) {
+    header('WWW-Authenticate: Basic realm="Kleinenberg archive"');
+    http_response_code(401);
+    header('Content-Type: text/plain; charset=utf-8');
+    exit("Private.\n");
+}
+
+/* Served from wherever it is served from.
+ *
+ * Open Graph needs absolute URLs -- a crawler will not resolve a relative
+ * og:image -- which is the one thing on this page that cannot simply be a
+ * relative path. So the origin is read off the request instead of written
+ * into the file, and the same files work on this domain, on the next one, and
+ * on localhost, with nothing to edit in between.
+ *
+ * HTTP_HOST is whatever the client sent, so it is escaped on the way out.
+ */
+$sk_https = (!empty($_SERVER['HTTPS']) && $_SERVER['HTTPS'] !== 'off')
+         || ($_SERVER['HTTP_X_FORWARDED_PROTO'] ?? '') === 'https';
+$sk_host  = $_SERVER['HTTP_HOST'] ?? 'localhost';
+$sk_dir   = rtrim(str_replace('\\', '/', dirname($_SERVER['SCRIPT_NAME'] ?? '/')), '/');
+$BASE = htmlspecialchars(($sk_https ? 'https' : 'http') . '://' . $sk_host . $sk_dir . '/',
+                         ENT_QUOTES, 'UTF-8');
+?>
 <!doctype html>
 <!--
 
@@ -11,12 +67,13 @@
          │                             │
          │   this website is made      │
          │   by @timtjomme             │
+         │   sander@timvanheukelom.nl  │
          │                             │
          └─────────────────────────────┘
 
          tipped out in no particular order.
 
---><html data-ground="tide"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg</title><meta name=description content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><link rel=icon href="p/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="p/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="p/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="https://timvanheukelom.nl/5k/"><meta property="og:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="https://timvanheukelom.nl/5k/p/sk-og.png"></head><body>
+--><html data-ground="tide"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg</title><meta name=description content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><link rel=icon href="pics/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="pics/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="pics/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="<?= $BASE ?>"><meta property="og:image" content="<?= $BASE ?>pics/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="<?= $BASE ?>pics/sk-og.png"></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&family=Permanent+Marker&family=Reenie+Beanie&display=swap">
@@ -25,7 +82,7 @@
   color-scheme: light;
   /* sampled off the tour poster: paper #f0eeea, ink #1c1c1c, pink #dd6691 */
   /* measured off the tour poster: paper #f1f1ec, ink #181817, pink #de6d96 */
-  --wall:#f1f1ec; --surface:url("p/surface.webp");
+  --wall:#f1f1ec; --surface:url("pics/surface.webp");
   --paper:#fdfcfa; --ink:#181817;
   --body:#2c2422;
   --accent:#de6d96; --shadow:72,64,52;
@@ -100,7 +157,7 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
 .snow{position:fixed;inset:0;z-index:0;pointer-events:none;overflow:hidden;display:none}
 :root[data-ground="ade"] .snow{display:block}
 .snow i{position:absolute;top:0;left:var(--x);width:calc(34px * var(--s));
-  aspect-ratio:896/600;background:url("p/ade26.svg") center/contain no-repeat;
+  aspect-ratio:896/600;background:url("pics/ade26.svg") center/contain no-repeat;
   opacity:.15;animation:adedrift var(--d) linear var(--t) infinite}
 /* The same layer over the TIDE ground, carrying the whole logo -- letters and
    the wave under them -- at full strength rather than as a hint. It does not
@@ -114,7 +171,7 @@ body{margin:0;background:var(--wall) var(--surface) center/cover no-repeat;
 :root[data-ground="tide"] .snow{display:block}
 :root[data-ground="tide"] .snow i{top:calc(var(--x) * .88);left:0;
   width:calc(160px * var(--s));aspect-ratio:353/200;
-  background-image:url("p/tide-logo.webp");opacity:1;
+  background-image:url("pics/tide-logo.webp");opacity:1;
   animation:tideacross var(--d) linear var(--t) infinite,
             tideswell calc(var(--d) / 7) ease-in-out var(--t) infinite alternate,
             tidetilt  calc(var(--d) / 7) ease-in-out
@@ -406,8 +463,8 @@ h1.logo svg{display:block;width:100%;height:auto}
 .plat-i{display:block;height:var(--ic);width:auto}
 .plat-i svg{display:block;height:var(--ic);width:auto;fill:currentColor}
 .plat-dz{width:var(--ic);
-  -webkit-mask:url("p/deezer.png") center/contain no-repeat;
-  mask:url("p/deezer.png") center/contain no-repeat;background:currentColor}
+  -webkit-mask:url("pics/deezer.png") center/contain no-repeat;
+  mask:url("pics/deezer.png") center/contain no-repeat;background:currentColor}
 @media (prefers-reduced-motion:reduce){.plat a{transition:none}
   .plat a:hover,.plat a:focus-visible{transform:none}}
 
@@ -519,7 +576,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .shot img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
 /* handling wear, offset per item so no two prints carry the same dust */
 .shot::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:url("p/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.34}
+  background:url("pics/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.34}
 /* the sheen counter-rotates, so every surface catches the same overhead light */
 .shot::after{content:"";position:absolute;inset:0;pointer-events:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.16),inset 0 3px 9px rgba(0,0,0,.3);
@@ -533,7 +590,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .sleeve img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
 /* the ring the record presses into its sleeve, plus rubbed corners */
 .sleeve::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:url("p/sleevewear.webp") center/100% 100% no-repeat;opacity:.8}
+  background:url("pics/sleevewear.webp") center/100% 100% no-repeat;opacity:.8}
 .sleeve::after{content:"";position:absolute;inset:0;pointer-events:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.42);
   background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.10),
@@ -560,7 +617,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   -webkit-appearance:none;appearance:none}
 .flyer img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
 .flyer::before{content:"";position:absolute;inset:0;pointer-events:none;
-  background:url("p/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.26}
+  background:url("pics/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.26}
 .flyer::after{content:"";position:absolute;inset:0;pointer-events:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.12);
   background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.22),
@@ -591,7 +648,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   border:0;border-radius:1px;background:#15130f;cursor:pointer;overflow:hidden}
 .mixtape img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
 .mixtape::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:url("p/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.2}
+  background:url("pics/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.2}
 .mixtape::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.42);
   background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.10),
@@ -603,7 +660,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   border:0;border-radius:1px;background:#15130f;cursor:pointer;overflow:hidden}
 .clip img{display:block;width:100%;height:100%;object-fit:cover;max-width:100%}
 .clip::before{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
-  background:url("p/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.2}
+  background:url("pics/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;opacity:.2}
 .clip::after{content:"";position:absolute;inset:0;z-index:1;pointer-events:none;
   box-shadow:inset 0 0 0 1px rgba(0,0,0,.42);
   background:linear-gradient(calc(104deg - var(--rot)),rgba(255,255,255,.10),
@@ -1059,8 +1116,8 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   <div class="under">
   <aside class="postit" data-on="2026-10-24" hidden>
    <a class="pi" href="https://veronicaschip.fairtix.io/p/tide-%E2%80%93-sub-sub-ibiza-ade-showcase" target="_blank" rel="noopener noreferrer">
-    <span class="pi-k">Upcoming <span class="pi-ade"><img src="p/ade26-yellow.svg" alt="ADE" width="896" height="600" decoding="async"></span> special</span>
-    <img class="pi-mark" src="p/tide.webp" alt="TIDE" width="280" height="120" decoding="async">
+    <span class="pi-k">Upcoming <span class="pi-ade"><img src="pics/ade26-yellow.svg" alt="ADE" width="896" height="600" decoding="async"></span> special</span>
+    <img class="pi-mark" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async">
     <span class="pi-w"><b>Saturday night</b>24 Oct &mdash; Het Veronica Schip<br>NDSM-pier 1, Amsterdam</span>
     <span class="pi-l">
      <i><b>Sander Kleinenberg</b> b2b <b>Meloko</b></i>
@@ -1076,7 +1133,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   <div class="single">
    <div class="pinned">
     <div class="pinned-card">
-     <span class="pinned-shot"><img src="p/make-it-rain.webp" alt="Sander Kleinenberg &amp; Darmon &mdash; Make It Rain" width="900" height="900" decoding="async"><button class="snip-play" type="button" aria-pressed="false" aria-label="Play a 30-second preview of Make It Rain"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ico-play" d="M9 5.3 19.4 12 9 18.7Z"/><g class="ico-pause"><rect x="7.4" y="5.6" width="3.5" height="12.8" rx="1.1"/><rect x="13.1" y="5.6" width="3.5" height="12.8" rx="1.1"/></g></svg></button><audio class="snip" preload="none" src="p/make-it-rain-clip.mp4"></audio></span>
+     <span class="pinned-shot"><img src="pics/make-it-rain.webp" alt="Sander Kleinenberg &amp; Darmon &mdash; Make It Rain" width="900" height="900" decoding="async"><button class="snip-play" type="button" aria-pressed="false" aria-label="Play a 30-second preview of Make It Rain"><svg viewBox="0 0 24 24" aria-hidden="true"><path class="ico-play" d="M9 5.3 19.4 12 9 18.7Z"/><g class="ico-pause"><rect x="7.4" y="5.6" width="3.5" height="12.8" rx="1.1"/><rect x="13.1" y="5.6" width="3.5" height="12.8" rx="1.1"/></g></svg></button><audio class="snip" preload="none" src="pics/make-it-rain-clip.mp4"></audio></span>
    <ul class="plat">
        <li><a href="https://open.spotify.com/track/5xrKQ7HwqAcsPaXkU4x336" target="_blank" rel="noopener noreferrer"
         aria-label="Listen on Spotify" title="Spotify"><span class="plat-i"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0C5.4 0 0 5.4 0 12s5.4 12 12 12 12-5.4 12-12S18.66 0 12 0zm5.521 17.34c-.24.359-.66.48-1.021.24-2.82-1.74-6.36-2.101-10.561-1.141-.418.122-.779-.179-.899-.539-.12-.421.18-.78.54-.9 4.56-1.021 8.52-.6 11.64 1.32.42.18.479.659.301 1.02zm1.44-3.3c-.301.42-.841.6-1.262.3-3.239-1.98-8.159-2.58-11.939-1.38-.479.12-1.02-.12-1.14-.6-.12-.48.12-1.021.6-1.141C9.6 9.9 15 10.561 18.72 12.84c.361.181.54.78.241 1.2zm.12-3.36C15.24 8.4 8.82 8.16 5.16 9.301c-.6.179-1.2-.181-1.38-.721-.18-.601.18-1.2.72-1.381 4.26-1.26 11.28-1.02 15.72 1.621.539.3.719 1.02.419 1.56-.299.421-1.02.599-1.559.3z"/></svg></span></a></li>
@@ -1104,7 +1161,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <path d="M54 178 C78 179 92 159 95 128" stroke-width=".85" opacity=".82"/>
    <path d="M95.0 128.0 L91.5 133.3 M95.0 128.0 L97.2 134.0" stroke-width=".85" opacity=".82"/>
    </svg>
-   <img class="pin" src="p/pin.webp" alt="" aria-hidden="true" width="329" height="430" decoding="async">
+   <img class="pin" src="pics/pin.webp" alt="" aria-hidden="true" width="329" height="430" decoding="async">
    <p class="scrawl" aria-hidden="true">NEW SINGLE<br>OUT NOW</p>
   </div>
  </header>
@@ -1112,287 +1169,280 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <div class="slot" style="--x:71.37%;--y:78.95%;--w:18.73%;--r:-24.7deg;--z:20;--mx:30.25%;--my:35.66%;--mw:44.50%;--mr:16.6deg;--lift:1.021;--bri:0.968;--wx:77%;--wy:54%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="0" aria-label="Enlarge: C'est chic">
-      <span class="shot"><img src="p/08-c-est-chic.webp" alt="C'est chic" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/08-c-est-chic.webp" alt="C'est chic" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:37.20%;--y:9.71%;--w:16.76%;--r:19.3deg;--z:14;--mx:72.50%;--my:40.54%;--mw:39.83%;--mr:-17.6deg;--lift:0.879;--bri:0.987;--wx:91%;--wy:35%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="1" aria-label="Enlarge: Ibiza '11">
-      <span class="shot"><img src="p/02-ibiza-11.webp" alt="Ibiza '11" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/02-ibiza-11.webp" alt="Ibiza '11" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:12.08%;--y:44.08%;--w:18.72%;--r:-8.1deg;--z:26;--mx:69.63%;--my:12.72%;--mw:44.48%;--mr:-17.0deg;--lift:1.162;--bri:1.007;--wx:6%;--wy:15%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="2" aria-label="Enlarge: The crew">
-      <span class="shot"><img src="p/20-the-crew.webp" alt="The crew" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/20-the-crew.webp" alt="The crew" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:27.26%;--y:80.69%;--w:14.09%;--r:1.8deg;--z:12;--mx:30.10%;--my:3.86%;--mw:33.49%;--mr:21.2deg;--lift:0.832;--bri:1.026;--wx:20%;--wy:96%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="3" aria-label="Enlarge: Under the tent">
-      <span class="shot"><img src="p/27-under-the-tent.webp" alt="Under the tent" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/27-under-the-tent.webp" alt="Under the tent" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:86.45%;--y:46.16%;--w:17.40%;--r:24.9deg;--z:11;--mx:30.71%;--my:92.18%;--mw:41.35%;--mr:20.3deg;--lift:0.809;--bri:0.971;--wx:34%;--wy:76%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="4" aria-label="Enlarge: Stay high">
-      <span class="shot"><img src="p/11-stay-high.webp" alt="Stay high" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/11-stay-high.webp" alt="Stay high" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:20.23%;--y:91.50%;--w:14.85%;--r:15.6deg;--z:10;--mx:80.21%;--my:51.75%;--mw:35.30%;--mr:-2.5deg;--lift:0.785;--bri:0.991;--wx:48%;--wy:56%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="5" aria-label="Enlarge: Paul van Dyk">
-      <span class="shot"><img src="p/15-paul-van-dyk.webp" alt="Paul van Dyk" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/15-paul-van-dyk.webp" alt="Paul van Dyk" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:59.14%;--y:65.84%;--w:16.04%;--r:-28.4deg;--z:22;--mx:21.24%;--my:56.00%;--mw:38.13%;--mr:2.4deg;--lift:1.068;--bri:1.01;--wx:62%;--wy:37%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="6" aria-label="Enlarge: Sold out">
-      <span class="shot"><img src="p/13-sold-out.webp" alt="Sold out" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/13-sold-out.webp" alt="Sold out" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:85.76%;--y:10.78%;--w:18.07%;--r:-27.0deg;--z:19;--mx:30.49%;--my:41.66%;--mw:42.94%;--mr:20.6deg;--lift:0.997;--bri:1.03;--wx:77%;--wy:17%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="7" aria-label="Enlarge: Off duty">
-      <span class="shot"><img src="p/06-off-duty.webp" alt="Off duty" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/06-off-duty.webp" alt="Off duty" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:57.26%;--y:91.19%;--w:16.55%;--r:-8.1deg;--z:30;--mx:26.12%;--my:74.39%;--mw:39.33%;--mr:14.2deg;--lift:1.256;--bri:0.975;--wx:91%;--wy:98%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="8" aria-label="Enlarge: Peace">
-      <span class="shot"><img src="p/17-peace.webp" alt="Peace" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/17-peace.webp" alt="Peace" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:87.47%;--y:21.24%;--w:18.75%;--r:-10.7deg;--z:27;--mx:72.26%;--my:45.69%;--mw:44.57%;--mr:9.7deg;--lift:1.185;--bri:0.994;--wx:5%;--wy:78%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="9" aria-label="Enlarge: Danny Tenaglia">
-      <span class="shot"><img src="p/09-danny-tenaglia.webp" alt="Danny Tenaglia" width="1000" height="1000" decoding="async"></span>
+      <span class="shot"><img src="pics/09-danny-tenaglia.webp" alt="Danny Tenaglia" width="1000" height="1000" decoding="async"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:56.15%;--y:33.45%;--w:16.74%;--r:-21.7deg;--z:34;--mx:44.16%;--my:17.47%;--mw:39.78%;--mr:-13.4deg;--lift:1.35;--bri:1.014;--wx:19%;--wy:59%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="10" aria-label="Enlarge: Pacha Festival">
-      <span class="shot"><img src="p/24-pacha-festival.webp" alt="Pacha Festival" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/24-pacha-festival.webp" alt="Pacha Festival" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:12.14%;--y:55.25%;--w:16.30%;--r:-19.1deg;--z:15;--mx:71.81%;--my:85.10%;--mw:38.73%;--mr:22.9deg;--lift:0.903;--bri:0.958;--wx:33%;--wy:39%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="11" aria-label="Enlarge: Just landed">
-      <span class="shot"><img src="p/03-just-landed.webp" alt="Just landed" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/03-just-landed.webp" alt="Just landed" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:71.46%;--y:90.69%;--w:15.56%;--r:-24.4deg;--z:32;--mx:23.02%;--my:68.81%;--mw:36.99%;--mr:9.1deg;--lift:1.303;--bri:0.978;--wx:48%;--wy:19%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="12" aria-label="Enlarge: Lights down">
-      <span class="shot"><img src="p/19-lights-down.webp" alt="Lights down" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/19-lights-down.webp" alt="Lights down" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:44.24%;--y:57.87%;--w:16.49%;--r:-7.8deg;--z:21;--mx:72.35%;--my:95.55%;--mw:39.20%;--mr:19.5deg;--lift:1.044;--bri:0.998;--wx:62%;--wy:100%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="13" aria-label="Enlarge: Sasha">
-      <span class="shot"><img src="p/16-sasha.webp" alt="Sasha" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/16-sasha.webp" alt="Sasha" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:73.74%;--y:38.02%;--w:15.06%;--r:-23.6deg;--z:25;--mx:20.50%;--my:15.34%;--mw:35.79%;--mr:3.8deg;--lift:1.138;--bri:1.017;--wx:76%;--wy:80%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="14" aria-label="Enlarge: Encore">
-      <span class="shot"><img src="p/25-encore.webp" alt="Encore" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/25-encore.webp" alt="Encore" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:73.95%;--y:27.34%;--w:17.41%;--r:10.7deg;--z:29;--mx:72.34%;--my:22.76%;--mw:41.37%;--mr:14.9deg;--lift:1.232;--bri:0.962;--wx:90%;--wy:61%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="15" aria-label="Enlarge: Le Freak">
-      <span class="shot"><img src="p/05-le-freak.webp" alt="Le Freak" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/05-le-freak.webp" alt="Le Freak" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:73.93%;--y:8.77%;--w:14.51%;--r:25.3deg;--z:9;--mx:21.47%;--my:3.62%;--mw:34.47%;--mr:8.9deg;--lift:0.762;--bri:0.982;--wx:4%;--wy:41%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="16" aria-label="Enlarge: Lee Burridge">
-      <span class="shot"><img src="p/21-lee-burridge.webp" alt="Lee Burridge" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/21-lee-burridge.webp" alt="Lee Burridge" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:12.24%;--y:85.92%;--w:15.33%;--r:-26.7deg;--z:17;--mx:19.44%;--my:96.56%;--mw:36.44%;--mr:0.0deg;--lift:0.95;--bri:1.001;--wx:19%;--wy:21%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="17" aria-label="Enlarge: We love Sander K">
-      <span class="shot"><img src="p/10-we-love-sander-k.webp" alt="We love Sander K" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/10-we-love-sander-k.webp" alt="We love Sander K" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:11.30%;--y:29.81%;--w:18.17%;--r:-5.5deg;--z:16;--mx:26.09%;--my:86.13%;--mw:43.18%;--mr:-7.6deg;--lift:0.926;--bri:1.021;--wx:33%;--wy:2%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="18" aria-label="Enlarge: Joshua Tree">
-      <span class="shot"><img src="p/12-joshua-tree.webp" alt="Joshua Tree" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/12-joshua-tree.webp" alt="Joshua Tree" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:33.61%;--y:68.22%;--w:15.12%;--r:-9.9deg;--z:13;--mx:74.89%;--my:90.00%;--mw:35.93%;--mr:18.3deg;--lift:0.856;--bri:0.965;--wx:47%;--wy:82%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="19" aria-label="Enlarge: Headspace">
-      <span class="shot"><img src="p/18-headspace.webp" alt="Headspace" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/18-headspace.webp" alt="Headspace" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:38.58%;--y:26.48%;--w:15.30%;--r:-33.4deg;--z:33;--mx:20.37%;--my:20.94%;--mw:36.36%;--mr:-2.6deg;--lift:1.326;--bri:0.985;--wx:61%;--wy:63%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="20" aria-label="Enlarge: Front row">
-      <span class="shot"><img src="p/23-front-row.webp" alt="Front row" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/23-front-row.webp" alt="Front row" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:27.38%;--y:49.76%;--w:14.34%;--r:-16.8deg;--z:24;--mx:81.10%;--my:35.94%;--mw:34.07%;--mr:1.9deg;--lift:1.115;--bri:1.005;--wx:75%;--wy:43%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="21" aria-label="Enlarge: Wheels up">
-      <span class="shot"><img src="p/01-wheels-up.webp" alt="Wheels up" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/01-wheels-up.webp" alt="Wheels up" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:27.00%;--y:59.59%;--w:14.58%;--r:17.3deg;--z:23;--mx:81.01%;--my:17.81%;--mw:34.66%;--mr:1.3deg;--lift:1.091;--bri:1.024;--wx:90%;--wy:24%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="22" aria-label="Enlarge: Hands up">
-      <span class="shot"><img src="p/22-hands-up.webp" alt="Hands up" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/22-hands-up.webp" alt="Hands up" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:86.71%;--y:90.19%;--w:15.98%;--r:34.5deg;--z:8;--mx:24.40%;--my:79.74%;--mw:37.97%;--mr:11.5deg;--lift:0.738;--bri:0.969;--wx:4%;--wy:4%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="23" aria-label="Enlarge: Hernán Cattáneo">
-      <span class="shot"><img src="p/14-hernan-cattaneo.webp" alt="Hernán Cattáneo" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/14-hernan-cattaneo.webp" alt="Hernán Cattáneo" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:89.31%;--y:79.42%;--w:15.88%;--r:-10.0deg;--z:18;--mx:21.94%;--my:47.68%;--mw:37.73%;--mr:-4.9deg;--lift:0.974;--bri:0.989;--wx:18%;--wy:84%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="24" aria-label="Enlarge: Backstage">
-      <span class="shot"><img src="p/26-backstage.webp" alt="Backstage" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/26-backstage.webp" alt="Backstage" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:36.03%;--y:90.19%;--w:17.02%;--r:-18.7deg;--z:7;--mx:73.36%;--my:62.09%;--mw:40.46%;--mr:-13.6deg;--lift:0.715;--bri:1.008;--wx:32%;--wy:65%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="25" aria-label="Enlarge: This is our house">
-      <span class="shot"><img src="p/07-this-is-our-house.webp" alt="This is our house" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/07-this-is-our-house.webp" alt="This is our house" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:88.54%;--y:34.83%;--w:15.71%;--r:-16.7deg;--z:28;--mx:76.98%;--my:57.24%;--mw:37.33%;--mr:-8.5deg;--lift:1.209;--bri:1.028;--wx:46%;--wy:45%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="26" aria-label="Enlarge: Studio Dub Syntax">
-      <span class="shot"><img src="p/04-studio-dub-syntax.webp" alt="Studio Dub Syntax" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/04-studio-dub-syntax.webp" alt="Studio Dub Syntax" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:25.21%;--y:34.16%;--w:18.67%;--r:7.3deg;--z:31;--mx:44.55%;--my:52.30%;--mw:44.38%;--mr:19.6deg;--lift:1.279;--bri:0.973;--wx:61%;--wy:26%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="27" aria-label="Enlarge: Sander & Lee On Tour">
-      <span class="shot"><img src="p/28-sander-and-lee-on-tour.webp" alt="Sander & Lee On Tour" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/28-sander-and-lee-on-tour.webp" alt="Sander & Lee On Tour" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:63.80%;--y:58.40%;--w:17.20%;--r:-11.4deg;--z:28;--mx:35.20%;--my:61.70%;--mw:40.90%;--mr:8.2deg;--lift:1.142;--bri:0.991;--wx:24%;--wy:71%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="40" aria-label="Enlarge: Small wheels">
-      <span class="shot"><img src="p/29-small-wheels.webp" alt="Small wheels" width="1000" height="1000" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/29-small-wheels.webp" alt="Small wheels" width="1000" height="1000" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:38.90%;--y:16.30%;--w:15.90%;--r:18.1deg;--z:24;--mx:68.40%;--my:28.90%;--mw:37.80%;--mr:-14.3deg;--lift:1.017;--bri:1.008;--wx:83%;--wy:44%;--ar:0.822;">
     <div class="tilt">
      <button class="print" data-i="41" aria-label="Enlarge: Come as you are">
-      <span class="shot"><img src="p/30-come-as-you-are.webp" alt="Come as you are" width="500" height="500" decoding="async" loading="lazy"></span>
+      <span class="shot"><img src="pics/30-come-as-you-are.webp" alt="Come as you are" width="500" height="500" decoding="async" loading="lazy"></span>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:81.67%;--y:63.44%;--w:30.27%;--r:8.1deg;--z:1;--mx:61.50%;--my:69.25%;--mw:61.90%;--mr:-13.5deg;--lift:0.574;--bri:0.992;--wx:75%;--wy:6%;--ar:1.0;">
     <div class="tilt">
      <button class="sleeve" data-i="28" aria-label="Enlarge: Free Frogs — Bombay">
-      <img src="p/v/01.webp" alt="Free Frogs — Bombay" decoding="async" loading="lazy">
+      <img src="pics/v/01.webp" alt="Free Frogs — Bombay" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:20.87%;--y:14.90%;--w:30.22%;--r:-22.0deg;--z:2;--mx:61.67%;--my:5.64%;--mw:61.79%;--mr:-13.2deg;--lift:0.597;--bri:1.012;--wx:89%;--wy:86%;--ar:1.0;">
     <div class="tilt">
      <button class="sleeve" data-i="29" aria-label="Enlarge: Amazone — Sangel">
-      <img src="p/v/02.webp" alt="Amazone — Sangel" decoding="async" loading="lazy">
+      <img src="pics/v/02.webp" alt="Amazone — Sangel" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:49.09%;--y:77.59%;--w:27.11%;--r:-22.2deg;--z:3;--mx:68.93%;--my:78.21%;--mw:55.44%;--mr:4.6deg;--lift:0.621;--bri:0.956;--wx:3%;--wy:67%;--ar:1.0;">
     <div class="tilt">
      <button class="sleeve" data-i="30" aria-label="Enlarge: Europe — Europe Transporter">
-      <img src="p/v/03.webp" alt="Europe — Europe Transporter" decoding="async" loading="lazy">
+      <img src="pics/v/03.webp" alt="Europe — Europe Transporter" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:13.67%;--y:70.75%;--w:21.15%;--r:-7.7deg;--z:4;--mx:22.90%;--my:27.72%;--mw:42.97%;--mr:0.4deg;--lift:0.644;--bri:0.976;--wx:17%;--wy:47%;--ar:1.0;">
     <div class="tilt">
      <button class="flyer soon" data-i="31" aria-label="Enlarge: One Day Forever × Tech Me In — MeWe, Amsterdam, 21.10.26">
-      <img src="p/flyer-one-day-forever-tech-me-in.webp" alt="One Day Forever × Tech Me In — MeWe, Amsterdam, 21.10.26" decoding="async" loading="lazy">
+      <img src="pics/flyer-one-day-forever-tech-me-in.webp" alt="One Day Forever × Tech Me In — MeWe, Amsterdam, 21.10.26" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:33.10%;--y:46.20%;--w:20.40%;--r:5.9deg;--z:8;--mx:60.30%;--my:17.40%;--mw:41.50%;--mr:-9.8deg;--lift:0.781;--bri:0.985;--wx:35%;--wy:62%;--ar:1.0;">
     <div class="tilt">
      <button class="flyer soon" data-i="42" aria-label="Enlarge: flyer">
-      <img src="p/flyer-tide-sub-sub-ibiza.webp" alt="" decoding="async" loading="lazy">
+      <img src="pics/flyer-tide-sub-sub-ibiza.webp" alt="" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:78.60%;--y:66.90%;--w:19.80%;--r:-14.6deg;--z:13;--mx:18.70%;--my:79.30%;--mw:40.20%;--mr:12.4deg;--lift:0.930;--bri:0.995;--wx:71%;--wy:33%;--ar:1.0;">
     <div class="tilt">
      <button class="flyer soon" data-i="43" aria-label="Enlarge: flyer">
-      <img src="p/flyer-do-not-sit-miami.webp" alt="" decoding="async" loading="lazy">
+      <img src="pics/flyer-do-not-sit-miami.webp" alt="" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:50.20%;--y:84.10%;--w:20.90%;--r:9.3deg;--z:16;--mx:47.60%;--my:40.80%;--mw:42.40%;--mr:-4.7deg;--lift:1.064;--bri:0.979;--wx:12%;--wy:88%;--ar:1.9097;">
     <div class="tilt">
      <button class="flyer soon" data-i="44" aria-label="Enlarge: flyer">
-      <img src="p/flyer-winter-of-love.webp" alt="" decoding="async" loading="lazy">
+      <img src="pics/flyer-winter-of-love.webp" alt="" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:63.40%;--y:19.80%;--w:21.15%;--r:11.2deg;--z:6;--mx:66.10%;--my:63.40%;--mw:42.97%;--mr:-8.3deg;--lift:0.712;--bri:0.984;--wx:58%;--wy:12%;--ar:0.7082;">
     <div class="tilt">
      <button class="flyer gone" data-i="38" aria-label="Enlarge: Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03">
-      <img src="p/flyer-renaissance-everybody.webp" alt="Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03" decoding="async" loading="lazy">
+      <img src="pics/flyer-renaissance-everybody.webp" alt="Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03" decoding="async" loading="lazy">
      </button>
-    </div>
-   </div>
-   <div class="slot" style="--x:11.80%;--y:71.30%;--w:17.60%;--r:7.8deg;--z:17;--mx:8.40%;--my:52.10%;--mw:36.20%;--mr:-6.4deg;--lift:1.090;--bri:1.0;--wx:18%;--wy:74%;--ar:1.0;">
-    <div class="tilt">
-     <a class="dl" data-i="45" href="go/" aria-label="Free download: Rock Your Body, Sander Kleinenberg 1999 Remix">
-      <b>Free download</b><i>Rock Your Body</i><em>Sander Kleinenberg 1999 Remix</em>
-     </a>
     </div>
    </div>
    <div class="slot" style="--x:42.46%;--y:41.41%;--w:21.71%;--r:-14.4deg;--z:5;--mx:25.81%;--my:9.75%;--mw:44.66%;--mr:-6.2deg;--lift:0.668;--bri:0.996;--wx:32%;--wy:28%;--ar:1.0;">
     <div class="tilt">
      <a class="mixtape" href="https://soundcloud.com/sanderkleinenberg/sander-kleinenberg-the-deepest" target="_blank" rel="noopener noreferrer" aria-label="Listen on SoundCloud: The Deepest Mixtape In The Universe #68">
-      <img src="p/mixtape-deepest-68.webp" alt="The Deepest Mixtape In The Universe #68" decoding="async" loading="lazy"><span class="play" aria-hidden="true"></span>
+      <img src="pics/mixtape-deepest-68.webp" alt="The Deepest Mixtape In The Universe #68" decoding="async" loading="lazy"><span class="play" aria-hidden="true"></span>
      </a>
     </div>
    </div>
    <div class="slot" style="--x:30.10%;--y:24.60%;--w:26.40%;--r:8.4deg;--z:7;--mx:53.20%;--my:72.40%;--mw:53.99%;--mr:-5.1deg;--lift:0.724;--bri:0.992;--wx:44%;--wy:66%;--ar:1.0;">
     <div class="tilt">
      <a class="clip" data-i="39" href="https://youtu.be/CW4aURZ6hWA" target="_blank" rel="noopener noreferrer" aria-label="Watch: Sander Kleinenberg — My Lexicon [Official Video]">
-      <img src="p/c/44.webp" alt="Sander Kleinenberg — My Lexicon [Official Video]" decoding="async" loading="lazy">
+      <img src="pics/c/44.webp" alt="Sander Kleinenberg — My Lexicon [Official Video]" decoding="async" loading="lazy">
      </a>
     </div>
    </div>
@@ -1406,35 +1456,35 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <div class="slot" style="--x:63.29%;--y:50.67%;--w:22.6%;--r:14.0deg;--z:7;--mx:27.05%;--my:62.08%;--mw:45.2%;--mr:7.0deg;--lift:0.712;--bri:1.004;--wx:40%;--wy:40%;--ar:0.60;">
     <div class="tilt">
      <button class="sheet" data-i="33" aria-label="Enlarge: Tour dates, October — November 2026">
-      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct 2026 &mdash; Aug 2027</p><ol class="ag-l"><li data-on="2026-10-10"><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li data-on="2026-10-16"><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li data-on="2026-10-17"><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li data-on="2026-10-18"><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>One Day Forever &times; Tech Me In @ MeWe<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://get-in.com/en/426354?seller_code=RO9kMO5p4Jx">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Festival &times; ADE @ Nido Cocktail Bar<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://sxmfestival.com/ade/">RSVP</span></span></li><li data-on="2026-10-23"><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li data-on="2026-10-24"><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Sub Sub Ibiza presents TIDE @ Het Veronica Schip, NDSM-pier 1<span class="ag-ade"><img src="p/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span>Sander Kleinenberg b2b Meloko &middot; Julian Prince &middot; Sebastien Bruce b2b Frank van Hees &middot; Eloy Hoose b2b Yves Labordus</span><span class="ag-x" data-tix="https://veronicaschip.fairtix.io/p/tide-%E2%80%93-sub-sub-ibiza-ade-showcase">Tickets</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m" data-on="2026-11-27"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m" data-on="2026-12-12"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p><p class="ag-m" data-on="2027-08-05"><strong>Tisno<em>HR</em></strong><b>05&ndash;09.08</b><span>Balance Croatia &mdash; The Garden Resort</span></p></div></div>
+      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct 2026 &mdash; Aug 2027</p><ol class="ag-l"><li data-on="2026-10-10"><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li data-on="2026-10-16"><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li data-on="2026-10-17"><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li data-on="2026-10-18"><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>One Day Forever &times; Tech Me In @ MeWe<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://get-in.com/en/426354?seller_code=RO9kMO5p4Jx">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Festival &times; ADE @ Nido Cocktail Bar<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://sxmfestival.com/ade/">RSVP</span></span></li><li data-on="2026-10-23"><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li data-on="2026-10-24"><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Sub Sub Ibiza presents TIDE @ Het Veronica Schip, NDSM-pier 1<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span>Sander Kleinenberg b2b Meloko &middot; Julian Prince &middot; Sebastien Bruce b2b Frank van Hees &middot; Eloy Hoose b2b Yves Labordus</span><span class="ag-x" data-tix="https://veronicaschip.fairtix.io/p/tide-%E2%80%93-sub-sub-ibiza-ade-showcase">Tickets</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m" data-on="2026-11-27"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m" data-on="2026-12-12"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p><p class="ag-m" data-on="2027-08-05"><strong>Tisno<em>HR</em></strong><b>05&ndash;09.08</b><span>Balance Croatia &mdash; The Garden Resort</span></p></div></div>
      </button>
     </div>
    </div>
    <div class="slot" style="--x:50.11%;--y:52.40%;--w:26.40%;--r:9.4deg;--z:6;--mx:27.05%;--my:47.80%;--mw:53.99%;--mr:5.2deg;--lift:0.700;--bri:1.000;--wx:50%;--wy:50%;--ar:1.0;">
     <div class="tilt">
      <button class="disc" data-i="34" aria-label="Enlarge: Global Underground Nubreed 004: Sander Kleinenberg — CD1">
-      <img src="p/disc-nubreed-004.webp" alt="Global Underground Nubreed 004: Sander Kleinenberg — CD1" decoding="async" loading="lazy">
+      <img src="pics/disc-nubreed-004.webp" alt="Global Underground Nubreed 004: Sander Kleinenberg — CD1" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:31.80%;--y:28.40%;--w:27.37%;--r:-6.2deg;--z:3;--mx:22.10%;--my:18.60%;--mw:55.96%;--mr:3.1deg;--lift:0.620;--bri:1.000;--wx:30%;--wy:45%;--ar:1.0;">
     <div class="tilt">
      <button class="cd" data-i="35" aria-label="Enlarge: #Summer">
-      <img src="p/c/01.webp" alt="#Summer" decoding="async" loading="lazy">
+      <img src="pics/c/01.webp" alt="#Summer" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:66.40%;--y:63.10%;--w:27.32%;--r:11.5deg;--z:4;--mx:70.30%;--my:72.40%;--mw:55.87%;--mr:-4.8deg;--lift:0.630;--bri:1.000;--wx:50%;--wy:30%;--ar:1.0811;">
     <div class="tilt">
      <button class="cd" data-i="36" aria-label="Enlarge: Sander Kleinenberg — Sander Kleinenberg Presents Melk">
-      <img src="p/c/02.webp" alt="Sander Kleinenberg — Sander Kleinenberg Presents Melk" decoding="async" loading="lazy">
+      <img src="pics/c/02.webp" alt="Sander Kleinenberg — Sander Kleinenberg Presents Melk" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
    <div class="slot" style="--x:46.90%;--y:78.20%;--w:24.52%;--r:-13.7deg;--z:5;--mx:44.80%;--my:88.10%;--mw:50.13%;--mr:6.6deg;--lift:0.640;--bri:1.000;--wx:70%;--wy:15%;--ar:1.1628;">
     <div class="tilt">
      <button class="cd" data-i="37" aria-label="Enlarge: Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways">
-      <img src="p/c/03.webp" alt="Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways" decoding="async" loading="lazy">
+      <img src="pics/c/03.webp" alt="Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways" decoding="async" loading="lazy">
      </button>
     </div>
    </div>
@@ -1567,8 +1617,8 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      ["disc-5k.webp", "Sander Kleinenberg \u2014 5K"],
      ["disc-everybody.webp", "Sander Kleinenberg \u2014 Everybody (It's A Renaissance)"]
    ];
-   deal(".pile .sleeve", "p/v/", VINYL);
-   deal(".pile .cd",     "p/c/", CDS);
+   deal(".pile .sleeve", "pics/v/", VINYL);
+   deal(".pile .cd",     "pics/c/", CDS);
    /* Today decides which flyer is which. One card is a night still to come,
       the other a night that happened; once nothing is left to come, both are
       memories rather than a gap on the table. */
@@ -1602,7 +1652,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      var el = document.querySelector(".pile .clip");
      if (!el) return;
      var c = CLIPS[(Math.random() * CLIPS.length) | 0], img = el.querySelector("img");
-     img.src = "p/" + c[2]; img.alt = c[1];
+     img.src = "pics/" + c[2]; img.alt = c[1];
      el.href = "https://youtu.be/" + c[0];
      el.setAttribute("aria-label", "Watch: " + c[1]);
      el.dataset.clip = c[0];
@@ -1612,10 +1662,10 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
       back to a memory rather than leaving a hole in the pile. */
    SOON.sort(function(a, b){ return a[3] < b[3] ? -1 : a[3] > b[3] ? 1 : 0; });
    document.querySelectorAll(".pile .flyer.soon").forEach(function(el, i){
-     place(el, SOON[i] || GONE[(Math.random()*GONE.length)|0], "p/");
+     place(el, SOON[i] || GONE[(Math.random()*GONE.length)|0], "pics/");
    });
-   deal(".pile .flyer.gone", "p/", GONE);
-   deal(".pile .disc",   "p/",   DISCS);
+   deal(".pile .flyer.gone", "pics/", GONE);
+   deal(".pile .disc",   "pics/",   DISCS);
 
    /* ?card=v/43 puts one particular card on the table, so a back can be read
       without reloading until the crate happens to deal it -- with 77 sleeves
@@ -1628,12 +1678,12 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      if (m) {
        name = ("0" + m[2]).slice(-2) + ".webp";
        sel  = m[1] === "v" ? ".pile .sleeve" : ".pile .cd";
-       dir  = m[1] === "v" ? "p/v/" : "p/c/";
+       dir  = m[1] === "v" ? "pics/v/" : "pics/c/";
        pool = m[1] === "v" ? VINYL : CDS;
      } else if (/^(flyer|disc)-/.test(want)) {
        name = want.replace(/\.webp$/, "") + ".webp";
        sel  = want.charAt(0) === "f" ? ".pile .flyer" : ".pile .disc";
-       dir  = "p/";
+       dir  = "pics/";
        pool = want.charAt(0) === "f" ? FLYERS : DISCS;
      } else return;
      var pick = null;
@@ -1652,7 +1702,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     like someone tipped the box out again. Same relaxation as the build step:
     seed a few clusters, then push overlapping items apart until they settle. */
  (function(){
-   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.17204, 0.40891, 0.822, 1, 0], [0.15897, 0.37784, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.20404, 0.41512, 0.5709, 0, 0], [0.19803, 0.40215, 0.5709, 0, 0], [0.20905, 0.42404, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.176, 0.362, 1.0, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.5399, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
+   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.17204, 0.40891, 0.822, 1, 0], [0.15897, 0.37784, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.20404, 0.41512, 0.5709, 0, 0], [0.19803, 0.40215, 0.5709, 0, 0], [0.20905, 0.42404, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.5399, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
    var slots = document.querySelectorAll('.pile .slot');
    if (!slots.length || slots.length !== LAY.length) return;
    var R = Math.random;
@@ -1746,9 +1796,9 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   <span class="gsep" aria-hidden="true">&bull;</span>
   <button type="button" data-g="bibi" aria-pressed="false">Bibi</button>
   <span class="gsep" aria-hidden="true">&bull;</span>
-  <button type="button" class="g-tide" data-g="tide" aria-pressed="true" aria-label="TIDE"><img src="p/tide.webp" alt="" width="280" height="120"></button>
+  <button type="button" class="g-tide" data-g="tide" aria-pressed="true" aria-label="TIDE"><img src="pics/tide.webp" alt="" width="280" height="120"></button>
   <span class="gsep" aria-hidden="true">&bull;</span>
-  <button type="button" class="g-ade" data-g="ade" aria-pressed="false" aria-label="ADE" hidden><img src="p/ade26.svg" alt="" width="896" height="600"></button>
+  <button type="button" class="g-ade" data-g="ade" aria-pressed="false" aria-label="ADE" hidden><img src="pics/ade26.svg" alt="" width="896" height="600"></button>
  </div>
 </div>
 
@@ -1809,7 +1859,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const SHOTS = [{"src": "p/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "p/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "p/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "p/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "p/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "p/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "p/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "p/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "p/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "p/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "p/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "p/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "p/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "p/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "p/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "p/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "p/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "p/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "p/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "p/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "p/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "p/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "p/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "p/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "p/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "p/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "p/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "p/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "p/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "p/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "p/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "p/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "p/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "p/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "p/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "p/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}, {"src": "p/29-small-wheels.webp", "cap": "Small wheels", "kind": "polaroid", "ar": 0.822}, {"src": "p/30-come-as-you-are.webp", "cap": "Come as you are", "kind": "polaroid", "ar": 0.822}, {"src": "p/flyer-tide-sub-sub-ibiza.webp", "cap": "", "kind": "flyer", "ar": 0.8}, {"src": "p/flyer-do-not-sit-miami.webp", "cap": "", "kind": "flyer", "ar": 1.0}, {"src": "p/flyer-winter-of-love.webp", "cap": "", "kind": "flyer", "ar": 1.9097}, {"src": "", "cap": "Free download", "kind": "gate", "ar": 1.0}];
+const SHOTS = [{"src": "pics/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "pics/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "pics/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "pics/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "pics/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "pics/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "pics/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "pics/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "pics/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "pics/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "pics/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "pics/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "pics/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "pics/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "pics/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "pics/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "pics/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "pics/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "pics/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "pics/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "pics/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "pics/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "pics/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "pics/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "pics/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "pics/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "pics/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "pics/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "pics/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "pics/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}, {"src": "pics/29-small-wheels.webp", "cap": "Small wheels", "kind": "polaroid", "ar": 0.822}, {"src": "pics/30-come-as-you-are.webp", "cap": "Come as you are", "kind": "polaroid", "ar": 0.822}, {"src": "pics/flyer-tide-sub-sub-ibiza.webp", "cap": "", "kind": "flyer", "ar": 0.8}, {"src": "pics/flyer-do-not-sit-miami.webp", "cap": "", "kind": "flyer", "ar": 1.0}, {"src": "pics/flyer-winter-of-love.webp", "cap": "", "kind": "flyer", "ar": 1.9097}];
 /* the sleeves and the flyer were re-dealt before paint, so take what they
    landed on from the DOM -- the flyer carries its shape across as well, since
    the enlarged view sizes itself from it */
@@ -2146,7 +2196,7 @@ function show(i){
          year and label, then the tracks. Keyed by the picture the card was
          dealt, since the crate re-deals on every visit. A sleeve with no
          audio in the collection keeps the caption and gets no list. */
-      const key = (s.src || '').replace('p/', '');
+      const key = (s.src || '').replace('pics/', '');
       const FLY = s.kind === 'flyer' ? FLYER_BACKS[key] : null;
       const REL = FLY || SLEEVE_BACKS[key];
       $('rlT').textContent = REL ? REL.h : (b.title || t2);
@@ -2563,7 +2613,7 @@ const mixEl = document.querySelector('.mixtape');
 
       /* The bill written in the TIDE logo's own four, dealt again on every
          visit the way the pile is, and never the same colour twice running.
-         The hues are the logo's exactly -- sampled off p/tide.webp, which is
+         The hues are the logo's exactly -- sampled off pics/tide.webp, which is
          also where the pink in --accent came from -- but taken down in
          lightness only, because all four are unreadable at full strength on
          this paper: orange 1.99:1 and green 2.13 against the note's darkest

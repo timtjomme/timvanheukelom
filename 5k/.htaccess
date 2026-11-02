@@ -9,23 +9,36 @@
 </IfModule>
 
 # ---- password ------------------------------------------------------------
-# Turn this on in Plesk: Websites & domeinen → timvanheukelom.nl →
-# Wachtwoordbeveiligde mappen → map "/5k" toevoegen, then add the user. That
-# writes the auth config itself and cannot break the directory.
+# index.php asks for it and serves nothing without it. The hash sits in
+# auth.php, which is not in this repository -- the repository is public. See
+# the note at the top of index.php.
 #
-# The alternative is the block below. It needs AuthUserFile as an ABSOLUTE
+# It is done in PHP rather than here because AuthUserFile wants an ABSOLUTE
 # server path, which differs depending on whether this domain is the main one
-# or an add-on under another subscription — a wrong path returns 500 for the
-# whole folder, so it is left commented rather than guessed. The .htpasswd
-# next to this file is already generated (user "sander", password "sanne");
-# check the real path in Plesk's File Manager, then uncomment and paste it in.
+# or an add-on under another subscription, and a wrong path returns 500 for
+# the whole folder. PHP needs no such path and cannot take the folder down.
 #
-# AuthType Basic
-# AuthName "Kleinenberg archive"
-# AuthUserFile /var/www/vhosts/timvanheukelom.nl/httpdocs/5k/.htpasswd
-# Require valid-user
+# Some PHP-FPM setups drop the Authorization header before PHP sees it, so
+# hand it over explicitly.
+<IfModule mod_rewrite.c>
+  RewriteEngine On
+  RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+</IfModule>
 
-# Never serve the password file itself, whichever route is used.
-<Files ".htpasswd">
-  Require all denied
+# The pictures under pics/ are handed out by Apache, not by index.php, so
+# somebody who knows an exact filename still gets one. To shut that too, use
+# Plesk: Websites & domeinen -> timvanheukelom.nl -> Wachtwoordbeveiligde
+# mappen -> map "/5k" toevoegen. It writes the auth config itself and cannot
+# break the directory. If you turn it on, take the gate out of index.php as
+# well, or the page asks twice.
+
+# The key file prints nothing of its own, but it is not meant to be fetched.
+<Files "auth.php">
+  <IfModule mod_authz_core.c>
+    Require all denied
+  </IfModule>
+  <IfModule !mod_authz_core.c>
+    Order allow,deny
+    Deny from all
+  </IfModule>
 </Files>
