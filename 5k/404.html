@@ -1,0 +1,463 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<style>:root{color-scheme:light;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}body{margin:0;font:14px/1.4 system-ui,-apple-system,sans-serif}img{max-width:100%}[hidden]{display:none!important}</style>
+<title>Sander Kleinenberg 404</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&family=Permanent+Marker&family=Reenie+Beanie&display=swap">
+
+<script>
+/* The ground the visitor picked in the archive, read before anything paints.
+   Same rules as the archive itself: "sander" is the paper, nothing saved means
+   Tide. ADE is over, so a saved ADE falls back to Tide too. */
+(function(){
+  var g = null;
+  try { g = localStorage.getItem("sk-ground"); } catch (e) {}
+  if (g === "sander") return;
+  document.documentElement.setAttribute("data-ground", (g === "olivia" || g === "bibi") ? g : "tide");
+})();
+</script>
+
+<style>
+/* Layout: one screen, the archive's table. The pile of polaroids on one side,
+   the note on the other; on a phone the pile comes first. The top print is the
+   one that never developed. Tokens are the live /5k/ values, grounds included.
+   Single theme on purpose: the brand is ink on paper. */
+:root{
+  color-scheme: light;
+
+  --wall:#f1f1ec;
+  --surface:url("/5k/404-assets/surface.webp");
+  --paper:#fdfcfa;
+  --ink:#181817;
+  --body:#2c2422;
+  --muted:#8d867c;
+  --accent:#de6d96;
+  --biro:#253163;
+  --emulsion:#1b2427;
+  --line:rgba(24,24,23,.15);
+  --shadow:72,64,52;
+
+  --sans:"Archivo",system-ui,-apple-system,"Helvetica Neue",Arial,sans-serif;
+  --mono:"DM Mono",ui-monospace,"SF Mono",Menlo,monospace;
+  --marker:"Permanent Marker",ui-rounded,cursive;
+  --hand:"Reenie Beanie",ui-rounded,cursive;
+}
+[data-ground="tide"]  { --wall:#8fcdf7; --surface:none; --accent:#fb1a74 }
+[data-ground="olivia"]{ --wall:#e49fb2; --surface:none }
+[data-ground="bibi"]  { --wall:#40e0d0; --surface:none }
+
+*,*::before,*::after{ box-sizing:border-box }
+html{ height:100% }
+body{
+  min-height:100%;
+  display:flex;
+  flex-direction:column;
+  background:var(--wall);
+  background-image:var(--surface);
+  background-size:520px auto;
+  color:var(--body);
+  font-family:var(--sans);
+  -webkit-font-smoothing:antialiased;
+}
+
+.page{
+  flex:1;
+  display:flex;
+  flex-direction:column;
+  /* a print tossed off the pile flies past the edge; the page must not scroll after it */
+  overflow-x:hidden;
+  overflow-x:clip;
+  padding-block:clamp(18px,3vw,30px) clamp(28px,5vw,56px);
+  padding-left:max(clamp(16px,4vw,40px),env(safe-area-inset-left,0px));
+  padding-right:max(clamp(16px,4vw,40px),env(safe-area-inset-right,0px));
+}
+
+.home{ display:block; width:clamp(118px,13vw,168px); color:var(--ink); line-height:0 }
+.home svg{ display:block; width:100%; height:auto }
+
+.stage{
+  flex:1;
+  width:100%;
+  max-width:1080px;
+  margin:0 auto;
+  padding-block:clamp(24px,4vw,48px);
+  display:grid;
+  grid-template-columns:minmax(0,1fr) minmax(0,1fr);
+  grid-template-areas:"msg pile";
+  align-items:center;
+  gap:clamp(28px,6vw,80px);
+}
+
+/* ---- the note -------------------------------------------------------------- */
+.msg{ grid-area:msg; min-width:0 }
+.kicker{
+  margin:0 0 1em;
+  font-family:var(--mono);
+  font-size:10.5px;
+  letter-spacing:.24em;
+  text-transform:uppercase;
+  color:var(--ink);
+  opacity:.62;
+}
+h1{
+  margin:0;
+  font-weight:800;
+  font-stretch:76%;
+  font-size:clamp(50px,8.4vw,106px);
+  line-height:.86;
+  letter-spacing:-.015em;
+  text-transform:uppercase;
+  color:var(--ink);
+  text-wrap:balance;
+}
+.strip{
+  background-image:linear-gradient(var(--accent),var(--accent));
+  background-repeat:no-repeat;
+  background-size:100% .3em;
+  background-position:0 84%;
+  padding:0 .05em;
+  -webkit-box-decoration-break:clone;
+  box-decoration-break:clone;
+}
+.lede{
+  margin:clamp(18px,2.4vw,26px) 0 0;
+  max-width:36ch;
+  font-size:clamp(16px,1.6vw,19px);
+  line-height:1.5;
+  color:var(--ink);
+}
+.asked{
+  margin:14px 0 0;
+  font-family:var(--mono);
+  font-size:11px;
+  letter-spacing:.06em;
+  color:var(--ink);
+  opacity:.7;
+  overflow-wrap:anywhere;
+}
+.asked code{ font-family:inherit; font-weight:500 }
+.go{ display:flex; flex-wrap:wrap; gap:8px; margin-top:clamp(22px,3vw,32px) }
+.btn{
+  display:inline-flex; align-items:center;
+  padding:13px 18px;
+  border:1px solid var(--ink);
+  background:var(--paper);
+  color:var(--ink);
+  text-decoration:none;
+  font-weight:800; font-stretch:84%;
+  font-size:14.5px; letter-spacing:.05em;
+  text-transform:uppercase;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.btn.ink{ background:var(--ink); color:var(--paper) }
+.btn:hover,.btn:focus-visible{ background:var(--accent); border-color:var(--accent); color:var(--paper) }
+
+/* ---- the pile -------------------------------------------------------------- */
+.table{ grid-area:pile; display:flex; flex-direction:column; align-items:center; gap:clamp(16px,2.4vw,24px); min-width:0 }
+.pile{
+  position:relative;
+  width:clamp(214px,30vw,330px);
+  aspect-ratio:.822;
+  touch-action:pan-y;
+  cursor:grab;
+  outline:none;
+}
+.pile:active{ cursor:grabbing }
+.pile:focus-visible{ outline:2px dashed var(--ink); outline-offset:22px }
+
+/* The archive's own Polaroid: 6.3% paper above the picture, 5.6% at the sides
+   and a 24.2% chin. Percent padding reads the pile's width, which is the card's. */
+.card{
+  position:absolute; inset:0;
+  margin:0;
+  display:flex; flex-direction:column;
+  padding:6.3% 5.6% 0;
+  container-type:inline-size;
+  background:var(--paper);
+  border-radius:2px;
+  transform:translate(var(--dx),var(--dy)) rotate(var(--r));
+  filter:brightness(var(--bri));
+  box-shadow:inset 0 1px 0 rgba(255,255,255,.7), inset 0 -1px 0 rgba(0,0,0,.11),
+             0 1px 2px rgba(var(--shadow),.22), 0 14px 26px -14px rgba(var(--shadow),.5);
+  -webkit-user-select:none; user-select:none;
+  animation:drop .5s cubic-bezier(.24,.92,.32,1) backwards;
+  animation-delay:calc(var(--i) * 45ms);
+}
+@keyframes drop{
+  from{ transform:translate(var(--dx),var(--dy)) rotate(var(--r)) translateY(-26px) scale(1.05) }
+}
+.shot{ position:relative; display:block; flex:none; aspect-ratio:.977; background:#111; overflow:hidden }
+.shot img{ display:block; width:100%; height:100%; object-fit:cover; pointer-events:none; -webkit-user-drag:none }
+/* handling wear, offset per print so no two carry the same dust */
+.shot::before{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  background:url("/5k/404-assets/wear.webp") var(--wx) var(--wy)/190% 190% no-repeat;
+  opacity:.34;
+}
+/* the sheen counter-rotates, so every print catches the same overhead light */
+.shot::after{
+  content:""; position:absolute; inset:0; pointer-events:none;
+  box-shadow:inset 0 0 0 1px rgba(0,0,0,.16), inset 0 3px 9px rgba(0,0,0,.3);
+  background:linear-gradient(calc(104deg - var(--r)),rgba(255,255,255,.12),
+    rgba(255,255,255,0) 34%,rgba(255,255,255,0) 72%,rgba(255,255,255,.06));
+}
+/* the one that never developed: the blue-black of a print fresh out of the camera */
+.shot.blank{
+  background:
+    radial-gradient(ellipse 70% 60% at 30% 26%, rgba(78,104,108,.55), transparent 70%),
+    radial-gradient(ellipse 60% 50% at 76% 82%, rgba(44,62,64,.6), transparent 72%),
+    var(--emulsion);
+}
+
+/* Written on the chin in biro, the archive's hand. The caption is the card's
+   last flex item, so it fills exactly the white under the picture at any size.
+   (cqw measures the card's content box, not the card, so it can only size the
+   letters here, never place them.) */
+.card figcaption{
+  flex:1; min-height:0;
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  padding:0 3cqw;
+  font-family:var(--hand);
+  font-size:11.5cqw;
+  line-height:.9;
+  color:var(--biro);
+  filter:url(#ink);
+  text-align:center;
+  rotate:-1.6deg;
+}
+.card figcaption b{ font-weight:400; font-size:14.5cqw; line-height:.86 }
+.card figcaption span{ font-size:9.5cqw }
+
+.ctl{ display:flex; align-items:center; gap:14px }
+.nav{
+  width:42px; height:42px;
+  display:grid; place-items:center;
+  border:1px solid var(--ink);
+  background:var(--paper);
+  color:var(--ink);
+  font-family:var(--mono);
+  font-size:17px; line-height:1;
+  cursor:pointer;
+  transition:background .15s ease, color .15s ease, border-color .15s ease;
+}
+.nav:hover,.nav:focus-visible{ background:var(--accent); border-color:var(--accent); color:var(--paper) }
+.count{
+  min-width:6.2em;
+  text-align:center;
+  font-family:var(--mono);
+  font-size:11px; letter-spacing:.16em;
+  color:var(--ink);
+  font-variant-numeric:tabular-nums;
+}
+.hint{
+  margin:0;
+  font-family:var(--marker);
+  font-size:16px;
+  color:var(--accent);
+  rotate:-3deg;
+}
+
+a:focus-visible,button:focus-visible{ outline:2px solid var(--ink); outline-offset:3px }
+
+.sr{ position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0 0 0 0); white-space:nowrap }
+
+@media (max-width:760px){
+  .stage{ grid-template-columns:minmax(0,1fr); grid-template-areas:"pile" "msg"; align-items:start }
+}
+@media (prefers-reduced-motion:reduce){
+  .card{ animation:none }
+  .btn,.nav{ transition:none }
+}
+</style>
+
+<svg width="0" height="0" style="position:absolute" aria-hidden="true" focusable="false"><defs>
+<filter id="ink" x="-6%" y="-16%" width="112%" height="132%">
+ <feTurbulence type="fractalNoise" baseFrequency="0.026 0.047" numOctaves="3" seed="11" result="n"/>
+ <feDisplacementMap in="SourceGraphic" in2="n" scale="1.3" xChannelSelector="R" yChannelSelector="G"/>
+</filter></defs></svg>
+
+<div class="page">
+  <header>
+    <a class="home" href="https://sanderkleinenberg.com/" aria-label="Sander Kleinenberg, back to the archive"><svg xmlns="http://www.w3.org/2000/svg" viewBox="25.03 9.87 1040.27 546.01" role="img" aria-label="Sander Kleinenberg">
+ <defs><filter id="s" x="-3%" y="-4%" width="106%" height="108%" color-interpolation-filters="sRGB">
+ <!-- Worn screenprint, fitted to the tour artwork rather than eyeballed. Measured off
+      the poster: its ink is almost solid (median L .024) and the wear lives entirely in
+      the top few percent of pixels - p97 .169, p99.5 .400, only .8% above L .33. So the
+      masks use a SOFT ramp, which thins ink to grey, instead of a hard threshold, which
+      punches white holes. Thresholds are stated in standard deviations of each noise's
+      real distribution: fractalNoise is centred on .500 with sd .1186, turbulence on
+      .254 with sd .1452 - not on 0, as the raw numbers suggest.
+      The poster's dust is also clustered in bands, not spread evenly, so both the dust
+      and the craquelure are gated by a low-frequency "where the wear happens" field. -->
+ 
+ <!-- where the ink is worn at all: broad, soft-edged bands -->
+ <feTurbulence type="fractalNoise" baseFrequency="0.03" numOctaves="2" seed="3" result="fn"/>
+ <feColorMatrix in="fn" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8.0 0 0 0 -3.4307" result="field"/>
+ 
+ <!-- dust: a fine pass and a coarser one, so speck sizes vary the way real ones do -->
+ <feTurbulence type="fractalNoise" baseFrequency="0.45" numOctaves="2" seed="7" result="d1"/>
+ <feColorMatrix in="d1" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.25 0 0 0 3.3034" result="m1"/>
+ <feTurbulence type="fractalNoise" baseFrequency="0.2" numOctaves="2" seed="31" result="d2"/>
+ <feColorMatrix in="d2" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -3.0 0 0 0 3.2152" result="m2"/>
+ <feComposite in="m1" in2="m2" operator="arithmetic" k1="1" k2="0" k3="0" k4="0" result="dust"/>
+ <feComposite in="dust" in2="field" operator="arithmetic" k1="1" k2="0" k3="-1" k4="1" result="dustg"/>
+ <feComposite in="SourceGraphic" in2="dustg" operator="in" result="s0"/>
+ 
+ <!-- craquelure: turbulence branches where fractalNoise only speckles. Gated tightly so
+      it shows up in a couple of places, like a real flake, instead of everywhere. -->
+ <feTurbulence type="turbulence" baseFrequency="0.35" numOctaves="3" seed="19" result="c0"/>
+ <feColorMatrix in="c0" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -2.6 0 0 0 2.2154" result="cm"/>
+ <feTurbulence type="fractalNoise" baseFrequency="0.055" numOctaves="2" seed="9" result="qn"/>
+ <feColorMatrix in="qn" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 8.0 0 0 0 -4.5693" result="qfield"/>
+ <feComposite in="cm" in2="qfield" operator="arithmetic" k1="1" k2="0" k3="-1" k4="1" result="crack"/>
+ <feComposite in="s0" in2="crack" operator="in" result="s1"/>
+ 
+ <!-- hairline squeegee drag along the print direction -->
+ <feTurbulence type="fractalNoise" baseFrequency="0.01 0.8" numOctaves="2" seed="23" result="x0"/>
+ <feColorMatrix in="x0" type="matrix" values="0 0 0 0 0 0 0 0 0 0 0 0 0 0 0 -7.0 0 0 0 6.8246" result="xm"/>
+ <feComposite in="s1" in2="xm" operator="in"/>
+ </filter></defs>
+ <path id="skmark" fill="currentColor" filter="url(#s)" d="M77.3830 349.5839 87.5233 346.8137C117.5944 338.5989 127.6967 324.1762 127.2019 303.5771L126.1084 266.2951C125.5381 251.1595 117.9903 245.1869 97.7127 234.9165L79.6246 225.8623C74.0078 222.9906 72.3288 220.8575 72.2437 216.2156L71.3613 184.0595C71.3046 180.9648 72.0385 179.4684 75.1855 178.6088C78.6822 177.6535 80.1092 178.8188 80.1029 181.6714L81.1901 221.8061L122.1008 210.6301L120.9569 167.4008C120.5125 152.7491 106.2014 145.2548 76.4800 153.3741L66.6894 156.0487C36.6183 164.2635 27.0262 177.7693 27.5273 195.5157L28.4727 227.9138C28.9517 241.2602 36.0175 249.6970 53.6300 258.3629L71.3055 267.2707C78.1602 270.5816 80.5386 272.5237 80.7151 278.9549L81.6826 315.7530C81.5787 319.6690 81.3204 321.5538 77.4741 322.6045C73.9774 323.5598 72.2007 322.4901 72.0810 319.1535L70.7889 271.0403L28.8292 282.5028L30.1213 330.6160C30.6507 349.9097 47.3119 357.7987 77.3830 349.5839ZM179.8181 256.8063 169.3282 259.6719 171.8412 185.8974ZM186.3868 317.9919 227.6471 306.7204 199.3034 121.6354 144.7558 136.5367 129.3916 333.5619 166.8056 323.3411 168.1535 288.2431 182.8394 284.2312ZM227.3028 113.9866 232.5687 305.3760 268.5841 295.5373 265.0579 179.8708 288.5150 290.0926 328.0270 279.2987 322.4114 88.0048 287.0954 97.6524 290.2970 202.0038 270.6611 102.1420ZM337.4679 276.7196 403.5544 258.6661C423.4853 253.2214 433.0427 241.0209 432.4219 219.9379L428.8356 88.2188C428.2432 68.6832 412.6247 63.3603 390.9456 69.2826L332.2020 85.3302ZM375.6929 99.8854 379.5392 98.8347C384.0849 97.5929 385.0646 99.9170 385.1843 103.2536L388.6571 228.7835C388.8336 235.2147 387.1483 235.9343 383.3020 236.9850L379.4557 238.0358ZM440.9408 55.6181 446.2068 247.0075 520.6852 226.6615 520.0202 196.7785 488.2008 205.4710 486.5432 150.2007 512.4183 143.1321 511.6273 112.7652 485.7522 119.8338 484.4885 73.2679 515.2589 64.8621 514.3703 35.5586ZM564.7001 46.1721 567.8471 45.3125C571.6934 44.2617 572.8337 45.7644 572.8905 48.8591L574.0912 95.1830C574.4976 98.1821 573.4770 100.0160 569.9803 100.9712L566.1340 102.0219ZM569.2885 213.3840 566.8683 129.2941 570.0153 128.4344C573.8616 127.3837 575.2886 128.5489 575.2823 131.4016L577.2866 202.3870C577.3087 206.7870 579.1137 209.4040 580.8274 210.2318L622.7871 198.7692L622.9477 197.9478C621.3947 196.2986 620.6040 194.7004 620.5189 190.0585L618.4579 115.9784C618.1333 104.6633 608.9916 101.1995 602.1306 100.7412C610.6548 96.0800 616.9613 88.6553 616.7974 76.5187L615.5620 31.5001C615.1523 15.5430 601.0869 11.8693 584.6527 16.3588L521.0139 33.7437L526.2798 225.1331ZM124.8938 542.1263 122.3287 466.1105 137.8313 538.5920 182.9380 526.2698 158.2746 430.1139 175.9237 335.3580 133.2647 347.0116 121.0020 419.3027 119.2782 350.8324 76.6192 362.4860 81.8851 553.8755ZM179.4204 334.4027 184.6863 525.7922 254.9688 506.5924 254.1778 476.2255 226.5543 483.7717 222.0794 322.7491ZM249.6983 315.2022 254.9642 506.5916 329.4426 486.2455 328.7776 456.3626 296.9582 465.0551 295.3007 409.7847 321.1758 402.7162 320.3848 372.3493 294.5096 379.4179 293.2459 332.8520 324.0164 324.4461 323.1277 295.1427ZM372.7800 281.5786 329.7713 293.3278 335.0373 484.7172 378.0459 472.9681ZM381.6248 279.1653 386.8907 470.5547 422.9061 460.7160 419.3799 345.0495 442.8370 455.2713 482.3490 444.4774 476.7334 253.1835 441.4173 262.8311 444.6190 367.1825 424.9831 267.3206ZM486.5240 250.5089 491.7899 441.8983 566.2684 421.5522 565.6034 391.6693 533.7839 400.3618 532.1264 345.0914 558.0015 338.0229 557.2105 307.6560 531.3354 314.7246 530.0717 268.1587 560.8421 259.7528 559.9534 230.4494ZM565.8531 228.8389 571.1190 420.2283 607.1344 410.3896 603.6082 294.7231 627.0653 404.9449 666.5773 394.1510 660.9617 202.8571 625.6456 212.5047 628.8473 316.8561 609.2114 216.9942ZM676.0182 391.5719 743.5034 373.1363C765.8819 367.0229 772.6419 355.5866 772.1125 336.2929L770.6093 283.0539C770.2280 268.6441 757.5896 266.1356 750.0923 266.1103C756.4209 263.0855 766.7627 255.3360 766.2207 241.7477L765.3288 199.4862C764.7301 182.8032 751.1750 178.2126 732.6428 183.2752L670.7523 200.1825ZM717.2358 211.8468C721.4318 210.7005 722.7328 211.3818 723.0416 215.4443L724.2139 260.2209C724.3336 263.5575 722.5507 265.3404 719.4037 266.2001L715.5574 267.2509L714.0888 212.7064ZM719.9552 289.8938C724.1512 288.7475 725.8649 289.5753 726.2366 293.8797L727.5162 347.6983C727.6359 351.0349 726.9019 352.5312 722.7060 353.6775L718.1603 354.9193L716.4586 290.8490ZM778.6944 170.6906 783.9603 362.0801 858.4388 341.7340 857.7738 311.8511 825.9543 320.5435 824.2968 265.2732 850.1719 258.2046 849.3809 227.8378 823.5058 234.9064 822.2421 188.3405 853.0125 179.9346 852.1239 150.6312ZM902.4537 161.2447 905.6007 160.3850C909.4470 159.3343 910.5873 160.8370 910.6441 163.9316L911.8448 210.2555C912.2512 213.2546 911.2305 215.0885 907.7339 216.0437L903.8876 217.0945ZM907.0421 328.4565 904.6219 244.3667 907.7688 243.5070C911.6151 242.4563 913.0422 243.6215 913.0359 246.4742L915.0401 317.4596C915.0622 321.8596 916.8673 324.4766 918.5810 325.3043L960.5407 313.8418L960.7013 313.0204C959.1483 311.3712 958.3576 309.7730 958.2725 305.1310L956.2115 231.0509C955.8869 219.7358 946.7452 216.2721 939.8842 215.8138C948.4084 211.1525 954.7149 203.7278 954.5509 191.5913L953.3156 146.5727C952.9059 130.6156 938.8405 126.9419 922.4063 131.4314L858.7675 148.8162L864.0334 340.2057ZM1002.8950 304.0883C1017.2312 300.1719 1025.4813 290.1428 1029.5638 282.8073C1031.1798 284.6984 1033.5803 291.0405 1034.2733 293.7021L1063.2955 285.7738L1060.1756 173.1064L1010.5233 186.6704L1010.9772 211.4275L1020.0685 208.9439L1021.5938 266.5830C1021.4898 270.4990 1019.8329 272.7659 1015.6369 273.9122C1011.4410 275.0584 1009.4753 273.2628 1009.2295 269.4423L1005.6716 139.2705C1005.5519 135.9339 1006.1598 133.9536 1010.0061 132.9028C1013.1531 132.0431 1015.2165 132.7754 1015.3992 136.3539L1016.5148 178.0359L1058.1248 166.6689L1057.0722 125.2288C1056.4105 108.3039 1042.9026 96.7025 1008.2859 106.1592L1002.3416 107.7830C968.0745 117.1441 961.1129 133.5598 961.7053 153.0955L965.1435 279.9307C965.7359 299.4663 978.4185 310.7748 1001.4963 304.4704Z"/>
+ </svg></a>
+  </header>
+
+  <main class="stage">
+    <section class="table" aria-label="A pile of polaroids">
+      <div class="pile" id="pile" tabindex="0" aria-describedby="pile-help">
+        <figure class="card" style="--i:12;--r:-3.2deg;--dx:-4px;--dy:2px;--bri:1;--wx:28%;--wy:64%;z-index:13"><span class="shot blank"></span><figcaption><b>404</b><span>never developed</span></figcaption></figure>
+        <figure class="card" style="--i:11;--r:5.4deg;--dx:7px;--dy:-3px;--bri:.985;--wx:71%;--wy:22%;z-index:12"><span class="shot"><img src="/5k/404-assets/p-11.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Stay high</figcaption></figure>
+        <figure class="card" style="--i:10;--r:-7.1deg;--dx:-9px;--dy:5px;--bri:.97;--wx:14%;--wy:83%;z-index:11"><span class="shot"><img src="/5k/404-assets/p-01.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Wheels up</figcaption></figure>
+        <figure class="card" style="--i:9;--r:2.3deg;--dx:3px;--dy:6px;--bri:1.01;--wx:55%;--wy:47%;z-index:10"><span class="shot"><img src="/5k/404-assets/p-05.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Le Freak</figcaption></figure>
+        <figure class="card" style="--i:8;--r:-1.4deg;--dx:-6px;--dy:-5px;--bri:.96;--wx:88%;--wy:61%;z-index:9"><span class="shot"><img src="/5k/404-assets/p-13.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Sold out</figcaption></figure>
+        <figure class="card" style="--i:7;--r:6.8deg;--dx:10px;--dy:3px;--bri:.99;--wx:36%;--wy:12%;z-index:8"><span class="shot"><img src="/5k/404-assets/p-06.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Off duty</figcaption></figure>
+        <figure class="card" style="--i:6;--r:-4.9deg;--dx:-2px;--dy:8px;--bri:1.02;--wx:62%;--wy:90%;z-index:7"><span class="shot"><img src="/5k/404-assets/p-17.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Peace</figcaption></figure>
+        <figure class="card" style="--i:5;--r:3.7deg;--dx:-8px;--dy:-2px;--bri:.975;--wx:9%;--wy:38%;z-index:6"><span class="shot"><img src="/5k/404-assets/p-03.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Just landed</figcaption></figure>
+        <figure class="card" style="--i:4;--r:-6.2deg;--dx:6px;--dy:4px;--bri:.99;--wx:47%;--wy:73%;z-index:5"><span class="shot"><img src="/5k/404-assets/p-23.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Front row</figcaption></figure>
+        <figure class="card" style="--i:3;--r:1.1deg;--dx:-5px;--dy:-6px;--bri:1.005;--wx:80%;--wy:29%;z-index:4"><span class="shot"><img src="/5k/404-assets/p-10.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>We love Sander K</figcaption></figure>
+        <figure class="card" style="--i:2;--r:-2.6deg;--dx:9px;--dy:7px;--bri:.965;--wx:21%;--wy:55%;z-index:3"><span class="shot"><img src="/5k/404-assets/p-24.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Pacha Festival</figcaption></figure>
+        <figure class="card" style="--i:1;--r:7.6deg;--dx:-3px;--dy:-4px;--bri:.995;--wx:66%;--wy:6%;z-index:2"><span class="shot"><img src="/5k/404-assets/p-28.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Sander &amp; Lee On Tour</figcaption></figure>
+        <figure class="card" style="--i:0;--r:-5.5deg;--dx:4px;--dy:5px;--bri:.98;--wx:42%;--wy:95%;z-index:1"><span class="shot"><img src="/5k/404-assets/p-30.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Come as you are</figcaption></figure>
+      </div>
+      <p class="sr" id="pile-help">Thirteen polaroids. Left and right arrow keys flip through them.</p>
+      <p class="sr" id="live" aria-live="polite"></p>
+      <div class="ctl">
+        <button class="nav" type="button" id="prev" aria-label="Previous polaroid">&lsaquo;</button>
+        <span class="count" id="count" aria-hidden="true">01 / 13</span>
+        <button class="nav" type="button" id="next" aria-label="Next polaroid">&rsaquo;</button>
+      </div>
+      <p class="hint" aria-hidden="true">flip through the pile</p>
+    </section>
+
+    <section class="msg" aria-labelledby="h">
+      <p class="kicker">Error 404 &middot; page not found</p>
+      <h1 id="h"><span class="strip">Not in the pile</span></h1>
+      <p class="lede">Whatever used to be at this address isn&rsquo;t here, or the link has a typo in it. The rest of the archive is still on the table.</p>
+      <p class="asked" id="asked" hidden>You asked for <code id="path"></code></p>
+      <div class="go">
+        <a class="btn ink" href="https://sanderkleinenberg.com/">Back to the archive</a>
+        <a class="btn" href="https://sanderkleinenberg.com/bio/">Bio &amp; links</a>
+      </div>
+    </section>
+  </main>
+</div>
+
+<script>
+(function(){
+  "use strict";
+
+  /* the address that brought them here, only where it is a real one */
+  if (/(^|\.)sanderkleinenberg\.com$/.test(location.hostname)) {
+    var p = location.pathname + location.search;
+    try { p = decodeURI(p); } catch (e) {}
+    document.getElementById("path").textContent = p;
+    document.getElementById("asked").hidden = false;
+  }
+
+  var pile  = document.getElementById("pile");
+  var cards = [].slice.call(pile.querySelectorAll(".card"));
+  var order = cards.slice();            /* order[0] is the print on top */
+  var n     = cards.length;
+  var count = document.getElementById("count");
+  var live  = document.getElementById("live");
+  var still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+  var busy  = false;
+
+  function two(k){ return (k < 10 ? "0" : "") + k; }
+  function v(el, name){ return getComputedStyle(el).getPropertyValue(name).trim(); }
+  function rest(el){ return "translate(" + v(el,"--dx") + "," + v(el,"--dy") + ") rotate(" + v(el,"--r") + ")"; }
+  /* off to one side of the pile, turned a little further the way it travels */
+  function away(el, dir){ return "translate(" + (dir * 112) + "%,-4%) rotate(" + (parseFloat(v(el,"--r")) + dir * 15) + "deg)"; }
+
+  function restack(){
+    for (var i = 0; i < n; i++) order[i].style.zIndex = String(n - i);
+    var top = order[0];
+    count.textContent = two(cards.indexOf(top) + 1) + " / " + two(n);
+    live.textContent = top.querySelector("figcaption").textContent + ", " + (cards.indexOf(top) + 1) + " of " + n;
+  }
+
+  /* Two moves, like by hand: slide the print clear of the pile, then tuck it
+     under (next) or lay it on top (previous). The stacking order changes only
+     between the two, while the print is out at the side. */
+  function move(el, dir, from, reorder, done){
+    if (still) { reorder(); restack(); done && done(); return; }
+    busy = true;
+    var out = el.animate([{ transform: from || rest(el) }, { transform: away(el, dir) }],
+                         { duration: from ? 170 : 230, easing: "cubic-bezier(.3,.7,.4,1)", fill: "forwards" });
+    el.style.transform = "";
+    out.onfinish = function(){
+      reorder(); restack();
+      var back = el.animate([{ transform: away(el, dir) }, { transform: rest(el) }],
+                            { duration: 330, easing: "cubic-bezier(.2,.8,.3,1)" });
+      out.cancel();
+      back.onfinish = function(){ busy = false; done && done(); };
+    };
+  }
+  function next(dir, from){
+    if (busy) return;
+    move(order[0], dir || 1, from, function(){ order.push(order.shift()); });
+  }
+  function prev(){
+    if (busy) return;
+    move(order[n - 1], -1, null, function(){ order.unshift(order.pop()); });
+  }
+
+  document.getElementById("next").addEventListener("click", function(){ next(1); });
+  document.getElementById("prev").addEventListener("click", prev);
+  pile.addEventListener("keydown", function(e){
+    if (e.key === "ArrowRight" || e.key === " " || e.key === "Enter") { e.preventDefault(); next(1); }
+    else if (e.key === "ArrowLeft") { e.preventDefault(); prev(); }
+  });
+
+  /* drag the top print aside to flip; a plain tap flips too */
+  var drag = null;
+  pile.addEventListener("pointerdown", function(e){
+    if (busy || e.button > 0) return;
+    drag = { x: e.clientX, y: e.clientY, dx: 0, dy: 0, moved: false, el: order[0], id: e.pointerId };
+    pile.setPointerCapture(e.pointerId);
+  });
+  pile.addEventListener("pointermove", function(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    drag.dx = e.clientX - drag.x; drag.dy = e.clientY - drag.y;
+    if (!drag.moved && Math.abs(drag.dx) < 5) return;
+    drag.moved = true;
+    drag.el.style.transform = "translate(" + drag.dx + "px," + (drag.dy * .25) + "px) " + rest(drag.el) + " rotate(" + (drag.dx / 24) + "deg)";
+  });
+  function release(e){
+    if (!drag || e.pointerId !== drag.id) return;
+    var d = drag; drag = null;
+    if (!d.moved) { next(1); return; }
+    var from = d.el.style.transform;
+    if (Math.abs(d.dx) > Math.min(80, pile.offsetWidth * .25)) { next(d.dx > 0 ? 1 : -1, from); return; }
+    d.el.style.transform = "";
+    if (!still) d.el.animate([{ transform: from }, { transform: rest(d.el) }], { duration: 260, easing: "cubic-bezier(.2,.8,.3,1)" });
+  }
+  pile.addEventListener("pointerup", release);
+  pile.addEventListener("pointercancel", release);
+
+  restack();
+})();
+</script>

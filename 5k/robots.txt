@@ -1,0 +1,8 @@
+# sanderkleinenberg.com
+# Everything public may be crawled. The press kit (password only) and the
+# visitor statistics stay out.
+User-agent: *
+Disallow: /press/
+Disallow: /analytics/
+
+Sitemap: https://sanderkleinenberg.com/sitemap.xml

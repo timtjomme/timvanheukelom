@@ -21,3 +21,9 @@ comments/.salt
 # working files for /5k -- notes, drafts and the rider; the repository is public
 5k/_*.html
 5k/_*.md
+# the press kit password hash and its downloads folder name; the repository is public
+5k/press/config.php
+5k/press/files-*/
+# the promoter list press/admin.php keeps on the server
+5k/press/promoters.php
+5k/press/history.log.php

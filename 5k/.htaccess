@@ -42,3 +42,7 @@
     Deny from all
   </IfModule>
 </Files>
+
+# The 404 page, the same one sanderkleinenberg.com serves, with its pictures
+# addressed from /5k/404-assets/ (sync-to-5k.py rewrites that).
+ErrorDocument 404 /5k/404.html

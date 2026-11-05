@@ -73,7 +73,47 @@ $BASE = htmlspecialchars(($sk_https ? 'https' : 'http') . '://' . $sk_host . $sk
 
          tipped out in no particular order.
 
---><html data-ground="tide"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg</title><meta name=description content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><link rel=icon href="pics/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="pics/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="pics/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="<?= $BASE ?>"><meta property="og:image" content="<?= $BASE ?>pics/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="<?= $BASE ?>pics/sk-og.png"></head><body>
+--><html lang="en" data-ground="tide"><head><meta charset=utf8><meta name=viewport content="width=device-width,initial-scale=1,viewport-fit=cover"><style>:root{color-scheme:light;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}html{scroll-padding-top:env(safe-area-inset-top,0px)}body{margin:0;padding:0;font:14px -apple-system,BlinkMacSystemFont,sans-serif;background:#faf9f5;color:#141413}img{max-width:100%}[hidden]:not([hidden=until-found i]){display:none!important}</style><title>Sander Kleinenberg — Official Site | DJ &amp; Producer</title><meta name=description content="Official website of Dutch DJ and producer Sander Kleinenberg: tour dates, new music, mixes, photos and the story behind My Lexicon, The Fruit and This Is Miami."><link rel=canonical href="https://sanderkleinenberg.com/"><meta name=robots content="index, follow, max-image-preview:large"><link rel=icon href="pics/sk-32.png" sizes="32x32" type="image/png"><link rel=icon href="pics/sk-16.png" sizes="16x16" type="image/png"><link rel=apple-touch-icon href="pics/sk-180.png"><meta property="og:type" content="website"><meta property="og:site_name" content="Sander Kleinenberg"><meta property="og:title" content="Sander Kleinenberg"><meta property="og:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta property="og:url" content="<?= $BASE ?>"><meta property="og:image" content="<?= $BASE ?>pics/sk-og.png"><meta property="og:image:width" content="1200"><meta property="og:image:height" content="630"><meta property="og:image:alt" content="SK monogram"><meta name="twitter:card" content="summary_large_image"><meta name="twitter:title" content="Sander Kleinenberg"><meta name="twitter:description" content="Thirty prints, three sleeves, five flyers &mdash; four nights still to come and one long gone &mdash; a mixtape, a video, the tour dates and a biography from the booth, the road and the back of the plane."><meta name="twitter:image" content="<?= $BASE ?>pics/sk-og.png"><meta name="twitter:site" content="@kleinenberg">
+<?php
+/* For search engines: who this is, and every upcoming date in the tour list
+   further down this file as an event (Google can show them in its results).
+   The dates are read from that list, so they're only ever edited there; a
+   date that has passed drops out by itself. */
+$sk_ld = (function () {
+    $site = 'https://sanderkleinenberg.com/';
+    $graph = json_decode('[{"@type": "WebSite", "@id": "https://sanderkleinenberg.com/#website", "url": "https://sanderkleinenberg.com/", "name": "Sander Kleinenberg", "inLanguage": "en", "publisher": {"@id": "https://sanderkleinenberg.com/#sander"}}, {"@type": "Person", "@id": "https://sanderkleinenberg.com/#sander", "name": "Sander Kleinenberg", "givenName": "Sander", "familyName": "Kleinenberg", "url": "https://sanderkleinenberg.com/", "image": "https://sanderkleinenberg.com/biography/img/sander-kleinenberg-dj.webp", "description": "Dutch DJ, record producer and video DJ from Delft, known for My Lexicon, The Fruit and This Is Miami, the Everybody and This Is club nights, and remixes for Madonna, Daft Punk, Janet Jackson and Justin Timberlake.", "birthDate": "1971-12-29", "birthPlace": {"@type": "Place", "name": "Delft, Netherlands", "sameAs": "https://www.wikidata.org/wiki/Q690"}, "nationality": {"@type": "Country", "name": "Netherlands"}, "jobTitle": "DJ and record producer", "mainEntityOfPage": "https://sanderkleinenberg.com/biography/", "sameAs": ["https://en.wikipedia.org/wiki/Sander_Kleinenberg", "https://www.wikidata.org/wiki/Q572036", "https://www.instagram.com/sanderkleinenberg/", "https://www.threads.com/@sanderkleinenberg", "https://www.facebook.com/sanderkleinenberg", "https://x.com/kleinenberg", "https://soundcloud.com/sanderkleinenberg", "https://www.youtube.com/@sanderkleinenbergtv", "https://open.spotify.com/artist/3CfH3WZPzbk5mNDWXpGIy6", "https://music.apple.com/us/artist/sander-kleinenberg/4091314", "https://www.deezer.com/artist/11979", "https://www.beatport.com/artist/sander-kleinenberg/2685", "https://www.discogs.com/artist/5800", "https://musicbrainz.org/artist/96ca75af-d011-4cf0-aa92-3d48521ff615", "https://www.allmusic.com/artist/mn0000239683"]}]', true);
+    $src = (string) file_get_contents(__FILE__);
+    $now = new DateTimeImmutable('today', new DateTimeZone('Europe/Amsterdam'));
+    $txt = fn($h) => trim(html_entity_decode(strip_tags((string) $h), ENT_QUOTES | ENT_HTML5, 'UTF-8'));
+    $seen = [];
+    preg_match_all('~<(li|p class="ag-m") data-on="(\d{4})-(\d\d)-(\d\d)">(.*?)</(?:li|p)>~s', $src, $all, PREG_SET_ORDER);
+    foreach ($all as $m) {
+        [$day, $body] = ["$m[2]-$m[3]-$m[4]", $m[5]];
+        if ($day < $now->format('Y-m-d')) continue;
+        if (!preg_match('~<strong>(.*?)<em>([A-Z]{2})</em></strong>~s', $body, $c)) continue;
+        [$city, $cc] = [$txt($c[1]), $c[2]];
+        preg_match_all('~<span>(.*?)</span>~s', $body, $sp);
+        $what = $txt($sp[1][0] ?? '');
+        $parts = preg_split('~\s+[\x{2014}/]\s+~u', $what);
+        $event = $parts[0] !== '' ? $parts[0] : $city;
+        $venue = count($parts) > 1 ? $parts[count($parts) - 1] : $event;
+        if (isset($seen[$day . $city])) continue;
+        $seen[$day . $city] = true;
+        $e = ['@type' => 'MusicEvent', 'name' => 'Sander Kleinenberg at ' . $event, 'startDate' => $day,
+              'eventStatus' => 'https://schema.org/EventScheduled',
+              'eventAttendanceMode' => 'https://schema.org/OfflineEventAttendanceMode',
+              'location' => ['@type' => 'Place', 'name' => $venue,
+                             'address' => ['@type' => 'PostalAddress', 'addressLocality' => $city, 'addressCountry' => $cc]],
+              'performer' => ['@id' => $site . '#sander'], 'image' => $site . 'pics/sk-og.png',
+              'description' => 'Sander Kleinenberg plays ' . $event . ' in ' . $city . '.'];
+        if (preg_match('~<b>\d\d(?:&ndash;|\x{2013}|-)(\d\d)\.(\d\d)</b>~u', $body, $r)) $e['endDate'] = "$m[2]-$r[2]-$r[1]";
+        if (preg_match('~data-tix="([^"]+)"~', $body, $t)) $e['offers'] = ['@type' => 'Offer', 'url' => html_entity_decode($t[1]), 'availability' => 'https://schema.org/InStock'];
+        $graph[] = $e;
+    }
+    return json_encode(['@context' => 'https://schema.org', '@graph' => $graph], JSON_UNESCAPED_SLASHES | JSON_UNESCAPED_UNICODE | JSON_HEX_TAG);
+})();
+?>
+<script type="application/ld+json"><?= $sk_ld ?></script><script>/* Instagram and Facebook add tracking tags to links (utm_..., fbclid). Nothing here uses them, so they come out of the address bar; ?card= and ?ground= stay. */(function(){try{var u=new URL(location.href),p=u.searchParams,k=[];p.forEach(function(v,n){if(/^utm_/i.test(n)||/^(fbclid|igshid|gclid)$/i.test(n))k.push(n)});if(!k.length)return;k.forEach(function(n){p.delete(n)});var q=p.toString();history.replaceState(history.state,'',u.pathname+(q?'?'+q:'')+u.hash)}catch(e){}})();</script><style>.vh{position:absolute!important;width:1px;height:1px;margin:-1px;padding:0;overflow:hidden;clip:rect(0 0 0 0);clip-path:inset(50%);white-space:nowrap;border:0}.socials a.txt{font-weight:800;font-stretch:78%;font-size:calc(var(--sh)*1.02);line-height:1;letter-spacing:.03em;text-transform:uppercase;text-decoration:none}</style></head><body>
 <link rel="preconnect" href="https://fonts.googleapis.com">
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@75..112,400..900&family=DM+Mono:wght@400;500&family=Permanent+Marker&family=Reenie+Beanie&display=swap">
@@ -810,8 +850,12 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .box-veil{position:absolute;inset:0;pointer-events:none;
   backdrop-filter:blur(5px) saturate(.94);-webkit-backdrop-filter:blur(5px) saturate(.94)}
 .box[hidden]{display:none!important}
+/* 560px suits a laptop. The pile grows with the screen, though, so a fixed cap
+   ends up smaller than the record you picked up off a big one. Past 1436px wide
+   the cap follows the screen instead (39vw), and whatever is lifted off the
+   table stays bigger than it was lying on it. */
 .box-stage{container-type:inline-size;perspective:1700px;
-  width:min(86vw,560px,calc((100vh - 150px) * var(--boxar,.8)))}
+  width:min(86vw,max(560px,39vw),calc((100vh - 150px) * var(--boxar,.8)))}
 /* Turning it over, the way you would pick a print up off the table. The back
    only exists for things that are objects - a sheet of paper is already text. */
 .box-flip{position:relative;width:100%;transform-style:preserve-3d;
@@ -1004,7 +1048,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 .box-print.is-flyer{background:var(--paper)}
 /* a shrunk A4 is unreadable, so enlarging the bio shows the text, not a bigger page */
 .box-stage.wide{width:min(92vw,660px)}
-/* A sleeve is looked at; a film is watched. The stage is capped at 560px,
+/* A sleeve is looked at; a film is watched. The stage is capped (560px on a laptop),
    which is right for holding a record up to the light and far too small once
    something is moving on it -- so with a film in it the card is let out to 80%
    of the screen, whichever way the screen runs out first, keeping 16:9. */
@@ -1056,6 +1100,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 </div>
 <div class="room">
   <ul class="socials">
+  <li><a class="txt" href="biography/" title="Biography and career">Bio</a></li>
   <li><a href="https://soundcloud.com/sanderkleinenberg/" target="_blank" rel="noopener noreferrer"
    aria-label="Sander Kleinenberg on SoundCloud" title="SoundCloud"><svg viewBox="0 0 36.5 24" width="29" height="19" fill="none"
    stroke="currentColor" stroke-width="1.9" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"
@@ -1071,7 +1116,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  </ul>
  <header>
   <div class="mark">
-   <h1 class="logo"><svg xmlns="http://www.w3.org/2000/svg" viewBox="25.03 9.87 1040.27 546.01" role="img" aria-label="Sander Kleinenberg">
+   <h1 class="logo"><span class="vh">Sander Kleinenberg</span><svg xmlns="http://www.w3.org/2000/svg" viewBox="25.03 9.87 1040.27 546.01" aria-hidden="true" focusable="false">
  <defs><filter id="s" x="-3%" y="-4%" width="106%" height="108%" color-interpolation-filters="sRGB">
  <!-- Worn screenprint, fitted to the tour artwork rather than eyeballed. Measured off
       the poster: its ink is almost solid (median L .024) and the wear lives entirely in
