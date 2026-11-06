@@ -90,13 +90,22 @@ $sk_ld = (function () {
     foreach ($all as $m) {
         [$day, $body] = ["$m[2]-$m[3]-$m[4]", $m[5]];
         if ($day < $now->format('Y-m-d')) continue;
-        if (!preg_match('~<strong>(.*?)<em>([A-Z]{2})</em></strong>~s', $body, $c)) continue;
-        [$city, $cc] = [$txt($c[1]), $c[2]];
-        preg_match_all('~<span>(.*?)</span>~s', $body, $sp);
-        $what = $txt($sp[1][0] ?? '');
-        $parts = preg_split('~\s+[\x{2014}/]\s+~u', $what);
-        $event = $parts[0] !== '' ? $parts[0] : $city;
-        $venue = count($parts) > 1 ? $parts[count($parts) - 1] : $event;
+        if (preg_match('~<strong class="ag-e">(.*?)</strong>.*?<span class="ag-v">(.*?)<em>([A-Z]{2})</em></span>~s', $body, $n)) {
+            /* forthcoming rows: the night first (a logo counts by its alt text),
+               then "venue · city" with the country */
+            $event = $txt(preg_replace('~<img[^>]*\balt="([^"]*)"[^>]*>~', '$1', $n[1]));
+            $where = array_map('trim', preg_split('~\s*\x{00B7}\s*~u', $txt($n[2])));
+            [$city, $cc] = [end($where), $n[3]];
+            $venue = count($where) > 1 ? $where[0] : $event;
+        } else {
+            if (!preg_match('~<strong>(.*?)<em>([A-Z]{2})</em></strong>~s', $body, $c)) continue;
+            [$city, $cc] = [$txt($c[1]), $c[2]];
+            preg_match_all('~<span>(.*?)</span>~s', $body, $sp);
+            $what = $txt($sp[1][0] ?? '');
+            $parts = preg_split('~\s+[\x{2014}/]\s+~u', $what);
+            $event = $parts[0] !== '' ? $parts[0] : $city;
+            $venue = count($parts) > 1 ? $parts[count($parts) - 1] : $event;
+        }
         if (isset($seen[$day . $city])) continue;
         $seen[$day . $city] = true;
         $e = ['@type' => 'MusicEvent', 'name' => 'Sander Kleinenberg at ' . $event, 'startDate' => $day,
@@ -107,6 +116,9 @@ $sk_ld = (function () {
               'performer' => ['@id' => $site . '#sander'], 'image' => $site . 'pics/sk-og.png',
               'description' => 'Sander Kleinenberg plays ' . $event . ' in ' . $city . '.'];
         if (preg_match('~<b>\d\d(?:&ndash;|\x{2013}|-)(\d\d)\.(\d\d)</b>~u', $body, $r)) $e['endDate'] = "$m[2]-$r[2]-$r[1]";
+        /* "5&ndash;9 August": the last day, in the month written out */
+        if (preg_match('~<b>\d{1,2}(?:&ndash;|\x{2013}|-)(\d{1,2}) ([A-Z][a-z]+)</b>~u', $body, $r)
+            && ($mo = date_parse("1 $r[2] 2000")['month'])) $e['endDate'] = sprintf('%s-%02d-%02d', $m[2], $mo, $r[1]);
         if (preg_match('~data-tix="([^"]+)"~', $body, $t)) $e['offers'] = ['@type' => 'Offer', 'url' => html_entity_decode($t[1]), 'availability' => 'https://schema.org/InStock'];
         $graph[] = $e;
     }
@@ -557,6 +569,98 @@ h1.logo svg{display:block;width:100%;height:auto}
 .bk-gate .gget[disabled]{opacity:.26;cursor:not-allowed}
 .bk-gate .gget:not([disabled]):hover{background:#fb1a74}
 
+/* ---- "Were you there?": the invitation ------------------------------------
+   One print in the pile asks the question. Picked up, it turns over by itself,
+   and its back is the form: a photo, a story, an idea or a demo, straight into
+   Sander's Dropbox (share/index.php). A photo chosen there develops on the
+   front, in place of his. */
+/* Its photo: Sander, hands up among the light bulbs, with the question in big
+   black letters on the white wall above him. A photo a visitor picks takes its
+   place, and the letters go with it. */
+.shot.invite,.box-print .shot.invite{background:#eeece7}
+.invite-words{display:none}
+/* ...and under it, on the chin, what to do about it. Only while his photo is
+   up: once a visitor's own is in, the chin is theirs again. */
+.invite-cta{display:none}
+.print.share .invite-cta,#boxPrint:has(.shot.invite) .invite-cta{display:block;position:absolute;
+  left:5.6cqw;right:5.6cqw;bottom:8cqw;margin:0;font-family:var(--sans);font-weight:900;
+  font-stretch:75%;font-style:normal;font-size:7.6cqw;line-height:1;letter-spacing:.01em;
+  text-transform:uppercase;color:#141413;text-align:center;white-space:nowrap;pointer-events:none}
+.shot.invite .invite-words{display:block;position:absolute;left:3%;right:3%;top:2.6%;margin:0;
+  font-family:var(--sans);font-weight:900;font-stretch:75%;font-style:normal;
+  font-size:14.6cqw;line-height:.8;letter-spacing:-.012em;text-transform:uppercase;
+  color:#141413;text-align:center;transform:rotate(-2.5deg);pointer-events:none}
+.shot.developing img{animation:develop 2.6s cubic-bezier(.3,.6,.4,1) both}
+@keyframes develop{
+  from{filter:brightness(.22) saturate(0) contrast(.7) blur(2px)}
+  55%{filter:brightness(.75) saturate(.55) contrast(.9) blur(.4px)}
+  to{filter:none}}
+@media (prefers-reduced-motion:reduce){.shot.developing img{animation:none}}
+.box-back.is-share{background-color:#efebe1;justify-content:flex-start;
+  padding:clamp(18px,6.5cqw,42px);overflow-y:auto;overflow-x:hidden;
+  overscroll-behavior:contain}
+.box-flip.turnable .box-back.is-share{cursor:auto}
+/* On a phone the print is about 390px tall, which is no room for a form once
+   the keyboard is up. There the back grows taller than the front, centred on
+   it, so the card turns over into a longer sheet. */
+@media (max-width:600px){
+  .box-back.is-share{top:50%;bottom:auto;height:calc(100vh - 140px);height:calc(100svh - 140px);
+    max-height:760px;transform:translateY(-50%) rotateY(180deg)}
+}
+.bk-share[hidden]{display:none!important}
+.bk-share,.sh-form{display:flex;flex-direction:column;gap:clamp(11px,2.8cqw,16px);width:100%;
+  font-family:var(--sans);color:var(--ink);text-align:left}
+.sh-t{margin:0;font-family:"Reenie Beanie",ui-rounded,cursive;font-weight:400;
+  font-size:clamp(34px,10.5cqw,60px);line-height:.95;color:#253163;filter:url(#ink);
+  transform:rotate(-1.4deg);transform-origin:left center}
+.sh-sub{margin:-.3em 0 0;font-size:clamp(14px,3.2cqw,16px);line-height:1.4;color:#4a453e}
+.sh-kinds{display:flex;flex-wrap:wrap;gap:6px;border:0;margin:0;padding:0;min-width:0}
+.sh-kinds label{position:relative;display:block}
+.sh-kinds input{position:absolute;inset:0;width:100%;height:100%;margin:0;opacity:0;cursor:pointer}
+.sh-kinds span{display:block;padding:8px 15px;border:1px solid rgba(24,24,23,.28);border-radius:99px;
+  font-size:14px;line-height:1;background:rgba(255,255,255,.45)}
+.sh-kinds input:checked+span{background:var(--ink);border-color:var(--ink);color:#faf9f5}
+.sh-kinds input:focus-visible+span{outline:2px solid var(--accent);outline-offset:2px}
+.sh-f{display:flex;flex-direction:column;gap:5px;min-width:0}
+.sh-f>span{font-family:var(--mono);font-size:11px;letter-spacing:.16em;text-transform:uppercase;color:#8d867c}
+.sh-f>span em{font-style:normal;letter-spacing:.08em;text-transform:none;opacity:.8}
+.sh-f input,.sh-f textarea{width:100%;box-sizing:border-box;margin:0;font:inherit;font-size:16px;
+  color:var(--ink);background:rgba(255,255,255,.6);border:1px solid rgba(24,24,23,.2);
+  border-radius:3px;padding:9px 10px;-webkit-appearance:none;appearance:none}
+.sh-f textarea{min-height:6em;resize:vertical;line-height:1.4}
+.sh-f input:focus,.sh-f textarea:focus{outline:2px solid var(--accent);outline-offset:-1px}
+.sh-row{display:grid;grid-template-columns:1fr 2fr;gap:10px}
+@container (max-width:360px){.sh-row{grid-template-columns:1fr}}
+.sh-pick{display:flex;flex-direction:column;gap:8px}
+.sh-btn{align-self:flex-start;padding:10px 18px;border:1px solid var(--ink);border-radius:99px;
+  background:rgba(255,255,255,.45);color:var(--ink);font:inherit;font-size:15px;cursor:pointer}
+.sh-btn:hover{background:#fff}
+.sh-btn:focus-visible,.sh-send:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
+.sh-files{list-style:none;margin:0;padding:0;display:grid;gap:3px;font-size:14px}
+.sh-files:empty{display:none}
+.sh-files li{display:flex;gap:8px;align-items:center;min-width:0}
+.sh-files b{font-weight:400;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.sh-files i{font-style:normal;font-family:var(--mono);font-size:12px;color:#8d867c}
+.sh-files button{border:0;background:none;font:inherit;font-size:18px;line-height:1;padding:2px 6px;
+  cursor:pointer;color:#8d867c}
+.sh-files button:hover{color:var(--ink)}
+.sh-note{margin:0;font-family:var(--mono);font-size:11px;line-height:1.55;letter-spacing:.02em;color:#8d867c}
+.sh-note a{color:inherit}
+.sh-ticks{display:grid;gap:9px;border:0;margin:2px 0 0;padding:0;min-width:0}
+.sh-ticks label{display:flex;gap:10px;align-items:flex-start;font-size:14px;line-height:1.35;cursor:pointer}
+.sh-ticks input{flex:none;width:18px;height:18px;margin:1px 0 0;accent-color:#fb1a74;cursor:pointer}
+.sh-send{width:100%;padding:14px 16px;border:0;border-radius:99px;background:var(--ink);color:#faf9f5;
+  font:inherit;font-size:16px;font-weight:600;cursor:pointer}
+.sh-send:hover{background:#fb1a74}
+.sh-send[disabled]{opacity:.5;cursor:progress;background:var(--ink)}
+.sh-bar{height:3px;margin-top:-4px;background:rgba(24,24,23,.1);border-radius:2px;overflow:hidden}
+.sh-bar[hidden]{display:none!important}
+.sh-bar i{display:block;height:100%;width:0;background:#fb1a74;transition:width .25s linear}
+.sh-msg{margin:-4px 0 0;font-size:14px;line-height:1.4}
+.sh-msg:empty{display:none}
+.sh-msg.bad{color:#b3124f}
+.sh-hp{position:absolute!important;left:-9999px;width:1px;height:1px;overflow:hidden}
+
 /* ---- the free download: a gummed label on the table ----------------------
    Everything else in the pile is a photograph of a real object. This one is not
    pretending to be: there is no artwork for a giveaway, so it is set as a label
@@ -597,6 +701,10 @@ h1.logo svg{display:block;width:100%;height:auto}
    up every time. has(focus-visible) is the browser's own
    "did this come from the keyboard" test. */
 html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);outline-offset:4px}
+/* ...which is why the browser's own ring is switched off here. Safari draws its
+   blue one on a card that gets focus back when the lightbox closes, mouse or
+   not; the accent ring above is the one keyboard users get. */
+.slot :focus,.slot :focus-visible{outline:none}
 .slot:hover,.slot:has(:focus-visible){z-index:900;transform:translate(-50%,-50%) translateY(-10px);
   filter:drop-shadow(calc(1.8px*var(--lift)) calc(2.6px*var(--lift)) calc(2.2px*var(--lift)) rgba(var(--shadow),.28))
          drop-shadow(calc(11px*var(--lift)) calc(18px*var(--lift)) calc(22px*var(--lift)) rgba(var(--shadow),.24))}
@@ -837,10 +945,18 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
   font-size:clamp(6px,6cqw,34px);letter-spacing:-.01em}
 .agenda .ag-m strong em{font-style:normal;font-weight:500;font-size:.4em;vertical-align:.52em;
   letter-spacing:.14em;color:#8d867c;margin-left:.4em}
-.agenda .ag-m b{font-family:var(--mono);font-weight:400;margin-left:.5em;
+/* the date on its own line above the night, written out: 16 July */
+.agenda .ag-m b{display:block;margin:0 0 .4em;font-family:var(--mono);font-weight:400;
   font-size:clamp(3px,2.5cqw,13px);letter-spacing:.14em}
 .agenda .ag-m>span{display:block;font-family:var(--mono);margin-top:.45em;
   font-size:clamp(2px,1.9cqw,10px);letter-spacing:.15em;text-transform:uppercase;color:#8d867c}
+/* The night is the name to read, the room and the town are the small print.
+   A night with its own logo shows the logo: TIDE in its own colours, set to
+   sit on the same line as a name in type would. */
+.agenda .ag-m .ag-e{font-size:clamp(6px,5.6cqw,32px);line-height:1}
+.agenda .ag-e small{font-weight:600;font-size:.5em;letter-spacing:.06em;vertical-align:.3em}
+.agenda .ag-logo{display:inline-block;height:1.32em;width:auto;vertical-align:-.3em;margin:-.12em 0}
+.agenda .ag-m>span em{font-style:normal;margin-left:.6em}
 
 
 /* ---- lightbox ---- */
@@ -1501,7 +1617,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    <div class="slot" style="--x:63.29%;--y:50.67%;--w:22.6%;--r:14.0deg;--z:7;--mx:27.05%;--my:62.08%;--mw:45.2%;--mr:7.0deg;--lift:0.712;--bri:1.004;--wx:40%;--wy:40%;--ar:0.60;">
     <div class="tilt">
      <button class="sheet" data-i="33" aria-label="Enlarge: Tour dates, October — November 2026">
-      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Oct 2026 &mdash; Aug 2027</p><ol class="ag-l"><li data-on="2026-10-10"><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li data-on="2026-10-16"><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li data-on="2026-10-17"><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li data-on="2026-10-18"><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>One Day Forever &times; Tech Me In @ MeWe<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://get-in.com/en/426354?seller_code=RO9kMO5p4Jx">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Festival &times; ADE @ Nido Cocktail Bar<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://sxmfestival.com/ade/">RSVP</span></span></li><li data-on="2026-10-23"><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li data-on="2026-10-24"><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Sub Sub Ibiza presents TIDE @ Het Veronica Schip, NDSM-pier 1<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span>Sander Kleinenberg b2b Meloko &middot; Julian Prince &middot; Sebastien Bruce b2b Frank van Hees &middot; Eloy Hoose b2b Yves Labordus</span><span class="ag-x" data-tix="https://veronicaschip.fairtix.io/p/tide-%E2%80%93-sub-sub-ibiza-ade-showcase">Tickets</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m" data-on="2026-11-27"><strong>Miami<em>US</em></strong><b>27.11</b><span>Do not sit on the furniture</span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m" data-on="2026-12-12"><strong>Amsterdam<em>NL</em></strong><b>12.12</b><span>Winter of Love Festival &mdash; Thuishaven</span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p><p class="ag-m" data-on="2027-08-05"><strong>Tisno<em>HR</em></strong><b>05&ndash;09.08</b><span>Balance Croatia &mdash; The Garden Resort</span></p></div></div>
+      <div class="sheet-body"><div class="agenda"><p class="ag-t">Tour Dates</p><p class="ag-k">Nov 2026 &mdash; Sep 2027</p><ol class="ag-l"><li data-on="2026-10-10"><span class="ag-d"><b>Oct</b><i>10</i></span><span class="ag-i"><strong>Los Angeles<em>US</em></strong><span>Spotlight</span><span class="ag-x" data-tix="https://dice.fm/event/bbgr8g-sander-kleinenberg-10th-oct-the-spotlight-los-angeles-tickets?pid=717f1d8a&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2BxTEs2SEpLMTE1S7QvyEyxNTc0TzNMsUhUqytKTUstKsrMS49PKsovL04tsg1OTEssygQAHxQD7EgAAAA%3D">Tickets</span></span></li><li data-on="2026-10-16"><span class="ag-d"><b>Oct</b><i>16</i></span><span class="ag-i"><strong>San Antonio<em>US</em></strong><span>Smoke Skybar / Skyline Rooftop</span><span class="ag-x" data-tix="https://posh.vip/e/hangout001sander-kleinenberg?utm_source=ig&amp;utm_medium=social&amp;utm_content=link_in_bio">Tickets</span></span></li><li data-on="2026-10-17"><span class="ag-d"><b>Oct</b><i>17</i></span><span class="ag-i"><strong>Phoenix<em>US</em></strong><span>The Roosevelt</span><span class="ag-x" data-tix="https://www.tixr.com/groups/roosevelt/events/sander-kleinenberg-208496">Tickets</span></span></li><li data-on="2026-10-18"><span class="ag-d"><b>Oct</b><i>18</i></span><span class="ag-i"><strong>Toronto<em>CA</em></strong><span>Wiggle Room &mdash; Sunday Service</span><span class="ag-x" data-tix="https://www.tickettailor.com/events/wigglyevents/2435189">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>One Day Forever &times; Tech Me In @ MeWe<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://get-in.com/en/426354?seller_code=RO9kMO5p4Jx">Tickets</span></span></li><li data-on="2026-10-21"><span class="ag-d"><b>Oct</b><i>21</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>SXM Festival &times; ADE @ Nido Cocktail Bar<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span class="ag-x" data-tix="https://sxmfestival.com/ade/">RSVP</span></span></li><li data-on="2026-10-23"><span class="ag-d"><b>Oct</b><i>23</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Private event<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span></span></li><li data-on="2026-10-24"><span class="ag-d"><b>Oct</b><i>24</i></span><span class="ag-i"><strong>Amsterdam<em>NL</em></strong><span>Sub Sub Ibiza presents TIDE @ Het Veronica Schip, NDSM-pier 1<span class="ag-ade"><img src="pics/ade26-yellow.svg" alt="Amsterdam Dance Event" width="896" height="600" loading="lazy" decoding="async"></span></span><span>Sander Kleinenberg b2b Meloko &middot; Julian Prince &middot; Sebastien Bruce b2b Frank van Hees &middot; Eloy Hoose b2b Yves Labordus</span><span class="ag-x" data-tix="https://veronicaschip.fairtix.io/p/tide-%E2%80%93-sub-sub-ibiza-ade-showcase">Tickets</span></span></li></ol><p class="ag-f"><span>Forthcoming</span></p><p class="ag-m" data-on="2026-11-27"><b>27 November</b><strong class="ag-e">Do Not Sit On The Furniture</strong><span class="ag-v">Miami<em>US</em></span><span class="ag-x" data-tix="https://dice.fm/event/eonmqd-sander-kleinenberg-armada-music-27th-nov-do-not-sit-on-the-furniture-miami-beach-tickets?pid=5abc751c&amp;_branch_match_id=1635558890649521142&amp;utm_medium=partners_api&amp;_branch_referrer=H4sIAAAAAAAAA8soKSkottLXz8nMy9ZLyUxO1UvL1Q%2B2NLRMNjIwNzYzNbMvyEyxNU1MSjY3NUxWqytKTUstKsrMS49PKsovL04tsg1OTEssygQAh%2BOl4kgAAAA%3D">Tickets</span></p><p class="ag-m" data-on="2026-12-12"><b>12 December</b><strong class="ag-e">Winter of Love Festival</strong><span class="ag-v">Thuishaven &middot; Amsterdam<em>NL</em></span><span class="ag-x" data-tix="https://events.musicofourdesire.com/nl/event/nwmk-winter-of-love-festival-2026-festival-amsterdam-netherlands">Tickets</span></p><p class="ag-m" data-on="2026-12-18"><b>18 December</b><strong class="ag-e"><img class="ag-logo" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async"></strong><span class="ag-v">Club Onder Hans &middot; Amsterdam<em>NL</em></span></p><p class="ag-m" data-on="2027-02-26"><b>26 February</b><strong class="ag-e"><img class="ag-logo" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async"> <small>with Konvex</small></strong><span class="ag-v">Club Onder Hans &middot; Amsterdam<em>NL</em></span></p><p class="ag-m" data-on="2027-05-14"><b>14 May</b><strong class="ag-e"><img class="ag-logo" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async"></strong><span class="ag-v">Paal 69 &middot; Zandvoort<em>NL</em></span></p><p class="ag-m" data-on="2027-07-16"><b>16 July</b><strong class="ag-e"><img class="ag-logo" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async"> <small>with Sentin</small></strong><span class="ag-v">Paal 69 &middot; Zandvoort<em>NL</em></span></p><p class="ag-m" data-on="2027-08-05"><b>5&ndash;9 August</b><strong class="ag-e">Balance Croatia</strong><span class="ag-v">The Garden Resort &middot; Tisno<em>HR</em></span></p><p class="ag-m" data-on="2027-09-17"><b>17 September</b><strong class="ag-e"><img class="ag-logo" src="pics/tide.webp" alt="TIDE" width="280" height="120" decoding="async"></strong><span class="ag-v">Paal 69 &middot; Zandvoort<em>NL</em></span></p></div></div>
      </button>
     </div>
    </div>
@@ -1530,6 +1646,14 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     <div class="tilt">
      <button class="cd" data-i="37" aria-label="Enlarge: Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways">
       <img src="pics/c/03.webp" alt="Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways" decoding="async" loading="lazy">
+     </button>
+    </div>
+   </div>
+   <div class="slot" style="--x:58.00%;--y:22.00%;--w:16.50%;--r:-5.5deg;--z:46;--mx:52.00%;--my:9.00%;--mw:39.20%;--mr:4.0deg;--lift:1.350;--bri:1.000;--wx:38%;--wy:62%;--ar:0.822;">
+    <div class="tilt">
+     <button class="print share" data-i="45" aria-label="Were you there? Upload your memories: photos, a story, an idea or a demo for Sander">
+      <span class="shot invite"><img src="pics/were-you-there.webp" alt="" width="960" height="960" decoding="async"><b class="invite-words" aria-hidden="true">Were you<br>there?</b></span>
+      <b class="invite-cta" aria-hidden="true">Upload your memories</b>
      </button>
     </div>
    </div>
@@ -1747,7 +1871,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
     like someone tipped the box out again. Same relaxation as the build step:
     seed a few clusters, then push overlapping items apart until they settle. */
  (function(){
-   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.17204, 0.40891, 0.822, 1, 0], [0.15897, 0.37784, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.20404, 0.41512, 0.5709, 0, 0], [0.19803, 0.40215, 0.5709, 0, 0], [0.20905, 0.42404, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.5399, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0]], H_D = 1.4000, H_M = 6.8000;
+   var LAY = [[0.18725, 0.44502, 0.822, 1, 0], [0.16761, 0.39834, 0.822, 1, 0], [0.18718, 0.44483, 0.822, 1, 0], [0.1409, 0.33486, 0.822, 1, 0], [0.17398, 0.41347, 0.822, 1, 0], [0.14854, 0.35301, 0.822, 1, 0], [0.16043, 0.38127, 0.822, 1, 0], [0.18067, 0.42937, 0.822, 1, 0], [0.1655, 0.39331, 0.822, 1, 0], [0.18753, 0.44567, 0.822, 1, 0], [0.16737, 0.39777, 0.822, 1, 0], [0.16297, 0.38731, 0.822, 1, 0], [0.15565, 0.3699, 0.822, 1, 0], [0.16493, 0.39197, 0.822, 1, 0], [0.15058, 0.35787, 0.822, 1, 0], [0.17407, 0.41368, 0.822, 1, 0], [0.14506, 0.34474, 0.822, 1, 0], [0.15334, 0.36442, 0.822, 1, 0], [0.18169, 0.43179, 0.822, 1, 0], [0.15119, 0.35931, 0.822, 1, 0], [0.15298, 0.36356, 0.822, 1, 0], [0.14336, 0.3407, 0.822, 1, 0], [0.14585, 0.34661, 0.822, 1, 0], [0.15975, 0.37966, 0.822, 1, 0], [0.15878, 0.37734, 0.822, 1, 0], [0.17024, 0.40458, 0.822, 1, 0], [0.15707, 0.37328, 0.822, 1, 0], [0.18675, 0.44381, 0.822, 1, 0], [0.17204, 0.40891, 0.822, 1, 0], [0.15897, 0.37784, 0.822, 1, 0], [0.30268, 0.61895, 1.0, 0, 0], [0.30216, 0.61791, 1.0, 0, 0], [0.27113, 0.55445, 1.0, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.20404, 0.41512, 0.5709, 0, 0], [0.19803, 0.40215, 0.5709, 0, 0], [0.20905, 0.42404, 0.5709, 0, 0], [0.21146, 0.42972, 0.5709, 0, 0], [0.21708, 0.4466, 1.0, 0, 1], [0.26402, 0.5399, 1.0, 0, 0], [0.2511, 0.5005, 0.7071, 0, 0], [0.226, 0.452, 0.6, 0, 0], [0.26402, 0.5399, 1.0, 0, 0], [0.27369, 0.55965, 1.0, 0, 0], [0.27321, 0.55871, 1.0, 0, 0], [0.24515, 0.50133, 1.0, 0, 0], [0.165, 0.392, 0.822, 1, 0]], H_D = 1.4000, H_M = 6.8000;
    var slots = document.querySelectorAll('.pile .slot');
    if (!slots.length || slots.length !== LAY.length) return;
    var R = Math.random;
@@ -1808,6 +1932,16 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
    var pz = prints.map(function(_,k){ return flats.length+k+1; });
    for (i2=pz.length-1;i2>0;i2--){ var kk=(R()*(i2+1))|0, t=pz[i2]; pz[i2]=pz[kk]; pz[kk]=t; }
    prints.forEach(function(i,k){ zs[i]=pz[k]; });
+   /* The empty Polaroid always lands on top and in the upper part of the
+      pile, where it is seen before the scrolling starts. */
+   var sh = -1;
+   Array.prototype.forEach.call(slots, function(el,i){ if (el.querySelector('.share')) sh = i; });
+   if (sh >= 0){
+     var topI = zs.indexOf(LAY.length);
+     if (topI >= 0 && topI !== sh){ zs[topI] = zs[sh]; zs[sh] = LAY.length; }
+     D[sh][1] = H_D * (.12 + R() * .22);
+     M[sh][1] = H_M * (.07 + R() * .13);
+   }
 
    var MAXZ = LAY.length;
    Array.prototype.forEach.call(slots, function(el,i){
@@ -1859,10 +1993,11 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
  <div class="box-stage" id="boxStage">
   <div class="box-flip" id="boxFlip">
    <div class="box-print" id="boxPrint">
-    <span class="shot" id="boxShot"><img id="boxImg" alt=""></span>
+    <span class="shot" id="boxShot"><img id="boxImg" alt=""><b class="invite-words" aria-hidden="true">Were you<br>there?</b></span>
     <div class="sheet-read" id="boxSheet" hidden></div>
     <div class="box-clip" id="boxClip" hidden></div>
     <div class="box-label" id="boxLabel" hidden></div>
+    <b class="invite-cta" aria-hidden="true">Upload your memories</b>
    </div>
    <div class="box-back" id="boxBack" aria-hidden="true">
     <div class="bk-hand" id="bkHand">
@@ -1871,6 +2006,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
      <p class="bk-more" id="bkMore"></p>
     </div>
     <div class="bk-gate" id="bkGate" hidden></div>
+    <div class="bk-share" id="bkShare" hidden></div>
     <div class="bk-rel" id="bkRel" hidden>
      <p class="rl-t" id="rlT"></p>
      <p class="rl-k" id="rlK"></p>
@@ -1904,7 +2040,7 @@ html[data-kb] .slot:has(:focus-visible) .tilt{outline:2px solid var(--accent);ou
 
 <script src="https://w.soundcloud.com/player/api.js"></script>
 <script>
-const SHOTS = [{"src": "pics/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "pics/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "pics/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "pics/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "pics/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "pics/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "pics/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "pics/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "pics/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "pics/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "pics/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "pics/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "pics/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "pics/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "pics/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "pics/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "pics/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "pics/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "pics/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "pics/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "pics/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "pics/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "pics/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "pics/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "pics/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "pics/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "pics/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "pics/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "pics/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "pics/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}, {"src": "pics/29-small-wheels.webp", "cap": "Small wheels", "kind": "polaroid", "ar": 0.822}, {"src": "pics/30-come-as-you-are.webp", "cap": "Come as you are", "kind": "polaroid", "ar": 0.822}, {"src": "pics/flyer-tide-sub-sub-ibiza.webp", "cap": "", "kind": "flyer", "ar": 0.8}, {"src": "pics/flyer-do-not-sit-miami.webp", "cap": "", "kind": "flyer", "ar": 1.0}, {"src": "pics/flyer-winter-of-love.webp", "cap": "", "kind": "flyer", "ar": 1.9097}];
+const SHOTS = [{"src": "pics/08-c-est-chic.webp", "cap": "C'est chic", "kind": "polaroid", "ar": 0.822}, {"src": "pics/02-ibiza-11.webp", "cap": "Ibiza '11", "kind": "polaroid", "ar": 0.822}, {"src": "pics/20-the-crew.webp", "cap": "The crew", "kind": "polaroid", "ar": 0.822}, {"src": "pics/27-under-the-tent.webp", "cap": "Under the tent", "kind": "polaroid", "ar": 0.822}, {"src": "pics/11-stay-high.webp", "cap": "Stay high", "kind": "polaroid", "ar": 0.822}, {"src": "pics/15-paul-van-dyk.webp", "cap": "Paul van Dyk", "kind": "polaroid", "ar": 0.822}, {"src": "pics/13-sold-out.webp", "cap": "Sold out", "kind": "polaroid", "ar": 0.822}, {"src": "pics/06-off-duty.webp", "cap": "Off duty", "kind": "polaroid", "ar": 0.822}, {"src": "pics/17-peace.webp", "cap": "Peace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/09-danny-tenaglia.webp", "cap": "Danny Tenaglia", "kind": "polaroid", "ar": 0.822}, {"src": "pics/24-pacha-festival.webp", "cap": "Pacha Festival", "kind": "polaroid", "ar": 0.822}, {"src": "pics/03-just-landed.webp", "cap": "Just landed", "kind": "polaroid", "ar": 0.822}, {"src": "pics/19-lights-down.webp", "cap": "Lights down", "kind": "polaroid", "ar": 0.822}, {"src": "pics/16-sasha.webp", "cap": "Sasha", "kind": "polaroid", "ar": 0.822}, {"src": "pics/25-encore.webp", "cap": "Encore", "kind": "polaroid", "ar": 0.822}, {"src": "pics/05-le-freak.webp", "cap": "Le Freak", "kind": "polaroid", "ar": 0.822}, {"src": "pics/21-lee-burridge.webp", "cap": "Lee Burridge", "kind": "polaroid", "ar": 0.822}, {"src": "pics/10-we-love-sander-k.webp", "cap": "We love Sander K", "kind": "polaroid", "ar": 0.822}, {"src": "pics/12-joshua-tree.webp", "cap": "Joshua Tree", "kind": "polaroid", "ar": 0.822}, {"src": "pics/18-headspace.webp", "cap": "Headspace", "kind": "polaroid", "ar": 0.822}, {"src": "pics/23-front-row.webp", "cap": "Front row", "kind": "polaroid", "ar": 0.822}, {"src": "pics/01-wheels-up.webp", "cap": "Wheels up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/22-hands-up.webp", "cap": "Hands up", "kind": "polaroid", "ar": 0.822}, {"src": "pics/14-hernan-cattaneo.webp", "cap": "Hernán Cattáneo", "kind": "polaroid", "ar": 0.822}, {"src": "pics/26-backstage.webp", "cap": "Backstage", "kind": "polaroid", "ar": 0.822}, {"src": "pics/07-this-is-our-house.webp", "cap": "This is our house", "kind": "polaroid", "ar": 0.822}, {"src": "pics/04-studio-dub-syntax.webp", "cap": "Studio Dub Syntax", "kind": "polaroid", "ar": 0.822}, {"src": "pics/28-sander-and-lee-on-tour.webp", "cap": "Sander & Lee On Tour", "kind": "polaroid", "ar": 0.822}, {"src": "pics/v/01.webp", "cap": "Free Frogs — Bombay", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/02.webp", "cap": "Amazone — Sangel", "kind": "sleeve", "ar": 1.0}, {"src": "pics/v/03.webp", "cap": "Europe — Europe Transporter", "kind": "sleeve", "ar": 1.0}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "", "cap": "Biography", "kind": "sheet", "ar": 0.7071}, {"src": "", "cap": "Tour", "kind": "sheet", "ar": 0.6}, {"src": "pics/disc-nubreed-004.webp", "cap": "Global Underground Nubreed 004: Sander Kleinenberg — CD1", "kind": "disc", "ar": 1.0}, {"src": "pics/c/01.webp", "cap": "#Summer", "kind": "cd", "ar": 1.0}, {"src": "pics/c/02.webp", "cap": "Sander Kleinenberg — Sander Kleinenberg Presents Melk", "kind": "cd", "ar": 1.0811}, {"src": "pics/c/03.webp", "cap": "Sander Kleinenberg — Mixmag Presents: Tranceglobal Airways", "kind": "cd", "ar": 1.1628}, {"src": "pics/flyer-renaissance-everybody.webp", "cap": "Renaissance presents Everybody — Paard van Troje, The Hague, 13.12.03", "kind": "flyer", "ar": 0.7082}, {"src": "pics/c/44.webp", "cap": "Sander Kleinenberg — My Lexicon [Official Video]", "kind": "clip", "ar": 1.0, "clip": "CW4aURZ6hWA"}, {"src": "pics/29-small-wheels.webp", "cap": "Small wheels", "kind": "polaroid", "ar": 0.822}, {"src": "pics/30-come-as-you-are.webp", "cap": "Come as you are", "kind": "polaroid", "ar": 0.822}, {"src": "pics/flyer-tide-sub-sub-ibiza.webp", "cap": "", "kind": "flyer", "ar": 0.8}, {"src": "pics/flyer-do-not-sit-miami.webp", "cap": "", "kind": "flyer", "ar": 1.0}, {"src": "pics/flyer-winter-of-love.webp", "cap": "", "kind": "flyer", "ar": 1.9097}, {"src": "", "cap": "Were you there?", "kind": "share", "ar": 0.822}];
 /* the sleeves and the flyer were re-dealt before paint, so take what they
    landed on from the DOM -- the flyer carries its shape across as well, since
    the enlarged view sizes itself from it */
@@ -1939,7 +2075,10 @@ addEventListener('pointerdown', () => {
    browser's own menu -- open in a new tab, copy a link, look up a word -- and
    a keyboard user the context-menu key, which fires the same event. Worth
    knowing before relying on it. */
-addEventListener('contextmenu', e => e.preventDefault());
+addEventListener('contextmenu', e => {
+  // the form on the empty Polaroid's back keeps its paste menu
+  if (!(e.target.closest && e.target.closest('input, textarea'))) e.preventDefault();
+});
 addEventListener('dragstart', e => {
   if (e.target instanceof HTMLImageElement) e.preventDefault();
 }, true);
@@ -2160,6 +2299,301 @@ async function paintGate(){
   box.append(h, sub, ol, btn);
 }
 
+/* ---- "Were you there?": the form on the back of the empty Polaroid ----------
+   share/?info=1 says whether the box is open and gives the tick-box wording, so
+   what someone agrees to here is word for word what info.txt records there.
+   On send, share/ checks it all and answers with one Dropbox upload link per
+   photo. Each photo then goes straight from this browser to Dropbox exactly as
+   it is on the phone or the computer: the file itself is sent, never drawn
+   onto a canvas, so nothing is resized or recompressed. The form is built
+   once and kept, so closing the card and coming back loses nothing. */
+const SHARE = { info: null, loading: false, built: false, files: [], preview: null, busy: false };
+const shEl = (tag, cls, text) => {
+  const e = document.createElement(tag);
+  if (cls) e.className = cls;
+  if (text != null) e.textContent = text;
+  return e;
+};
+const shMB = n => n >= 1e6 ? (n / 1e6).toFixed(1) + ' MB' : Math.max(1, Math.round(n / 1e3)) + ' KB';
+
+/* The front: Sander and the question until a photo is chosen, then that photo, developing. */
+function paintShareFront(develop){
+  if (!SHOTS[at] || SHOTS[at].kind !== 'share') return;
+  const shot = $('boxShot'), img = $('boxImg');
+  shot.classList.remove('developing');
+  const invite = () => {
+    img.onerror = null;
+    img.alt = 'Sander, hands up: were you there?';
+    img.src = (document.querySelector('.pile .share img') || {}).src || '';
+    shot.classList.add('invite');
+  };
+  if (SHARE.preview) {
+    img.onerror = invite;                               // HEIC: only Safari can show it
+    img.alt = 'Your photo';
+    img.src = SHARE.preview;
+    shot.classList.remove('invite');
+    if (develop) { void shot.offsetWidth; shot.classList.add('developing'); }
+  } else invite();
+}
+function shareSetPreview(){
+  if (SHARE.preview) { URL.revokeObjectURL(SHARE.preview); SHARE.preview = null; }
+  if (SHARE.files[0]) SHARE.preview = URL.createObjectURL(SHARE.files[0]);
+  paintShareFront(true);
+}
+
+async function paintShare(){
+  const box = $('bkShare');
+  if (SHARE.built || SHARE.loading) return;
+  if (!SHARE.info) {
+    SHARE.loading = true;
+    box.textContent = '';
+    box.append(shEl('p', 'sh-sub', 'One moment…'));
+    try {
+      const r = await fetch('share/?info=1', { headers: { 'Accept': 'application/json' } });
+      SHARE.info = await r.json();
+    } catch {
+      box.textContent = '';
+      box.append(shEl('h3', 'sh-t', 'Were you there?'),
+                 shEl('p', 'sh-sub', 'The box can’t be reached right now. Please try again later.'));
+      return;
+    } finally { SHARE.loading = false; }
+  }
+  buildShare(box, SHARE.info);
+  SHARE.built = true;
+}
+
+function shareUpload(url, file, progress){
+  return new Promise(done => {
+    const go = left => {
+      const x = new XMLHttpRequest();
+      x.open('POST', url);
+      x.setRequestHeader('Content-Type', 'application/octet-stream');
+      x.upload.onprogress = e => { if (e.lengthComputable) progress(e.loaded / e.total); };
+      x.onload = () => x.status >= 200 && x.status < 300 ? done(true) : left ? go(left - 1) : done(false);
+      x.onerror = () => left ? go(left - 1) : done(false);
+      x.send(file);
+    };
+    go(1);
+  });
+}
+
+function buildShare(box, I){
+  box.textContent = '';
+  const W = I.words || {};
+  const form = shEl('form', 'sh-form');
+  form.noValidate = true;
+  form.append(shEl('h3', 'sh-t', 'Were you there?'),
+              shEl('p', 'sh-sub', 'Send Sander your photos from the night, a story, an idea or a demo.'));
+  if (!I.ready) {
+    form.append(shEl('p', 'sh-msg', 'The box isn’t open yet. Please come back soon.'));
+    box.append(form);
+    return;
+  }
+  const opened = Date.now();
+
+  const kinds = shEl('fieldset', 'sh-kinds');
+  kinds.append(shEl('legend', 'vh', 'What are you sending?'));
+  [['photo', 'Photos'], ['story', 'A story'], ['idea', 'An idea'], ['demo', 'A demo']].forEach(([v, t], i) => {
+    const l = shEl('label'), r = shEl('input');
+    r.type = 'radio'; r.name = 'kind'; r.value = v; r.checked = !i;
+    l.append(r, shEl('span', null, t));
+    kinds.append(l);
+  });
+
+  const field = (label, input, forKinds, hint) => {
+    const f = shEl('label', 'sh-f');
+    const s = shEl('span', null, label);
+    if (hint) s.append(shEl('em', null, ' ' + hint));
+    f.append(s, input);
+    if (forKinds) f.dataset.for = forKinds;
+    return f;
+  };
+  const input = (type, name, extra) => {
+    const e = shEl('input'); e.type = type; e.name = name;
+    Object.assign(e, extra || {});
+    return e;
+  };
+
+  /* the photos */
+  const pick = shEl('div', 'sh-pick'); pick.dataset.for = 'photo';
+  const fileIn = input('file', 'files', { multiple: true, className: 'vh', tabIndex: -1 });
+  fileIn.accept = 'image/*,image/heic,image/heif,' + (I.ext || []).map(x => '.' + x).join(',');
+  fileIn.setAttribute('aria-hidden', 'true');
+  const pickBtn = shEl('button', 'sh-btn', 'Choose photos'); pickBtn.type = 'button';
+  pickBtn.addEventListener('click', () => fileIn.click());
+  const list = shEl('ul', 'sh-files');
+  const note = shEl('p', 'sh-note', 'Sent exactly as they are, nothing compressed. Up to '
+                    + I.maxFiles + ', ' + I.maxMB + ' MB each.');
+  pick.append(pickBtn, fileIn, list, note);
+
+  const drawFiles = () => {
+    list.textContent = '';
+    SHARE.files.forEach((f, i) => {
+      const li = shEl('li');
+      const x = shEl('button', null, '×'); x.type = 'button';
+      x.setAttribute('aria-label', 'Remove ' + f.name);
+      x.addEventListener('click', () => { SHARE.files.splice(i, 1); drawFiles(); shareSetPreview(); });
+      li.append(shEl('b', null, f.name), shEl('i', null, shMB(f.size)), x);
+      list.append(li);
+    });
+    pickBtn.textContent = SHARE.files.length ? 'Add more' : 'Choose photos';
+  };
+  fileIn.addEventListener('change', () => {
+    say('');
+    for (const f of fileIn.files) {
+      const ext = (f.name.includes('.') ? f.name.split('.').pop() : '').toLowerCase();
+      if (!(I.ext || []).includes(ext)) { say(f.name + ' isn’t a photo this box takes.', true); continue; }
+      if (f.size > I.maxMB * 1e6) { say(f.name + ' is bigger than ' + I.maxMB + ' MB.', true); continue; }
+      if (SHARE.files.length >= I.maxFiles) { say('Up to ' + I.maxFiles + ' photos at a time, please.', true); break; }
+      if (!SHARE.files.some(g => g.name === f.name && g.size === f.size)) SHARE.files.push(f);
+    }
+    fileIn.value = '';
+    drawFiles();
+    shareSetPreview();
+  });
+
+  const text = shEl('textarea'); text.name = 'text'; text.maxLength = 6000;
+  const textF = field('', text, 'photo story idea demo', '');
+  const link = input('url', 'link', { maxLength: 500, placeholder: 'https://soundcloud.com/…', inputMode: 'url' });
+  const year = input('text', 'year', { maxLength: 24, placeholder: '1999', inputMode: 'numeric' });
+  const where = input('text', 'where', { maxLength: 140, placeholder: 'Club, city' });
+  const by = input('text', 'by', { maxLength: 80, placeholder: 'Who took it' });
+  const name = input('text', 'name', { maxLength: 80, autocomplete: 'name' });
+  const email = input('email', 'email', { maxLength: 200, autocomplete: 'email', required: true });
+  const hp = input('text', 'website', { tabIndex: -1, autocomplete: 'off' });
+  const hpWrap = shEl('div', 'sh-hp'); hpWrap.setAttribute('aria-hidden', 'true'); hpWrap.append(hp);
+
+  const row = shEl('div', 'sh-row'); row.dataset.for = 'photo story';
+  row.append(field('Year', year), field('Where', where));
+
+  const ticks = shEl('fieldset', 'sh-ticks');
+  ticks.append(shEl('legend', 'vh', 'Please tick all three'));
+  const tick = () => {
+    const l = shEl('label'), c = input('checkbox', 'tick');
+    l.append(c, shEl('span'));
+    ticks.append(l);
+    return l;
+  };
+  const tRights = tick(), tUse = tick(), tAge = tick();
+  tAge.lastChild.textContent = W.age || '';
+
+  const send = shEl('button', 'sh-send', 'Send it'); send.type = 'submit';
+  const bar = shEl('div', 'sh-bar'); bar.hidden = true; bar.append(shEl('i'));
+  const msg = shEl('p', 'sh-msg'); msg.setAttribute('role', 'status');
+  const say = (s, bad) => { msg.textContent = s; msg.classList.toggle('bad', !!bad); };
+
+  const priv = shEl('p', 'sh-note', 'Your email is only for asking you before anything is posted.');
+  if (I.contact) {
+    const a = shEl('a', null, I.contact); a.href = 'mailto:' + I.contact;
+    priv.append(' To have something taken out, write to ', a, '.');
+  }
+
+  form.append(kinds, pick,
+              field('Link to the demo', link, 'demo'),
+              textF, row, field('Photo by', by, 'photo', 'optional'),
+              field('Your name', name, '', 'for the credit'),
+              field('Your email', email),
+              ticks, hpWrap, send, bar, msg, priv);
+
+  const LABEL = { photo: ['About it', 'optional'], story: ['Your story', ''],
+                  idea: ['Your idea', ''], demo: ['A note', 'optional'] };
+  const HOLD = { photo: 'Who’s in it, what was the night?', story: 'What happened?',
+                 idea: 'What’s the idea?', demo: 'Anything Sander should know' };
+  const kind = () => form.elements.kind.value;
+  const setKind = () => {
+    const k = kind();
+    form.querySelectorAll('[data-for]').forEach(el => { el.hidden = !el.dataset.for.split(' ').includes(k); });
+    const s = textF.firstChild;
+    s.textContent = LABEL[k][0];
+    if (LABEL[k][1]) s.append(shEl('em', null, ' ' + LABEL[k][1]));
+    text.placeholder = HOLD[k];
+    text.style.minHeight = (k === 'story' || k === 'idea') ? '9em' : '';
+    /* new wording, so the old ticks no longer stand for it */
+    tRights.lastChild.textContent = (W.rights || {})[k] || '';
+    tUse.lastChild.textContent = (W.use || {})[k] || '';
+    tRights.firstChild.checked = tUse.firstChild.checked = false;
+    say('');
+  };
+  kinds.addEventListener('change', setKind);
+  setKind();
+
+  form.addEventListener('submit', async e => {
+    e.preventDefault();
+    if (SHARE.busy) return;
+    const k = kind();
+    const stop = (s, el) => { say(s, true); if (el) el.focus(); };
+    if (k === 'photo' && !SHARE.files.length) return stop('Choose at least one photo.', pickBtn);
+    if ((k === 'story' || k === 'idea') && text.value.trim().length < 10) return stop('Please write a little more.', text);
+    if (k === 'demo' && !/^https?:\/\/[^\s\/]+\.[^\s\/]+/i.test(link.value.trim()))
+      return stop('Please paste a link to your demo (SoundCloud, Dropbox, WeTransfer …).', link);
+    if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email.value.trim()))
+      return stop('Please fill in your email address, so Sander can ask before posting anything.', email);
+    if (!(tRights.firstChild.checked && tUse.firstChild.checked && tAge.firstChild.checked))
+      return stop('Please tick all three boxes.');
+
+    const has = f => f.split(' ').includes(k);
+    const body = {
+      kind: k, name: name.value, email: email.value.trim(), text: text.value,
+      year: has('photo story') ? year.value : '', where: has('photo story') ? where.value : '',
+      by: k === 'photo' ? by.value : '', link: k === 'demo' ? link.value.trim() : '',
+      consent: { rights: true, use: true, age: true },
+      files: k === 'photo' ? SHARE.files.map(f => ({ name: f.name, size: f.size })) : [],
+      website: hp.value, ms: Date.now() - opened,
+    };
+    SHARE.busy = true; send.disabled = true; say('Sending…');
+    let res;
+    try {
+      const r = await fetch('share/', { method: 'POST', body: JSON.stringify(body),
+        headers: { 'Content-Type': 'application/json', 'Accept': 'application/json' } });
+      res = await r.json();
+    } catch { res = { ok: false, error: 'The box can’t be reached right now. Please try again in a while.' }; }
+    if (!res.ok) { SHARE.busy = false; send.disabled = false; return say(res.error || 'Something went wrong.', true); }
+
+    const ups = res.uploads || [], sent = SHARE.files.slice(0, ups.length), failed = [];
+    const total = sent.reduce((a, f) => a + f.size, 0) || 1;
+    let before = 0;
+    bar.hidden = !ups.length;
+    for (let i = 0; i < ups.length; i++) {
+      const f = sent[i];
+      say(ups.length > 1 ? 'Sending photo ' + (i + 1) + ' of ' + ups.length + '…' : 'Sending your photo…');
+      const ok = await shareUpload(ups[i].url, f, part => {
+        bar.firstChild.style.width = ((before + part * f.size) / total * 100).toFixed(1) + '%';
+      });
+      if (!ok) failed.push(f.name);
+      before += f.size;
+      bar.firstChild.style.width = (before / total * 100).toFixed(1) + '%';
+    }
+    SHARE.busy = false;
+    shareThanks(box, form, k, ups.length - failed.length, failed);
+  });
+
+  box.append(form);
+}
+
+function shareThanks(box, form, k, n, failed){
+  const done = shEl('div', 'sh-form');
+  done.append(shEl('h3', 'sh-t', failed.length && !n ? 'That didn’t work' : 'Got it. Thank you!'));
+  const what = k === 'photo' ? (n === 1 ? 'Your photo is' : 'Your ' + n + ' photos are') : 'It’s';
+  if (n || k !== 'photo')
+    done.append(shEl('p', 'sh-sub', what + ' in Sander’s box. If anything is going to be posted, '
+                     + 'you’ll get an email first.'));
+  if (failed.length)
+    done.append(shEl('p', 'sh-msg bad', (failed.length === 1 ? failed[0] + ' didn’t arrive.'
+                     : 'These didn’t arrive: ' + failed.join(', ') + '.') + ' Please send '
+                     + (failed.length === 1 ? 'it' : 'them') + ' again.'));
+  const again = shEl('button', 'sh-btn', 'Send something else'); again.type = 'button';
+  again.addEventListener('click', () => {
+    SHARE.files = []; shareSetPreview();
+    SHARE.built = false; paintShare();
+  });
+  done.append(again);
+  box.textContent = '';
+  box.append(done);
+  box.closest('.box-back').scrollTop = 0;
+}
+
+addEventListener('beforeunload', e => { if (SHARE.busy) { e.preventDefault(); e.returnValue = ''; } });
+
 function show(i){
   at = (i + SHOTS.length) % SHOTS.length;
   const s = SHOTS[at];
@@ -2170,6 +2604,9 @@ function show(i){
   const bare = ['sleeve', 'cd', 'flyer', 'disc', 'clip', 'gate'].includes(s.kind);
   /* the giveaway: a label on the front, the asking on the back */
   const isGate = s.kind === 'gate';
+  /* the empty Polaroid: the question on its chin, the form on its back */
+  const isShare = s.kind === 'share';
+  $('boxShot').classList.remove('invite', 'developing');
   // a Polaroid is taller than its image because of the chin, hence .8 not s.ar
   $('boxStage').style.setProperty('--boxar', isSheet ? 1 : (bare ? s.ar : .8));
   $('boxPrint').classList.toggle('is-bare', bare);
@@ -2197,7 +2634,11 @@ function show(i){
       a.className = el.className; a.textContent = el.textContent;
       el.replaceWith(a);
     });
+  } else if (isShare) {
+    $('boxImg').alt = 'Your photo';
+    paintShareFront(false);
   } else {
+    $('boxImg').onerror = null;
     $('boxImg').src = s.src; $('boxImg').alt = s.cap;
   }
   /* Two kinds never turn, each in its own right rather than by the flag: a
@@ -2224,10 +2665,18 @@ function show(i){
     const printed = s.kind === 'sleeve' || s.kind === 'cd'
                  || s.kind === 'flyer' || s.kind === 'clip';
     $('boxBack').classList.toggle('is-rel', printed);
-    $('bkHand').hidden = printed || isGate;
+    $('boxBack').classList.toggle('is-share', isShare);
+    $('bkHand').hidden = printed || isGate || isShare;
     $('bkRel').hidden = !printed || isGate;
     $('bkGate').hidden = !isGate;
+    $('bkShare').hidden = !isShare;
     if (isGate) { paintGate(); return; }
+    if (isShare) {
+      paintShare();
+      /* it turns itself over: the back is the point of this one */
+      setTimeout(() => { if (!box.hidden && SHOTS[at] === s) turn(true); },
+                 matchMedia('(prefers-reduced-motion: reduce)').matches ? 0 : 620);
+    }
     const dash = (s.cap || '').indexOf('\u2014');
     const artist = dash > 0 ? s.cap.slice(0, dash).trim() : '';
     const title  = dash > 0 ? s.cap.slice(dash + 1).trim() : (s.cap || '');
@@ -2591,7 +3040,7 @@ $('boxFlip').addEventListener('click', e => {
      giveaway: its back is a form, so its links and its button would each turn
      the card away from the person using them. The button in the corner still
      turns it back. */
-  if (e.target.closest('.bk-gate')) return;
+  if (e.target.closest('.bk-gate') || e.target.closest('.bk-share')) return;
   turn();
 });
 box.addEventListener('click', e => {
@@ -2607,9 +3056,31 @@ addEventListener('keydown', e => {
     if (!$('boxClip').hidden) { shutClip(); $('close').focus(); }
     else shut();
   }
+  else if (e.target.closest && e.target.closest('input, textarea')) return;   // typing in the share form
   else if (e.key === 'ArrowLeft') show(at - 1);
   else if (e.key === 'ArrowRight') show(at + 1);
 });
+
+/* sanderkleinenberg.com/#share (and /share/, which comes here) opens the empty
+   Polaroid with its form showing: the address to put under a post. */
+(() => {
+  const i = SHOTS.findIndex(s => s.kind === 'share');
+  const card = document.querySelector('.pile .share');
+  if (i < 0 || !card) return;
+  /* Straight in, not flown in from the pile: on a fresh load the page is still
+     painting and a flight from far down the table stalled on its first frame,
+     leaving the card invisible for seconds. Closing still drops it back there. */
+  const go = () => {
+    if (location.hash !== '#share' || !box.hidden) return;
+    openAt(i, null);
+    opener = card;
+  };
+  addEventListener('hashchange', go);
+  document.addEventListener('sk:shut', () => {
+    if (location.hash === '#share') history.replaceState(history.state, '', location.pathname + location.search);
+  });
+  go();
+})();
 
 /* ---- mixtape player -------------------------------------------------------
    Streams through SoundCloud's own embedded player rather than a custom

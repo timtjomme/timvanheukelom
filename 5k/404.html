@@ -24,7 +24,7 @@
 <style>
 /* Layout: one screen, the archive's table. The pile of polaroids on one side,
    the note on the other; on a phone the pile comes first. The top print is the
-   one that never developed. Tokens are the live /5k/ values, grounds included.
+   404 itself: a roadside Exit 404 sign. Tokens are the live /5k/ values, grounds included.
    Single theme on purpose: the brand is ink on paper. */
 :root{
   color-scheme: light;
@@ -37,7 +37,6 @@
   --muted:#8d867c;
   --accent:#de6d96;
   --biro:#253163;
-  --emulsion:#1b2427;
   --line:rgba(24,24,23,.15);
   --shadow:72,64,52;
 
@@ -205,13 +204,6 @@ h1{
   background:linear-gradient(calc(104deg - var(--r)),rgba(255,255,255,.12),
     rgba(255,255,255,0) 34%,rgba(255,255,255,0) 72%,rgba(255,255,255,.06));
 }
-/* the one that never developed: the blue-black of a print fresh out of the camera */
-.shot.blank{
-  background:
-    radial-gradient(ellipse 70% 60% at 30% 26%, rgba(78,104,108,.55), transparent 70%),
-    radial-gradient(ellipse 60% 50% at 76% 82%, rgba(44,62,64,.6), transparent 72%),
-    var(--emulsion);
-}
 
 /* Written on the chin in biro, the archive's hand. The caption is the card's
    last flex item, so it fills exactly the white under the picture at any size.
@@ -328,7 +320,7 @@ a:focus-visible,button:focus-visible{ outline:2px solid var(--ink); outline-offs
   <main class="stage">
     <section class="table" aria-label="A pile of polaroids">
       <div class="pile" id="pile" tabindex="0" aria-describedby="pile-help">
-        <figure class="card" style="--i:12;--r:-3.2deg;--dx:-4px;--dy:2px;--bri:1;--wx:28%;--wy:64%;z-index:13"><span class="shot blank"></span><figcaption><b>404</b><span>never developed</span></figcaption></figure>
+        <figure class="card" style="--i:12;--r:-3.2deg;--dx:-4px;--dy:2px;--bri:1;--wx:28%;--wy:64%;z-index:13"><span class="shot"><img src="/5k/404-assets/p-404.webp" alt="A green highway sign by the road: Exit 404, with an arrow" width="720" height="737" decoding="async"></span><figcaption><b>404</b><span>wrong exit</span></figcaption></figure>
         <figure class="card" style="--i:11;--r:5.4deg;--dx:7px;--dy:-3px;--bri:.985;--wx:71%;--wy:22%;z-index:12"><span class="shot"><img src="/5k/404-assets/p-11.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Stay high</figcaption></figure>
         <figure class="card" style="--i:10;--r:-7.1deg;--dx:-9px;--dy:5px;--bri:.97;--wx:14%;--wy:83%;z-index:11"><span class="shot"><img src="/5k/404-assets/p-01.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Wheels up</figcaption></figure>
         <figure class="card" style="--i:9;--r:2.3deg;--dx:3px;--dy:6px;--bri:1.01;--wx:55%;--wy:47%;z-index:10"><span class="shot"><img src="/5k/404-assets/p-05.webp" alt="" width="560" height="560" decoding="async"></span><figcaption>Le Freak</figcaption></figure>
@@ -359,7 +351,6 @@ a:focus-visible,button:focus-visible{ outline:2px solid var(--ink); outline-offs
       <p class="asked" id="asked" hidden>You asked for <code id="path"></code></p>
       <div class="go">
         <a class="btn ink" href="https://sanderkleinenberg.com/">Back to the archive</a>
-        <a class="btn" href="https://sanderkleinenberg.com/bio/">Bio &amp; links</a>
       </div>
     </section>
   </main>

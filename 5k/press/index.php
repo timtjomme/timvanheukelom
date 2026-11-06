@@ -549,7 +549,7 @@ main{ display:flex; flex-direction:column; gap:clamp(64px,10vw,120px); padding-b
   color:var(--accent);
   border-bottom:1px solid currentColor;
 }
-.date:hover .where b{ color:var(--accent) }
+a.date:hover .where b{ color:var(--accent) }
 
 /* where he's played: a festival bill in tiers, then the rooms, then the cities */
 .stages{ padding:clamp(18px,2.6vw,26px); rotate:-.4deg }
@@ -1126,12 +1126,37 @@ a:focus-visible,button:focus-visible{ outline:2px solid var(--accent); outline-o
             <span class="where"><b>Winter of Love &middot; Thuishaven</b><span>Amsterdam &middot; NL</span></span>
             <span class="tix">Tickets</span>
           </a></li>
+          <li><div class="date">
+            <img src="img/tide.webp" alt="" width="200" height="200" loading="lazy">
+            <span class="when">18.12<small>2026</small></span>
+            <span class="where"><b>TIDE &middot; Club Onder Hans</b><span>Amsterdam &middot; NL</span></span>
+          </div></li>
+          <li><div class="date">
+            <img src="img/tide.webp" alt="" width="200" height="200" loading="lazy">
+            <span class="when">26.02<small>2027</small></span>
+            <span class="where"><b>TIDE with Konvex &middot; Club Onder Hans</b><span>Amsterdam &middot; NL</span></span>
+          </div></li>
+          <li><div class="date">
+            <img src="img/tide.webp" alt="" width="200" height="200" loading="lazy">
+            <span class="when">14.05<small>2027</small></span>
+            <span class="where"><b>TIDE &middot; Paal 69</b><span>Zandvoort &middot; NL</span></span>
+          </div></li>
+          <li><div class="date">
+            <img src="img/tide.webp" alt="" width="200" height="200" loading="lazy">
+            <span class="when">16.07<small>2027</small></span>
+            <span class="where"><b>TIDE with Sentin &middot; Paal 69</b><span>Zandvoort &middot; NL</span></span>
+          </div></li>
           <li><a class="date" href="https://www.balancecroatia.com">
             <img src="img/flyer-balance-croatia.webp" alt="" width="200" height="200" loading="lazy">
             <span class="when">05&ndash;09.08<small>2027</small></span>
             <span class="where"><b>Balance Croatia &middot; The Garden Resort</b><span>Tisno &middot; HR</span></span>
             <span class="tix">Tickets</span>
           </a></li>
+          <li><div class="date">
+            <img src="img/tide.webp" alt="" width="200" height="200" loading="lazy">
+            <span class="when">17.09<small>2027</small></span>
+            <span class="where"><b>TIDE &middot; Paal 69</b><span>Zandvoort &middot; NL</span></span>
+          </div></li>
         </ul>
       </div>
 
